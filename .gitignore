@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+.chroma/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.DS_Store
+data/compliance.db
+*.db-journal

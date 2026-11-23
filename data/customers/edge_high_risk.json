@@ -1,0 +1,110 @@
+{
+  "case_id": "KYC-2024-003",
+  "submission_type": "individual_onboarding",
+  "submitted_by": "Private Banking Relationship Manager",
+  "submitted_at": "2024-09-02T11:00:00Z",
+  "customer": {
+    "type": "individual",
+    "full_name": "Mikhail Petrov",
+    "aliases": ["Mikhail V. Petrov", "M. Petrov"],
+    "date_of_birth": "1972-07-14",
+    "nationality": "Russian",
+    "country_of_residence": "Thailand",
+    "occupation": "Business Owner / Investor",
+    "employer": "Self-employed",
+    "annual_income": 2000000,
+    "income_currency": "USD",
+    "additional_info": "Claims to have relocated from Moscow to Bangkok in 2022. Operates multiple businesses across Southeast Asia."
+  },
+  "identification_documents": [
+    {
+      "type": "passport",
+      "category": "A",
+      "document_number": "75 4421889",
+      "issuing_country": "Russia",
+      "issue_date": "2021-05-10",
+      "expiry_date": "2031-05-09",
+      "verified": true
+    },
+    {
+      "type": "utility_bill",
+      "category": "B",
+      "description": "Thai electricity bill - Provincial Electricity Authority",
+      "document_date": "2024-08-15",
+      "address": "99/1 Sukhumvit Soi 31, Watthana, Bangkok 10110, Thailand",
+      "verified": true
+    },
+    {
+      "type": "driver_license",
+      "category": "A",
+      "document_number": "TH-DL-7214-5590",
+      "issuing_country": "Thailand",
+      "issue_date": "2023-02-20",
+      "expiry_date": "2028-02-19",
+      "verified": true
+    }
+  ],
+  "account_request": {
+    "product_type": "private_banking",
+    "purpose": "Wealth management and investment portfolio",
+    "expected_monthly_deposit": 200000,
+    "expected_monthly_withdrawal": 150000,
+    "initial_deposit": 5000000,
+    "source_of_initial_deposit": "Sale of commercial property in Dubai, UAE",
+    "primary_transaction_countries": ["Thailand", "UAE", "Singapore", "Cyprus"]
+  },
+  "source_of_funds": {
+    "primary": "business_revenue_and_investments",
+    "details": "Claims income from: (1) Real estate holdings in Thailand and UAE, (2) Import/export business - Petrochemical supplies, (3) Technology startup investments in Southeast Asia",
+    "supporting_documents": ["bank_statements_6_months", "property_deed_dubai", "company_registration_thailand"]
+  },
+  "source_of_wealth": {
+    "declared": "Built wealth through petrochemical trading business established in Moscow in 2005. Diversified into real estate in Dubai (2015) and Southeast Asian tech investments (2020). Claims net worth of approximately $15 million.",
+    "supporting_documents": ["self_declaration_only"],
+    "verification_status": "unverified"
+  },
+  "declarations": {
+    "pep_status": false,
+    "pep_association": false,
+    "tax_residency": ["Thailand"],
+    "us_person": false,
+    "consent_given": true,
+    "declaration_signed": true,
+    "declaration_date": "2024-09-02"
+  },
+  "screening_flags": {
+    "sanctions_screening": {
+      "result": "potential_match",
+      "details": "Name 'Mikhail Petrov' returns partial match (82% confidence) against an individual on the EU sanctions list related to Russian oligarch designations. The listed individual has date of birth 1972 and Russian nationality. Additional verification required to confirm or dismiss.",
+      "matched_list": "EU Consolidated Financial Sanctions List",
+      "matched_entry": "PETROV, Mikhail Vladimirovich, DOB: 1972-03-22, Russian national, designated for association with sanctioned entities in energy sector"
+    },
+    "pep_screening": {
+      "result": "potential_match",
+      "details": "An individual named 'Mikhail Petrov' appears in PEP databases as a former advisor to a regional government in Russia (2010-2018). Requires verification whether this is the same person."
+    },
+    "adverse_media": {
+      "result": "findings",
+      "details": "News articles from 2023 mention a 'Mikhail Petrov' involved in a Dubai property transaction that was investigated by UAE financial authorities for potential money laundering. Investigation outcome unknown. Separate articles mention Russian businessmen named Petrov relocating assets to Southeast Asia following 2022 sanctions."
+    }
+  },
+  "issues_for_review": [
+    "Potential sanctions list match (EU list, 82% confidence) — same DOB year and nationality",
+    "Potential PEP match — former Russian government advisor",
+    "Adverse media findings — Dubai property investigation, Russian asset relocation",
+    "Russian national with high-risk geographic profile (Russia, UAE, Cyprus)",
+    "Private banking product — highest risk product category",
+    "Large initial deposit ($5M) from Dubai property sale — must verify",
+    "Source of wealth only self-declared, no independent verification",
+    "Petrochemical business ties — sector under heightened sanctions scrutiny",
+    "Recent relocation from Russia (2022) coincides with sanctions timeline",
+    "Tax residency declared as Thailand only — may have undeclared obligations"
+  ],
+  "expected_outcome": {
+    "risk_rating": "high",
+    "risk_score": 15,
+    "due_diligence_level": "enhanced",
+    "decision": "escalate_to_compliance_committee",
+    "reasoning": "Maximum risk score across multiple dimensions. Critical issue: potential sanctions match must be resolved before any further processing — per Sanctions Screening Procedures Section 5.2, if the match cannot be dismissed within 48 hours, it must be treated as confirmed. The PEP potential match, if confirmed, automatically triggers high-risk classification and senior management approval requirement. Adverse media findings related to money laundering investigation in Dubai add further concern. Even if sanctions and PEP matches are dismissed, the customer profile (Russian national, petrochemical business, Dubai property, Cyprus transactions, recent relocation from Russia) presents an extremely high-risk profile requiring full EDD with Compliance Review Committee approval. Source of wealth must be independently verified — self-declaration alone is insufficient for this risk level."
+  }
+}
