@@ -28,13 +28,21 @@ IMPORTANT: Apply ONLY the document requirements for the customer type above.
 Steps:
 1. Check if all required documents for THIS customer type are present
 2. Verify document validity (not expired, correct categories)
-3. List any missing or problematic documents
-4. Determine if the submission can proceed to screening or needs more information
+3. Classify each missing document as CRITICAL or NON-CRITICAL:
+   - CRITICAL (blocks review): For individuals — photo ID (passport, national ID, or driver license). For corporates — certificate of incorporation, board resolution, beneficial ownership declaration.
+   - NON-CRITICAL (review can proceed with risk adjustment): supplementary address proofs, additional financial statements, tax certificates, business licenses, employment letters.
+4. Determine intake_status:
+   - "blocked" — any critical document is missing → cannot proceed
+   - "conditional" — only non-critical documents are missing → proceed with risk flag
+   - "complete" — all documents present → proceed normally
 
 Respond in this JSON format:
 {{
     "documents_complete": true/false,
-    "missing_documents": ["list of missing items"],
+    "missing_documents": ["list of ALL missing items"],
+    "critical_missing": ["list of CRITICAL missing documents only"],
+    "non_critical_missing": ["list of NON-CRITICAL missing documents only"],
+    "intake_status": "blocked/conditional/complete",
     "document_issues": ["list of issues with provided documents"],
     "verification_notes": ["notes about each document"],
     "can_proceed": true/false,

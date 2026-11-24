@@ -98,7 +98,7 @@ def ingest_documents(config: AppConfig, documents_dir: str = "src/knowledge/docu
     docs_path = Path(documents_dir)
     total_chunks = 0
 
-    for md_file in sorted(docs_path.glob("*.md")):
+    for md_file in sorted(docs_path.rglob("*.md")):
         content = md_file.read_text(encoding="utf-8")
         doc_metadata = parse_document_metadata(content, str(md_file))
         doc_id = doc_metadata.get("document_id", md_file.stem)

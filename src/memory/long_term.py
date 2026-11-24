@@ -1,46 +1,58 @@
-"""Long-term memory: cross-review accumulated experience.
+"""Long-term memory: policy version tracking (intentionally thin).
 
-Stores patterns the agent learns across reviews: common issues, analyst
-preferences, edge case precedents, and review quality signals. This is
-the agent's own experience, NOT customer data (which lives in the database).
+Design decision
+---------------
+Long-term memory intentionally kept thin. Knowledge reuse is handled through
+retrospective case review documents ingested into RAG
+(see ``src/knowledge/documents/case_reviews/``), not opaque memory entries.
+
+Why: an earlier iteration stored free-form "experience" and "precedent" rows
+(edge-case learnings, observed patterns, confidence scores) and recalled them
+into the prompt. Those entries were hard to audit, hard to correct, and could
+not be traced back to a human-reviewed source, which is a poor fit for a
+compliance setting. Retrospective documents are human-readable, reviewable,
+versioned, and retrieved through the same cited RAG path as policy text.
+
+The one thing that does not fit a RAG document is a small structured fact:
+"which policy version was active when case X was reviewed". That is what this
+layer stores, and nothing else. It is metadata for audit/reproducibility, not
+context injected into the agent's prompt.
+
+Per-case state lives in ``short_term.SessionMemory``; customer data and the
+audit trail live in the main SQLite tables.
 """
 
 from __future__ import annotations
 
-import json
 import sqlite3
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
 
-MEMORY_SCHEMA = """
-CREATE TABLE IF NOT EXISTS agent_memory (
-    memory_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    category TEXT NOT NULL,
-    content TEXT NOT NULL,
-    source_case_id TEXT,
-    relevance_tags TEXT,
-    confidence REAL DEFAULT 1.0,
-    access_count INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now')),
-    last_accessed TEXT,
-    expires_at TEXT
+# NOTE: the legacy ``agent_memory`` table (experience / precedent storage) is
+# no longer created or written by this module. Existing databases may still
+# contain it; it is simply ignored.
+POLICY_VERSION_SCHEMA = """
+CREATE TABLE IF NOT EXISTS policy_version_log (
+    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id TEXT NOT NULL,
+    document_id TEXT NOT NULL,
+    version TEXT NOT NULL,
+    recorded_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_memory_category ON agent_memory(category);
-CREATE INDEX IF NOT EXISTS idx_memory_tags ON agent_memory(relevance_tags);
+CREATE INDEX IF NOT EXISTS idx_policy_version_case ON policy_version_log(case_id);
 """
 
 
 class LongTermMemory:
-    """SQLite-backed long-term memory for the compliance review agent."""
+    """Thin SQLite-backed record of policy versions used per reviewed case."""
 
     def __init__(self, db_path: str = "data/compliance.db"):
         self.db_path = db_path
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(db_path)
-        conn.executescript(MEMORY_SCHEMA)
+        conn.executescript(POLICY_VERSION_SCHEMA)
         conn.commit()
         conn.close()
 
@@ -49,92 +61,40 @@ class LongTermMemory:
         conn.row_factory = sqlite3.Row
         return conn
 
-    def store(self, category: str, content: str, source_case_id: str = "",
-              tags: list[str] = None, confidence: float = 1.0) -> int:
-        """Store a new memory entry."""
+    def record_policy_version(self, case_id: str, document_id: str, version: str) -> int:
+        """Record that ``document_id`` at ``version`` was active for ``case_id``."""
         conn = self._get_conn()
         cursor = conn.execute(
-            """INSERT INTO agent_memory (category, content, source_case_id, relevance_tags, confidence)
-               VALUES (?, ?, ?, ?, ?)""",
-            (category, content, source_case_id, ",".join(tags or []), confidence),
+            "INSERT INTO policy_version_log (case_id, document_id, version) VALUES (?, ?, ?)",
+            (case_id, document_id, version),
         )
         conn.commit()
-        memory_id = cursor.lastrowid
+        log_id = cursor.lastrowid
         conn.close()
-        return memory_id
+        return log_id
 
-    def recall(self, category: str = None, tags: list[str] = None,
-               limit: int = 5) -> list[dict]:
-        """Recall memories matching the category and/or tags."""
+    def get_policy_versions(self, case_id: str) -> list[dict]:
+        """Return the policy versions recorded for a case."""
         conn = self._get_conn()
-        query = "SELECT * FROM agent_memory WHERE 1=1"
-        params = []
-
-        if category:
-            query += " AND category = ?"
-            params.append(category)
-
-        if tags:
-            tag_conditions = " OR ".join("relevance_tags LIKE ?" for _ in tags)
-            query += f" AND ({tag_conditions})"
-            params.extend(f"%{tag}%" for tag in tags)
-
-        query += " ORDER BY confidence DESC, created_at DESC LIMIT ?"
-        params.append(limit)
-
-        rows = conn.execute(query, params).fetchall()
-        results = []
-        for row in rows:
-            conn.execute(
-                "UPDATE agent_memory SET access_count = access_count + 1, last_accessed = ? WHERE memory_id = ?",
-                (datetime.now(timezone.utc).isoformat(), row["memory_id"]),
-            )
-            results.append(dict(row))
-
-        conn.commit()
-        conn.close()
-        return results
-
-    def recall_for_context(self, case_tags: list[str], limit: int = 3) -> str:
-        """Recall and format memories relevant to the current review context."""
-        memories = self.recall(tags=case_tags, limit=limit)
-        if not memories:
-            return ""
-
-        lines = ["## Relevant past experience:"]
-        for m in memories:
-            lines.append(f"- [{m['category']}] {m['content']} (confidence: {m['confidence']:.1f})")
-        return "\n".join(lines)
-
-    def store_review_outcome(self, case_id: str, outcome: dict) -> None:
-        """Store learnings from a completed review."""
-        if outcome.get("edge_case_learning"):
-            self.store(
-                category="edge_case",
-                content=outcome["edge_case_learning"],
-                source_case_id=case_id,
-                tags=outcome.get("tags", []),
-                confidence=0.8,
-            )
-
-        if outcome.get("pattern_observed"):
-            self.store(
-                category="pattern",
-                content=outcome["pattern_observed"],
-                source_case_id=case_id,
-                tags=outcome.get("tags", []),
-                confidence=0.7,
-            )
-
-    def get_stats(self) -> dict:
-        """Get memory statistics."""
-        conn = self._get_conn()
-        total = conn.execute("SELECT COUNT(*) FROM agent_memory").fetchone()[0]
-        by_category = conn.execute(
-            "SELECT category, COUNT(*) as count FROM agent_memory GROUP BY category"
+        rows = conn.execute(
+            "SELECT document_id, version, recorded_at FROM policy_version_log "
+            "WHERE case_id = ? ORDER BY log_id",
+            (case_id,),
         ).fetchall()
         conn.close()
-        return {
-            "total_memories": total,
-            "by_category": {row["category"]: row["count"] for row in by_category},
-        }
+        return [dict(r) for r in rows]
+
+    def get_stats(self) -> dict:
+        """Counts for the sidebar: tracked policy versions and cases covered."""
+        conn = self._get_conn()
+        total = conn.execute("SELECT COUNT(*) FROM policy_version_log").fetchone()[0]
+        cases = conn.execute(
+            "SELECT COUNT(DISTINCT case_id) FROM policy_version_log"
+        ).fetchone()[0]
+        conn.close()
+        return {"policy_versions_tracked": total, "cases_covered": cases}
+
+    # --- Removed in the "keep memory thin" refactor -------------------------
+    # store(), recall(), recall_for_context(), store_review_outcome():
+    # free-form experience/precedent memory. Replaced by retrospective
+    # documents in RAG (see module docstring).
