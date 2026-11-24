@@ -1,0 +1,104 @@
+{
+  "case_id": "KYC-2024-005",
+  "submission_type": "individual_onboarding",
+  "submitted_by": "Private Banking Relationship Manager",
+  "submitted_at": "2024-09-15T14:30:00Z",
+  "customer": {
+    "type": "individual",
+    "full_name": "Dato' Ahmad bin Ibrahim",
+    "date_of_birth": "1965-08-12",
+    "nationality": "Malaysian",
+    "country_of_residence": "Malaysia",
+    "occupation": "Chairman, Ibrahim Holdings Sdn Bhd",
+    "employer": "Self-employed",
+    "annual_income": 1500000,
+    "income_currency": "MYR",
+    "additional_info": "Former Deputy Minister of Trade and Industry, Malaysia (2010-2018). Retired from politics. Now runs family conglomerate focused on palm oil and construction."
+  },
+  "identification_documents": [
+    {
+      "type": "passport",
+      "category": "A",
+      "document_number": "A45678901",
+      "issuing_country": "Malaysia",
+      "issue_date": "2023-06-15",
+      "expiry_date": "2033-06-14",
+      "verified": true
+    },
+    {
+      "type": "national_id",
+      "category": "A",
+      "document_number": "650812-10-5577",
+      "issuing_country": "Malaysia",
+      "issue_date": "2020-01-10",
+      "expiry_date": "2035-01-09",
+      "verified": true
+    },
+    {
+      "type": "utility_bill",
+      "category": "B",
+      "description": "Tenaga Nasional electricity bill",
+      "document_date": "2024-08-28",
+      "address": "12 Jalan Bukit Tunku, 50480 Kuala Lumpur, Malaysia",
+      "verified": true
+    },
+    {
+      "type": "tax_certificate",
+      "category": "C",
+      "document_number": "LHDN-2024-ABI-9900",
+      "tax_year": 2023,
+      "issuing_authority": "Lembaga Hasil Dalam Negeri (LHDN)",
+      "verified": true
+    }
+  ],
+  "account_request": {
+    "product_type": "private_banking",
+    "purpose": "Wealth management and cross-border investment portfolio",
+    "expected_monthly_deposit": 100000,
+    "expected_monthly_withdrawal": 50000,
+    "initial_deposit": 2000000,
+    "source_of_initial_deposit": "Dividend from Ibrahim Holdings Sdn Bhd",
+    "primary_transaction_countries": ["Malaysia", "Singapore", "Indonesia"]
+  },
+  "source_of_funds": {
+    "primary": "business_revenue",
+    "details": "Dividends and director fees from Ibrahim Holdings Sdn Bhd (family conglomerate, established 1992, palm oil plantations and construction). Also receives rental income from commercial properties in Kuala Lumpur.",
+    "supporting_documents": ["company_annual_report", "audited_financial_statements_2023", "bank_statements_6_months", "property_title_deeds"]
+  },
+  "source_of_wealth": {
+    "declared": "Family wealth built through Ibrahim Holdings Sdn Bhd since 1992 (father founded). Business expanded into palm oil (2000s) and construction (2010s). Personal net worth estimated at MYR 50 million. No connection between political career and business dealings — family business predates political appointment.",
+    "supporting_documents": ["company_annual_report", "audited_financial_statements_2023", "statutory_declaration_source_of_wealth"],
+    "verification_status": "partially_verified"
+  },
+  "declarations": {
+    "pep_status": true,
+    "pep_details": "Former Deputy Minister of Trade and Industry, Malaysia (2010-2018). Retired from all government positions.",
+    "pep_association": false,
+    "tax_residency": ["Malaysia"],
+    "us_person": false,
+    "consent_given": true,
+    "declaration_signed": true,
+    "declaration_date": "2024-09-15"
+  },
+  "screening_flags": {
+    "pep_screening": {
+      "result": "confirmed_match",
+      "details": "Dato' Ahmad bin Ibrahim confirmed as former Deputy Minister of Trade and Industry, Malaysia (2010-2018). PEP status declared by customer. PEP classification: domestic PEP (retired). PEP cooling-off period: varies by jurisdiction, typically 12-24 months post-retirement (last office 2018, now 6+ years retired)."
+    },
+    "sanctions_screening": {
+      "result": "clear",
+      "details": "No matches found on OFAC SDN, EU Consolidated, UN Security Council, or APAC regional lists."
+    },
+    "adverse_media": {
+      "result": "clear",
+      "details": "No adverse media findings related to corruption, money laundering, or financial crime. Minor mentions in Malaysian business press regarding Ibrahim Holdings' construction contracts — routine reporting, no allegations."
+    }
+  },
+  "expected_outcome": {
+    "risk_rating": "high",
+    "risk_score": 12,
+    "due_diligence_level": "enhanced",
+    "decision": "approve_with_conditions",
+    "reasoning": "Declared PEP (retired 6+ years) triggers automatic high-risk classification per Risk Rating Matrix Section 3.2. However, risk mitigants are strong: (1) PEP status self-declared — demonstrates transparency; (2) family business predates political career by 18 years; (3) source of wealth documented with audited financials and company annual reports; (4) sanctions clear, no adverse media; (5) well past typical PEP cooling-off period. EDD required but approval recommended with conditions: enhanced ongoing monitoring, annual review of PEP status, source of funds verification for any single transaction >MYR 500,000. Senior management approval needed per CDD Guidelines for PEP accounts."
+  }
+}

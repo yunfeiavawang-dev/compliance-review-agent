@@ -1,0 +1,66 @@
+{
+  "case_id": "KYC-2024-006",
+  "submission_type": "individual_onboarding",
+  "submitted_by": "Branch Officer - Raffles Place Branch",
+  "submitted_at": "2024-10-01T09:15:00Z",
+  "customer": {
+    "type": "individual",
+    "full_name": "Sarah Chen Mei Ling",
+    "date_of_birth": "1988-12-05",
+    "nationality": "Singaporean",
+    "country_of_residence": "Singapore",
+    "occupation": "Financial Analyst",
+    "employer": "GIC Private Limited",
+    "annual_income": 145000,
+    "income_currency": "SGD"
+  },
+  "identification_documents": [
+    {
+      "type": "passport",
+      "category": "A",
+      "document_number": "E7788901",
+      "issuing_country": "Singapore",
+      "issue_date": "2014-11-20",
+      "expiry_date": "2024-11-19",
+      "verified": true,
+      "note": "Passport expires in less than 2 months — still valid at submission date but approaching expiry"
+    },
+    {
+      "type": "utility_bill",
+      "category": "B",
+      "description": "PUB water bill",
+      "document_date": "2024-09-15",
+      "address": "45 Bencoolen Street, #10-08, Singapore 189626",
+      "verified": true
+    }
+  ],
+  "account_request": {
+    "product_type": "savings_account",
+    "purpose": "Emergency fund and short-term savings",
+    "expected_monthly_deposit": 5000,
+    "expected_monthly_withdrawal": 2000,
+    "initial_deposit": 30000,
+    "source_of_initial_deposit": "Transfer from OCBC savings account"
+  },
+  "source_of_funds": {
+    "primary": "employment_income",
+    "details": "Monthly salary from GIC Private Limited, employed since 2016.",
+    "supporting_documents": ["employment_letter", "latest_3_month_payslips"]
+  },
+  "declarations": {
+    "pep_status": false,
+    "pep_association": false,
+    "tax_residency": ["Singapore"],
+    "us_person": false,
+    "consent_given": true,
+    "declaration_signed": true,
+    "declaration_date": "2024-10-01"
+  },
+  "expected_outcome": {
+    "risk_rating": "low",
+    "risk_score": 5,
+    "due_diligence_level": "standard",
+    "decision": "approve",
+    "reasoning": "Singaporean national, salaried professional at sovereign wealth fund (GIC), standard savings account. Passport approaching expiry (2 months) — intake should flag as doc_issue but NOT classify as critical (document is still valid at submission). Missing category C (tax document) is non-critical — intake status should be 'conditional' with risk +1. Otherwise clean profile with no adverse screening expected. Approve via standard CDD with note to request updated passport upon renewal."
+  }
+}

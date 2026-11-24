@@ -1,0 +1,74 @@
+{
+  "case_id": "KYC-2024-004",
+  "submission_type": "individual_onboarding",
+  "submitted_by": "Branch Officer - Orchard Road Branch",
+  "submitted_at": "2024-09-10T10:00:00Z",
+  "customer": {
+    "type": "individual",
+    "full_name": "Tanaka Yuki",
+    "date_of_birth": "1990-04-18",
+    "nationality": "Japanese",
+    "country_of_residence": "Singapore",
+    "occupation": "Regional Sales Director",
+    "employer": "Mitsubishi Electric Asia Pte Ltd",
+    "annual_income": 320000,
+    "income_currency": "SGD"
+  },
+  "identification_documents": [
+    {
+      "type": "passport",
+      "category": "A",
+      "document_number": "TK8912345",
+      "issuing_country": "Japan",
+      "issue_date": "2022-03-01",
+      "expiry_date": "2032-02-28",
+      "verified": true
+    },
+    {
+      "type": "utility_bill",
+      "category": "B",
+      "description": "Singapore Power electricity bill",
+      "document_date": "2024-08-20",
+      "address": "8 Nassim Road, #05-02, Singapore 258372",
+      "verified": true
+    },
+    {
+      "type": "tax_certificate",
+      "category": "C",
+      "document_number": "TX-2024-FIN-8912",
+      "tax_year": 2023,
+      "issuing_authority": "Inland Revenue Authority of Singapore",
+      "verified": true
+    }
+  ],
+  "account_request": {
+    "product_type": "investment_account",
+    "purpose": "Portfolio investment and wealth accumulation",
+    "expected_monthly_deposit": 25000,
+    "expected_monthly_withdrawal": 10000,
+    "initial_deposit": 200000,
+    "source_of_initial_deposit": "Savings accumulated from employment at Mitsubishi Electric",
+    "primary_transaction_countries": ["Singapore", "Japan", "Hong Kong"]
+  },
+  "source_of_funds": {
+    "primary": "employment_income",
+    "details": "Monthly salary and annual bonus from Mitsubishi Electric Asia. Employed since 2018 as Regional Sales Director covering APAC markets.",
+    "supporting_documents": ["employment_letter", "latest_6_month_payslips", "tax_certificate"]
+  },
+  "declarations": {
+    "pep_status": false,
+    "pep_association": false,
+    "tax_residency": ["Singapore", "Japan"],
+    "us_person": false,
+    "consent_given": true,
+    "declaration_signed": true,
+    "declaration_date": "2024-09-10"
+  },
+  "expected_outcome": {
+    "risk_rating": "medium",
+    "risk_score": 8,
+    "due_diligence_level": "standard",
+    "decision": "approve",
+    "reasoning": "Japanese national in Singapore, salaried professional at established multinational. Investment account is a medium-risk product. Dual tax residency (SG + JP) and cross-border transactions to Japan and Hong Kong add moderate geographic complexity but are consistent with employment profile. All documents complete and verified. Standard CDD sufficient — no adverse screening expected."
+  }
+}

@@ -1,131 +1,173 @@
 # KYC Compliance Review Agent
 
-An AI-powered agentic compliance review system for customer onboarding (KYC) at a simulated APAC financial institution. Built with **LangGraph** for workflow orchestration, **RAG** for compliance knowledge retrieval, and a **3-layer data architecture** (Database + Knowledge Base + Memory).
-
-## Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────┐
-│                  Streamlit Demo UI                    │
-├─────────────────────────────────────────────────────┤
-│              LangGraph Workflow Engine                │
-│  intake → screening → risk assessment → review →     │
-│  human-in-the-loop → decision                        │
-├──────────┬──────────────────┬────────────────────────┤
-│ Database │  Knowledge Base  │       Memory           │
-│ (SQLite) │ (ChromaDB + RAG) │ (Short-term + Long)    │
-│ Customer │ Compliance       │ Session state,          │
-│ profiles,│ policies,        │ cross-review            │
-│ reviews, │ regulations,     │ patterns,               │
-│ decisions│ handbooks        │ analyst prefs            │
-└──────────┴──────────────────┴────────────────────────┘
-```
+An AI-powered agentic compliance review system for customer onboarding (KYC) at a simulated APAC financial institution. Built with **LangGraph** for workflow orchestration, **RAG** for compliance knowledge retrieval, and a **three-layer data architecture** (Database + Knowledge Base + Memory).
 
 ## Quick Start
 
 ### Prerequisites
 
-- Python 3.9+
-- An OpenAI API key (or Volcano Engine Ark API key)
+- **Python 3.10+** (required by LangGraph)
+- An **OpenAI API key** (recommended) or Volcano Engine Ark API key
 
-### Setup
+### Setup (from fresh clone)
 
 ```bash
-# Clone the repository
 git clone https://github.com/yunfeiavawang-dev/compliance-review-agent.git
 cd compliance-review-agent
+```
 
-# Install dependencies
-pip install langgraph langchain langchain-openai langchain-community chromadb sentence-transformers streamlit python-dotenv openai pydantic
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+```
 
-# Configure environment
+```bash
+pip install -e .
+```
+
+```bash
 cp .env.template .env
-# Edit .env with your API keys
+```
+
+Edit `.env` and set your API key:
+
+```bash
+# For OpenAI (recommended):
+LLM_PROVIDER=openai
+OPENAI_API_KEY=sk-your-key-here
+EMBEDDING_PROVIDER=local
+
+# For Ark (Doubao):
+# LLM_PROVIDER=ark
+# ARK_API_KEY=your-ark-key
+# EMBEDDING_PROVIDER=local
 ```
 
 ### Initialize Data
 
 ```bash
-# Seed the database with synthetic customer data
-python -c "import sys; sys.path.insert(0, '.'); from src.database.seed import seed_all; seed_all()"
-
-# Ingest compliance documents into ChromaDB
-python -c "import sys; sys.path.insert(0, '.'); from src.config import load_config; from src.knowledge.ingestion import ingest_documents; ingest_documents(load_config())"
+python3 -c "from src.database.seed import seed_all; seed_all()"
 ```
 
-### Run the Demo
+```bash
+python3 -c "from src.config import load_config; from src.knowledge.ingestion import ingest_documents; ingest_documents(load_config())"
+```
+
+### Run
 
 ```bash
 streamlit run app.py
 ```
 
-The app will open at `http://localhost:8501`. Select a sample case from the sidebar and click "Start Review".
+The app opens at `http://localhost:8501`. Select a case from the Review Queue and click **Start Review**.
 
-## LLM Provider Configuration
+---
 
-The system supports multiple LLM providers via the `.env` file:
+## Architecture
 
-| Variable | Options | Description |
-|----------|---------|-------------|
-| `LLM_PROVIDER` | `openai`, `ark` | LLM provider for chat completions |
-| `EMBEDDING_PROVIDER` | `local`, `openai` | Embedding provider (local uses BAAI/bge-small-zh-v1.5) |
+```
+┌─────────────────────────────────────────────────────┐
+│                 Streamlit Dashboard UI                │
+│  Review Queue │ Case Detail (3-col) │ Audit Timeline │
+├─────────────────────────────────────────────────────┤
+│              LangGraph Workflow Engine                │
+│  intake → screening → risk → CDD/EDD → human → end  │
+├──────────┬──────────────────┬────────────────────────┤
+│ Database │  Knowledge Base  │       Memory           │
+│ (SQLite) │ (ChromaDB + RAG) │ (Session + Policy Log) │
+└──────────┴──────────────────┴────────────────────────┘
+```
 
-**Recommended:** Use `LLM_PROVIDER=openai` with `gpt-4o-mini` for reliable results. Ark (doubao-seed-evolving) is also supported but requires network access to `ark.cn-beijing.volces.com`.
+**Core design:** macro-structure via graph (deterministic process), micro-autonomy via LLM (reasoning within each step). See [DESIGN.md](DESIGN.md) for the full system design document.
+
+## Node Design Patterns
+
+| Node | Pattern | Description |
+|------|---------|-------------|
+| Intake | Rule-based + LLM fallback | Deterministic checks first; LLM only for edge cases |
+| Screening | Single LLM call | Simulated sanctions/PEP/adverse media screening |
+| Risk Assessment | Single LLM call | 5-factor scoring matrix (1-3 per factor) |
+| Standard Review (CDD) | ReAct loop (max 4 rounds) | Autonomous investigation with 5 tools |
+| Enhanced Due Diligence | ReAct loop (max 5 rounds) | Deeper investigation for high-risk cases |
+| Human Review | Checkpoint interrupt | Workflow pauses for analyst decision |
+| Decision | Single LLM call | Final summary with policy citations |
 
 ## Project Structure
 
 ```
 compliance-review-agent/
-├── app.py                      # Streamlit demo application
+├── app.py                      # Streamlit dashboard (Review Queue + Case Detail)
+├── DESIGN.md                   # System design document (architecture, decisions, roadmap)
+├── EXPLANATION.md              # Written explanation (use case, metrics, trade-offs)
 ├── src/
 │   ├── config.py               # Configuration and provider abstraction
 │   ├── models.py               # LLM and embedding provider wrappers
 │   ├── graph/
-│   │   ├── state.py            # LangGraph state schema (TypedDict)
-│   │   ├── nodes.py            # Graph node implementations
-│   │   ├── edges.py            # Conditional routing logic
-│   │   └── workflow.py         # Graph assembly and compilation
+│   │   ├── state.py            # ReviewState (TypedDict) with append-only audit trail
+│   │   ├── nodes.py            # Node implementations (rules, LLM, ReAct)
+│   │   ├── edges.py            # Conditional routing (all deterministic)
+│   │   ├── workflow.py         # Graph assembly and compilation
+│   │   └── resume.py           # Request-info loop resume logic
 │   ├── knowledge/
-│   │   ├── documents/          # Synthetic compliance policy documents
-│   │   │   ├── kyc_policy.md
-│   │   │   ├── aml_handbook.md
-│   │   │   ├── cdd_guidelines.md
-│   │   │   ├── sanctions_screening.md
-│   │   │   └── risk_rating_matrix.md
-│   │   ├── ingestion.py        # Document chunking and ChromaDB ingestion
+│   │   ├── documents/          # Synthetic compliance policies (5 MD files)
+│   │   │   └── case_reviews/   # Retrospective case review documents (RAG)
+│   │   ├── ingestion.py        # Document chunking → ChromaDB ingestion
 │   │   └── retrieval.py        # RAG retrieval with source citations
 │   ├── memory/
 │   │   ├── short_term.py       # Per-review session memory
-│   │   └── long_term.py        # Cross-review accumulated experience
+│   │   └── long_term.py        # Policy version tracking (intentionally thin)
 │   ├── database/
-│   │   ├── schema.py           # SQLite schema definition
+│   │   ├── schema.py           # SQLite schema (customers, reviews, audit_log, ...)
 │   │   ├── crud.py             # Database operations
 │   │   └── seed.py             # Synthetic data seeding
 │   └── prompts/
 │       └── templates.py        # Prompt templates per workflow node
 ├── data/
-│   └── customers/              # Synthetic test cases
-│       ├── clean_case.json     # Standard low-risk individual
-│       ├── edge_incomplete.json # Corporate with missing documents
-│       └── edge_high_risk.json # Individual with sanctions/PEP flags
+│   └── customers/              # Synthetic test cases (JSON)
+│       ├── clean_case.json     # Low-risk individual — expected: approve
+│       ├── edge_incomplete.json # BVI corporate, missing docs — expected: request more info
+│       ├── edge_high_risk.json # Russian national, sanctions match — expected: escalate
+│       ├── medium_risk_individual.json  # Medium-risk cross-border individual
+│       ├── pep_declared.json   # Declared PEP with legitimate background
+│       ├── expired_documents.json # Valid case but documents near expiry
+│       └── corporate_clean.json # Clean corporate onboarding
 └── tests/
+    └── test_request_info_loop.py
 ```
 
 ## Test Cases
 
-| Case | Customer | Type | Expected Path | Expected Outcome |
-|------|----------|------|---------------|-----------------|
-| KYC-2024-001 | Chen Wei Lin | Individual | Intake → Screening → Risk(Low) → Standard Review → Approve | Approve |
-| KYC-2024-002 | Golden Dragon Trading | Corporate | Intake → Request More Info | Request more info (missing docs) |
-| KYC-2024-003 | Mikhail Petrov | Individual | Intake → Screening → Risk(High) → EDD → Request More Info | Escalate / Request more info |
+| Case | Customer | Type | Expected Path | Outcome |
+|------|----------|------|---------------|---------|
+| KYC-2024-001 | Chen Wei Lin | Individual | Full pipeline → Standard Review | Approve |
+| KYC-2024-002 | Golden Dragon Trading | Corporate | Intake blocked (missing board resolution) | Request info |
+| KYC-2024-003 | Mikhail Petrov | Individual | Full pipeline → EDD (sanctions + PEP match) | Escalate |
+| KYC-2024-004 | Tanaka Yuki | Individual | Full pipeline → Standard Review | Approve |
+| KYC-2024-005 | Dato' Ahmad | Individual | Full pipeline → Standard Review (declared PEP) | Approve with conditions |
+| KYC-2024-006 | Sarah Chen | Individual | Conditional intake → Standard Review | Approve |
+| KYC-2024-007 | TechBridge Solutions | Corporate | Full pipeline → Standard Review | Approve |
+
+## LLM Provider Configuration
+
+| Variable | Options | Description |
+|----------|---------|-------------|
+| `LLM_PROVIDER` | `openai`, `ark` | LLM for chat completions |
+| `EMBEDDING_PROVIDER` | `local`, `openai` | Embedding model (`local` = BAAI/bge-small-zh-v1.5, free) |
+| `OPENAI_API_KEY` | — | Required if `LLM_PROVIDER=openai` |
+| `ARK_API_KEY` | — | Required if `LLM_PROVIDER=ark` |
+
+**Recommended for demo:** `LLM_PROVIDER=openai` with `gpt-4o-mini` and `EMBEDDING_PROVIDER=local`.
 
 ## Key Design Decisions
 
-- **LangGraph** for workflow orchestration: stateful directed graph with conditional branching, human-in-the-loop via checkpoint interrupts
-- **3-layer data architecture**: structured data in SQLite, unstructured knowledge in ChromaDB/RAG, agent experience in memory
-- **RAG with source citations**: every policy-based conclusion traced back to specific document, version, and section
-- **Provider abstraction**: config-based switching between Ark and OpenAI without code changes
+1. **LangGraph over autonomous agent** — Compliance needs auditable, deterministic process flow
+2. **Rule-based + LLM hybrid** — Fast deterministic checks + LLM judgment for edge cases
+3. **ReAct in CDD/EDD** — Multi-turn investigation produces richer audit trails
+4. **RAG with citations** — Every AI conclusion traced to policy document + version + section
+5. **Thin long-term memory** — Knowledge reuse via retrospective docs in RAG, not opaque memory
+6. **Provider abstraction** — `.env` switch between Ark (BytePlus) and OpenAI, zero code changes
+
+See [EXPLANATION.md](EXPLANATION.md) for detailed rationale and trade-offs.
 
 ## Synthetic Data
 
-All data is synthetic. The institution "Pacific Rim Financial Group" (PRFG) is fictional. Customer profiles, policies, and cases are fabricated for demonstration purposes only.
+All data is synthetic. Pacific Rim Financial Group (PRFG) is fictional. Customer profiles, policies, and cases are fabricated for demonstration purposes only. No real customer data, regulated policies, or proprietary materials are used.
