@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+import operator
+from typing import Annotated, Any, Optional
 from typing_extensions import TypedDict
 
 
@@ -24,6 +25,11 @@ class ReviewState(TypedDict, total=False):
     missing_documents: list[str]
     document_verification: list[dict]
 
+    # Intake three-level classification
+    intake_status: str  # "blocked", "conditional", "complete"
+    critical_missing: list[str]
+    non_critical_missing: list[str]
+
     # Screening results
     sanctions_result: str  # "clear", "potential_match", "confirmed_match"
     pep_result: str
@@ -40,6 +46,11 @@ class ReviewState(TypedDict, total=False):
     # Due diligence
     due_diligence_level: str  # "standard", "enhanced"
     edd_findings: Optional[dict]
+    # Mandatory EDD documents still outstanding (set by edd_document_check)
+    edd_missing_docs: list[str]
+    # True when outstanding EDD docs did NOT block the case because a red flag
+    # (potential/confirmed sanctions or PEP match) must reach EDD/escalation.
+    edd_docs_bypassed: bool
 
     # Review findings
     findings: list[str]
@@ -55,13 +66,25 @@ class ReviewState(TypedDict, total=False):
     human_decision: Optional[str]
     human_notes: Optional[str]
 
+    # AI confidence and agreement tracking
+    ai_confidence: Optional[float]  # 0.0-1.0 confidence in recommendation
+    ai_human_agreement: Optional[bool]  # whether AI and human decisions match
+    review_status: str  # "pending", "in_review", "completed"
+
     # Workflow control
     current_step: str
     next_step: Optional[str]
     info_requests: list[str]
+    # Request-info loop: the node that asked for information. After the
+    # supplement arrives the graph resumes AT that node (not at intake).
+    info_request_stage: str
+    info_request_round: int
+    info_round_exceeded: bool  # True once MAX_INFO_REQUEST_ROUNDS is hit
 
-    # Audit trail
-    audit_trail: list[dict]
+    # Audit trail — append-only. The reducer makes the framework concatenate
+    # whatever a node returns onto the existing list, so a node can never
+    # overwrite earlier entries. Nodes therefore return ONLY their new entries.
+    audit_trail: Annotated[list[dict], operator.add]
 
     # Error handling
     error: Optional[str]

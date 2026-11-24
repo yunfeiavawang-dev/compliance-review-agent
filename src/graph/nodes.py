@@ -16,6 +16,7 @@ from src.prompts.templates import (
     EDD_PROMPT, DECISION_SUMMARY_PROMPT,
 )
 from src.graph.state import ReviewState
+from src.graph.edges import MAX_INFO_REQUEST_ROUNDS, RESUMABLE_STAGES, has_red_flag, resume_target
 
 
 def _parse_json_response(text: str) -> dict:
@@ -30,16 +31,60 @@ def _parse_json_response(text: str) -> dict:
         return {"raw_response": text, "parse_error": True}
 
 
-def _add_audit(state: ReviewState, step: str, action: str, details: str = "", sources: str = "") -> list[dict]:
-    trail = list(state.get("audit_trail", []))
-    trail.append({
+def _audit_entry(step: str, action: str, details: str = "", sources: str = "") -> dict:
+    return {
         "step": step,
         "action": action,
         "details": details,
         "sources_used": sources,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-    })
-    return trail
+    }
+
+
+def _add_audit(state: ReviewState, step: str, action: str, details: str = "", sources: str = "") -> list[dict]:
+    """Return the NEW audit entries for this node.
+
+    ``audit_trail`` has an append reducer (see state.py), so LangGraph appends
+    the returned list to the existing trail. ``state`` is kept in the signature
+    for call-site compatibility but is deliberately not read: a node must never
+    copy-and-rewrite the whole trail.
+    """
+    return [_audit_entry(step, action, details, sources)]
+
+
+def _case_background(submission: dict) -> str:
+    """Declared funding/wealth facts that SoF/SoW assessment depends on."""
+    return (
+        f"Account request: {json.dumps(submission.get('account_request', {}), indent=2, default=str)}\n"
+        f"Source of funds (declared): {json.dumps(submission.get('source_of_funds', {}), indent=2, default=str)}\n"
+        f"Source of wealth (declared): {json.dumps(submission.get('source_of_wealth', {}), indent=2, default=str)}\n"
+        f"Declarations: {json.dumps(submission.get('declarations', {}), indent=2, default=str)}"
+    )
+
+
+def _real_evidence(docs: Any) -> list:
+    """Supporting documents that are real evidence (a bare self-declaration is not)."""
+    return [d for d in (docs or []) if d and d != "self_declaration_only"]
+
+
+REACT_TOOLS_DESCRIPTION = """You have these tools. Call ONE per turn by responding with the exact JSON format shown.
+
+1. search_policy — Query the compliance knowledge base for specific policy sections.
+   {"tool": "search_policy", "query": "your search query"}
+
+2. check_document — Inspect a specific submitted document in detail.
+   {"tool": "check_document", "doc_type": "passport|utility_bill|certificate_of_incorporation|..."}
+
+3. assess_risk_factor — Deep-dive into a specific risk factor from the assessment.
+   {"tool": "assess_risk_factor", "factor": "geography|customer_type|transaction_pattern|..."}
+
+4. search_precedent — Search past case review notes for similar situations.
+   {"tool": "search_precedent", "query": "your search query"}
+
+5. final_answer — You have gathered enough information. Provide your conclusion.
+   {"tool": "final_answer", ...your full analysis JSON...}
+
+Think step-by-step. Each turn: state what you still need to verify, pick ONE tool, explain why."""
 
 
 class NodeRunner:
@@ -60,32 +105,242 @@ class NodeRunner:
         )
         return _parse_json_response(response)
 
-    # --- Node: Intake & Validation ---
+    def _call_llm_raw(self, system: str, messages: list[dict]) -> str:
+        return chat_completion(
+            self.client, self.model,
+            [{"role": "system", "content": system}] + messages,
+            temperature=self.config.llm.temperature,
+            max_tokens=self.config.llm.max_tokens,
+        )
+
+    def _execute_react_tool(self, tool_call: dict, state: ReviewState) -> str:
+        """Execute a ReAct tool and return the observation string."""
+        tool = tool_call.get("tool", "")
+        if tool == "search_policy":
+            query = tool_call.get("query", "")
+            results = self.kb.query(query, n_results=3)
+            if not results:
+                return "No policy documents found for this query."
+            parts = []
+            for r in results:
+                parts.append(
+                    f"[{r['source']} — {r.get('section', 'N/A')}] "
+                    f"(relevance: {r.get('relevance_score', 0):.2f})\n{r['text'][:400]}"
+                )
+            return "\n---\n".join(parts)
+
+        elif tool == "check_document":
+            doc_type = tool_call.get("doc_type", "")
+            docs = state.get("submission", {}).get("identification_documents", [])
+            matches = [d for d in docs if d.get("type") == doc_type]
+            if not matches:
+                return f"Document '{doc_type}' not found in submission."
+            return json.dumps(matches, indent=2, default=str)
+
+        elif tool == "assess_risk_factor":
+            factor = tool_call.get("factor", "")
+            risk_scores = state.get("risk_scores", {})
+            if factor in risk_scores:
+                return json.dumps(risk_scores[factor], indent=2, default=str)
+            return f"Risk factor '{factor}' not found. Available: {list(risk_scores.keys())}"
+
+        elif tool == "search_precedent":
+            query = tool_call.get("query", "")
+            results = self.kb.query(query, n_results=2, collection_filter="case_reviews")
+            if not results:
+                results = self.kb.query(query, n_results=2)
+            if not results:
+                return "No precedent cases found."
+            parts = [f"[{r['source']}] {r['text'][:300]}" for r in results]
+            return "\n---\n".join(parts)
+
+        return f"Unknown tool: {tool}"
+
+    def _react_loop(
+        self, system_prompt: str, initial_user_msg: str, state: ReviewState,
+        max_rounds: int = 5, step_name: str = "review",
+    ) -> tuple[dict, list[dict]]:
+        """Run a ReAct loop: Thought → Action → Observation, up to max_rounds.
+
+        Returns (final_answer_dict, react_trace_list).
+        """
+        messages: list[dict] = [{"role": "user", "content": initial_user_msg}]
+        trace: list[dict] = []
+
+        for i in range(max_rounds):
+            raw = self._call_llm_raw(system_prompt, messages)
+            parsed = _parse_json_response(raw)
+
+            if parsed.get("tool") == "final_answer" or parsed.get("parse_error"):
+                trace.append({
+                    "round": i + 1, "action": "final_answer",
+                    "thought": raw[:200] if parsed.get("parse_error") else "Concluded analysis",
+                })
+                if parsed.get("parse_error"):
+                    parsed = {"raw_response": raw}
+                return parsed, trace
+
+            tool_name = parsed.get("tool", "unknown")
+            observation = self._execute_react_tool(parsed, state)
+            sources_used = parsed.get("query", parsed.get("doc_type", parsed.get("factor", "")))
+
+            trace.append({
+                "round": i + 1,
+                "action": f"{tool_name}({sources_used})",
+                "observation_preview": observation[:150],
+            })
+
+            messages.append({"role": "assistant", "content": raw})
+            messages.append({
+                "role": "user",
+                "content": f"Observation from {tool_name}:\n{observation}\n\nContinue your analysis. Use another tool or call final_answer.",
+            })
+
+        final_raw = self._call_llm_raw(system_prompt, messages + [
+            {"role": "user", "content": "You have used all available rounds. Provide your final_answer now."}
+        ])
+        final = _parse_json_response(final_raw)
+        trace.append({"round": max_rounds + 1, "action": "forced_final_answer"})
+        return final, trace
+
+    # --- Node: Intake & Validation (Rule-based + LLM) ---
+
+    @staticmethod
+    def _rule_based_doc_check(submission: dict) -> dict:
+        """Phase 1: deterministic checks — no LLM needed."""
+        customer_type = submission.get("customer", {}).get("type", "individual")
+        docs = submission.get("identification_documents", [])
+        declarations = submission.get("declarations", {})
+
+        critical_missing: list[str] = []
+        non_critical_missing: list[str] = []
+        verification_notes: list[str] = []
+        doc_issues: list[str] = []
+        edge_cases: list[str] = []
+
+        def _has_doc(doc_type: str) -> bool:
+            return any(
+                d.get("type") == doc_type and (d.get("verified") or d.get("provided"))
+                for d in docs
+            )
+
+        def _has_category(cat: str) -> bool:
+            return any(
+                d.get("category") == cat and (d.get("verified") or d.get("provided"))
+                for d in docs
+            )
+
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        for d in docs:
+            expiry = d.get("expiry_date", "")
+            if expiry and expiry < today:
+                doc_issues.append(f"{d.get('type', 'unknown')} expired on {expiry}")
+
+        if customer_type == "individual":
+            if not _has_category("A"):
+                photo_id_types = {"passport", "national_id", "driver_license"}
+                if not any(d.get("type") in photo_id_types and (d.get("verified") or d.get("provided")) for d in docs):
+                    critical_missing.append("photo ID (passport, national ID, or driver license)")
+                else:
+                    edge_cases.append("Photo ID present but not labeled category A — verify classification")
+            if not _has_category("B"):
+                non_critical_missing.append("proof of address (category B)")
+            if not _has_category("C"):
+                non_critical_missing.append("tax document (category C)")
+            if not declarations.get("declaration_signed"):
+                critical_missing.append("signed declaration")
+        else:
+            for crit_doc in ["certificate_of_incorporation", "board_resolution"]:
+                if not _has_doc(crit_doc):
+                    critical_missing.append(crit_doc.replace("_", " "))
+            bo = submission.get("beneficial_ownership", {})
+            if not bo.get("declared_owners"):
+                critical_missing.append("beneficial ownership declaration")
+            else:
+                for owner in bo.get("declared_owners", []):
+                    if not owner.get("identification_provided") and owner.get("ownership_percentage", 0) >= 25:
+                        edge_cases.append(
+                            f"UBO {owner.get('name', 'unknown')} ({owner.get('ownership_percentage')}%) — ID not provided"
+                        )
+            if not _has_doc("memorandum_of_association"):
+                non_critical_missing.append("memorandum of association")
+            if not _has_doc("audited_financial_statements"):
+                non_critical_missing.append("audited financial statements")
+            if not _has_doc("business_license"):
+                non_critical_missing.append("business license / local registration")
+
+        for d in docs:
+            status = "verified" if d.get("verified") else ("provided" if d.get("provided") else "missing")
+            verification_notes.append(f"{d.get('type', 'unknown')}: {status}")
+
+        return {
+            "critical_missing": critical_missing,
+            "non_critical_missing": non_critical_missing,
+            "verification_notes": verification_notes,
+            "doc_issues": doc_issues,
+            "edge_cases": edge_cases,
+        }
+
     def intake_node(self, state: ReviewState) -> dict:
         submission = state["submission"]
         policy_results = self.kb.get_policy_for_step("intake")
-        policy_context = self.kb.format_sources_for_prompt(policy_results)
 
-        customer_type = submission.get("customer", {}).get("type", "individual")
-        prompt = INTAKE_PROMPT.format(
-            submission_json=json.dumps(submission, indent=2, default=str),
-            customer_type=customer_type.upper(),
-            policy_context=policy_context,
-        )
+        rules = self._rule_based_doc_check(submission)
+        critical_missing = rules["critical_missing"]
+        non_critical_missing = rules["non_critical_missing"]
+        edge_cases = rules["edge_cases"]
 
-        result = self._call_llm(SYSTEM_PROMPT, prompt)
+        if edge_cases or rules["doc_issues"]:
+            policy_context = self.kb.format_sources_for_prompt(policy_results)
+            customer_type = submission.get("customer", {}).get("type", "individual")
+            prompt = INTAKE_PROMPT.format(
+                submission_json=json.dumps(submission, indent=2, default=str),
+                customer_type=customer_type.upper(),
+                policy_context=policy_context,
+            )
+            llm_result = self._call_llm(SYSTEM_PROMPT, prompt)
+            critical_missing = llm_result.get("critical_missing", critical_missing)
+            non_critical_missing = llm_result.get("non_critical_missing", non_critical_missing)
+            llm_summary = llm_result.get("summary", "LLM reviewed edge cases")
+            rules["verification_notes"] = llm_result.get("verification_notes", rules["verification_notes"])
+        else:
+            llm_summary = None
+
+        if critical_missing:
+            intake_status = "blocked"
+        elif non_critical_missing:
+            intake_status = "conditional"
+        else:
+            intake_status = "complete"
+
+        all_missing = critical_missing + non_critical_missing
+        summary_parts = []
+        if intake_status == "complete":
+            summary_parts.append("All required documents present and verified")
+        elif intake_status == "blocked":
+            summary_parts.append(f"BLOCKED — critical documents missing: {', '.join(critical_missing)}")
+        else:
+            summary_parts.append(f"CONDITIONAL — non-critical missing: {', '.join(non_critical_missing)}")
+        if rules["doc_issues"]:
+            summary_parts.append(f"Issues: {'; '.join(rules['doc_issues'])}")
+        if llm_summary:
+            summary_parts.append(f"LLM assessment: {llm_summary}")
+        summary = ". ".join(summary_parts)
 
         return {
-            "documents_complete": result.get("documents_complete", False),
-            "missing_documents": result.get("missing_documents", []),
-            "document_verification": result.get("verification_notes", []),
+            "documents_complete": len(all_missing) == 0,
+            "missing_documents": all_missing,
+            "document_verification": rules["verification_notes"],
+            "intake_status": intake_status,
+            "critical_missing": critical_missing,
+            "non_critical_missing": non_critical_missing,
             "current_step": "intake",
-            "next_step": "identity_screening" if result.get("can_proceed", False) else "request_info",
-            "findings": [result.get("summary", "Intake check completed")],
+            "next_step": "identity_screening" if intake_status != "blocked" else "request_info",
+            "findings": [summary],
             "sources_cited": [{"step": "intake", "sources": [r["source"] for r in policy_results]}],
             "audit_trail": _add_audit(
                 state, "intake", "document_completeness_check",
-                result.get("summary", ""),
+                f"[{intake_status.upper()}] {summary}",
                 ", ".join(r["document_id"] for r in policy_results),
             ),
         }
@@ -143,9 +398,17 @@ class NodeRunner:
         policy_results = self.kb.get_policy_for_step("risk_assessment")
         policy_context = self.kb.format_sources_for_prompt(policy_results)
 
+        # The prompt has one "Account Request" slot; SoF/SoW are part of what the
+        # Source-of-Funds risk factor is scored on, so they go in with it.
+        account_context = {
+            "account_request": account,
+            "source_of_funds": submission.get("source_of_funds", {}),
+            "source_of_wealth": submission.get("source_of_wealth", {}),
+        }
+
         prompt = RISK_ASSESSMENT_PROMPT.format(
             customer_json=json.dumps(customer, indent=2, default=str),
-            account_json=json.dumps(account, indent=2, default=str),
+            account_json=json.dumps(account_context, indent=2, default=str),
             screening_summary=json.dumps(screening_summary, indent=2),
             policy_context=policy_context,
         )
@@ -155,10 +418,22 @@ class NodeRunner:
         findings = list(state.get("findings", []))
         findings.append(result.get("summary", "Risk assessment completed"))
 
+        total_score = result.get("total_score", 0)
+        if state.get("intake_status") == "conditional":
+            total_score += 1
+            findings.append("Risk score +1: proceeding with incomplete non-critical documents")
+
+        final_rating = result.get("final_rating", "medium")
+        if total_score != result.get("total_score", 0):
+            if total_score >= 12:
+                final_rating = "high"
+            elif total_score >= 8:
+                final_rating = "medium"
+
         return {
             "risk_scores": result.get("scores", {}),
-            "risk_total": result.get("total_score", 0),
-            "risk_rating": result.get("final_rating", "medium"),
+            "risk_total": total_score,
+            "risk_rating": final_rating,
             "risk_override": result.get("override_reason") if result.get("override_applied") else None,
             "due_diligence_level": result.get("due_diligence_level", "standard"),
             "current_step": "risk_assessment",
@@ -173,71 +448,124 @@ class NodeRunner:
             ),
         }
 
-    # --- Node: Standard Review ---
+    # --- Node: Standard Review (ReAct loop) ---
     def standard_review_node(self, state: ReviewState) -> dict:
         submission = state["submission"]
 
-        policy_results = self.kb.get_policy_for_step("standard_review")
-        policy_context = self.kb.format_sources_for_prompt(policy_results)
-
-        prompt = STANDARD_REVIEW_PROMPT.format(
-            customer_json=json.dumps(submission.get("customer", {}), indent=2, default=str),
-            document_summary=json.dumps(state.get("document_verification", []), indent=2, default=str),
-            screening_summary=json.dumps(state.get("screening_details", []), indent=2, default=str),
-            risk_summary=json.dumps({
-                "scores": state.get("risk_scores", {}),
-                "total": state.get("risk_total", 0),
-                "rating": state.get("risk_rating", ""),
-            }, indent=2),
-            policy_context=policy_context,
+        case_summary = (
+            f"Customer: {json.dumps(submission.get('customer', {}), indent=2, default=str)}\n"
+            f"Documents: {json.dumps(state.get('document_verification', []), indent=2, default=str)}\n"
+            f"Screening: {json.dumps(state.get('screening_details', []), indent=2, default=str)}\n"
+            f"Risk: total={state.get('risk_total', 0)}, rating={state.get('risk_rating', '')}, "
+            f"scores={json.dumps(state.get('risk_scores', {}), indent=2, default=str)}\n"
+            f"{_case_background(submission)}"
         )
 
-        result = self._call_llm(SYSTEM_PROMPT, prompt)
+        initial_msg = (
+            f"Conduct a standard CDD review for this customer.\n\n"
+            f"## Case summary\n{case_summary}\n\n"
+            f"## Available tools\n{REACT_TOOLS_DESCRIPTION}\n\n"
+            f"Start by identifying what you need to verify. Use tools to look up "
+            f"specific CDD policies, check documents, or search precedents. "
+            f"When ready, call final_answer with this JSON structure:\n"
+            f'{{"tool": "final_answer", "recommendation": "approve/reject/request_more_info", '
+            f'"rationale": "...", "findings": [...], "conditions": [...], '
+            f'"confidence": 0.0-1.0, "sources_cited": [...]}}'
+        )
+
+        result, trace = self._react_loop(
+            SYSTEM_PROMPT, initial_msg, state,
+            max_rounds=4, step_name="standard_review",
+        )
 
         findings = list(state.get("findings", []))
         findings.extend(result.get("findings", []))
 
+        react_sources = []
+        for t in trace:
+            action = t.get("action", "")
+            if "search_policy" in action or "search_precedent" in action:
+                react_sources.append(action)
+
+        audit_trail = [
+            _audit_entry(
+                "standard_review",
+                f"react_round_{t['round']}: {t['action']}",
+                t.get("observation_preview", ""),
+            )
+            for t in trace
+        ]
+
         return {
             "decision": result.get("recommendation", "approve"),
             "decision_rationale": result.get("rationale", ""),
+            "ai_confidence": result.get("confidence", 0.85),
             "recommendations": result.get("conditions", []),
             "current_step": "standard_review",
             "human_review_required": True,
             "findings": findings,
             "sources_cited": state.get("sources_cited", []) + [
-                {"step": "standard_review", "sources": [r["source"] for r in policy_results]}
+                {"step": "standard_review", "sources": result.get("sources_cited", react_sources)}
             ],
-            "audit_trail": _add_audit(
-                state, "standard_review", "standard_cdd_review",
-                result.get("rationale", ""),
-                ", ".join(r["document_id"] for r in policy_results),
-            ),
+            "audit_trail": audit_trail,
         }
 
-    # --- Node: Enhanced Due Diligence ---
+    # --- Node: Enhanced Due Diligence (ReAct loop) ---
     def edd_node(self, state: ReviewState) -> dict:
         submission = state["submission"]
 
-        policy_results = self.kb.get_policy_for_step("enhanced_due_diligence")
-        policy_context = self.kb.format_sources_for_prompt(policy_results)
+        case_summary = (
+            f"Customer: {json.dumps(submission.get('customer', {}), indent=2, default=str)}\n"
+            f"Documents: {json.dumps(state.get('document_verification', []), indent=2, default=str)}\n"
+            f"Screening: {json.dumps(state.get('screening_details', []), indent=2, default=str)}\n"
+            f"Risk: total={state.get('risk_total', 0)}, rating={state.get('risk_rating', '')}, "
+            f"override={state.get('risk_override')}\n"
+            f"Beneficial ownership: {json.dumps(submission.get('beneficial_ownership', {}), indent=2, default=str)}\n"
+            f"{_case_background(submission)}"
+        )
+        outstanding = state.get("edd_missing_docs") or []
+        if outstanding:
+            case_summary += (
+                "\nMandatory EDD documents STILL OUTSTANDING (the case proceeds to EDD because "
+                "of a screening red flag, so treat these as conditions, include them in "
+                f"additional_info_needed, and do not recommend approval without them): {json.dumps(outstanding)}"
+            )
 
-        prompt = EDD_PROMPT.format(
-            customer_json=json.dumps(submission.get("customer", {}), indent=2, default=str),
-            document_summary=json.dumps(state.get("document_verification", []), indent=2, default=str),
-            screening_summary=json.dumps(state.get("screening_details", []), indent=2, default=str),
-            risk_summary=json.dumps({
-                "scores": state.get("risk_scores", {}),
-                "total": state.get("risk_total", 0),
-                "rating": state.get("risk_rating", ""),
-                "override": state.get("risk_override"),
-            }, indent=2),
-            policy_context=policy_context,
+        initial_msg = (
+            f"Conduct Enhanced Due Diligence (EDD) for this HIGH-RISK customer.\n\n"
+            f"## Case summary\n{case_summary}\n\n"
+            f"## Available tools\n{REACT_TOOLS_DESCRIPTION}\n\n"
+            f"EDD requires deeper investigation. You MUST:\n"
+            f"1. Search for EDD policy requirements\n"
+            f"2. Assess source of wealth and source of funds\n"
+            f"3. Check beneficial ownership structure\n"
+            f"4. Look for similar precedent cases\n\n"
+            f"Use tools to gather evidence, then call final_answer with:\n"
+            f'{{"tool": "final_answer", "recommendation": "approve_with_conditions/reject/request_more_info/escalate", '
+            f'"rationale": "...", "findings": [...], '
+            f'"source_of_wealth_assessment": "...", "source_of_funds_assessment": "...", '
+            f'"additional_info_needed": [...], "risk_mitigants": [...], "risk_amplifiers": [...], '
+            f'"proposed_monitoring": "...", "confidence": 0.0-1.0, "sources_cited": [...]}}'
         )
 
-        result = self._call_llm(SYSTEM_PROMPT, prompt)
+        result, trace = self._react_loop(
+            SYSTEM_PROMPT, initial_msg, state,
+            max_rounds=5, step_name="edd",
+        )
 
         findings = list(state.get("findings", []))
         findings.extend(result.get("findings", []))
+
+        audit_trail = [
+            _audit_entry(
+                "enhanced_due_diligence",
+                f"react_round_{t['round']}: {t['action']}",
+                t.get("observation_preview", ""),
+            )
+            for t in trace
+        ]
+
+        react_sources = [t.get("action", "") for t in trace if "search_" in t.get("action", "")]
 
         return {
             "edd_findings": {
@@ -249,18 +577,15 @@ class NodeRunner:
             },
             "decision": result.get("recommendation", "escalate"),
             "decision_rationale": result.get("rationale", ""),
-            "recommendations": result.get("proposed_monitoring", "").split(". ") if result.get("proposed_monitoring") else [],
+            "ai_confidence": result.get("confidence", 0.7),
+            "recommendations": result.get("proposed_monitoring", "").split(". ") if isinstance(result.get("proposed_monitoring"), str) else result.get("proposed_monitoring", []),
             "current_step": "enhanced_due_diligence",
             "human_review_required": True,
             "findings": findings,
             "sources_cited": state.get("sources_cited", []) + [
-                {"step": "edd", "sources": [r["source"] for r in policy_results]}
+                {"step": "edd", "sources": result.get("sources_cited", react_sources)}
             ],
-            "audit_trail": _add_audit(
-                state, "enhanced_due_diligence", "edd_review",
-                result.get("rationale", ""),
-                ", ".join(r["document_id"] for r in policy_results),
-            ),
+            "audit_trail": audit_trail,
         }
 
     # --- Node: Human Review (passthrough — waits for human input) ---
@@ -275,7 +600,9 @@ class NodeRunner:
 
     # --- Node: Final Decision ---
     def decision_node(self, state: ReviewState) -> dict:
-        final_decision = state.get("human_decision", state.get("decision", "escalate"))
+        final_decision = state.get("human_decision") or state.get("decision") or "escalate"
+        ai_decision = state.get("decision")
+        ai_human_agreement = (final_decision == ai_decision) if ai_decision else None
 
         review_context = {
             "case_id": state.get("case_id"),
@@ -305,6 +632,8 @@ class NodeRunner:
         return {
             "decision": final_decision,
             "decision_rationale": result.get("rationale", state.get("decision_rationale", "")),
+            "ai_human_agreement": ai_human_agreement,
+            "review_status": "completed",
             "current_step": "decision",
             "audit_trail": _add_audit(
                 state, "decision", f"final_decision_{final_decision}",
@@ -313,18 +642,128 @@ class NodeRunner:
             ),
         }
 
-    # --- Node: Request More Info ---
-    def request_info_node(self, state: ReviewState) -> dict:
-        info_requests = state.get("missing_documents", [])
-        if state.get("edd_findings"):
-            info_requests.extend(state["edd_findings"].get("additional_info_needed", []))
+    # --- Node: EDD document gate (deterministic, no LLM) ---
+    @staticmethod
+    def _check_edd_documents(submission: dict) -> list[str]:
+        """Mandatory EDD evidence per CDD guidelines §7.1: source-of-wealth
+        documentation and source-of-funds evidence. A bare self-declaration
+        does not count as evidence."""
+        missing: list[str] = []
+        sow = submission.get("source_of_wealth") or {}
+        if not _real_evidence(sow.get("supporting_documents")):
+            missing.append(
+                "source of wealth supporting documentation "
+                "(independent evidence — a self-declaration alone is insufficient)"
+            )
+        sof = submission.get("source_of_funds") or {}
+        if not _real_evidence(sof.get("supporting_documents")):
+            missing.append("source of funds supporting documentation (initial deposit / expected transactions)")
+        return missing
+
+    def edd_document_check_node(self, state: ReviewState) -> dict:
+        missing = self._check_edd_documents(state["submission"])
+        red_flag = has_red_flag(state)
+        bypassed = bool(missing) and red_flag
+
+        if not missing:
+            summary = "All mandatory EDD documents present"
+        elif red_flag:
+            summary = (
+                f"EDD documents outstanding: {'; '.join(missing)}. NOT blocking — screening red flag "
+                f"(sanctions={state.get('sanctions_result')}, pep={state.get('pep_result')}) must reach EDD/escalation; "
+                f"gaps carried into EDD as conditions"
+            )
+        else:
+            summary = f"EDD blocked pending documents: {'; '.join(missing)}"
 
         return {
-            "decision": "request_more_info",
+            "edd_missing_docs": missing,
+            "edd_docs_bypassed": bypassed,
+            "current_step": "edd_document_check",
+            "audit_trail": _add_audit(state, "edd_document_check", "edd_document_gate", summary),
+        }
+
+    # --- Node: Request More Info ---
+    @staticmethod
+    def _resolve_info_stage(state: ReviewState) -> str:
+        """Which node is asking for information (= where the graph resumes)."""
+        if state.get("human_decision") == "request_more_info":
+            return "human_review"
+        step = state.get("current_step", "")
+        return step if step in RESUMABLE_STAGES else "intake"
+
+    @staticmethod
+    def _collect_info_requests(state: ReviewState, stage: str) -> list[str]:
+        if stage == "human_review":
+            requests = [state.get("human_notes") or "Reviewer requested additional information"]
+        elif stage == "edd_document_check":
+            requests = list(state.get("edd_missing_docs", []))
+        elif stage == "enhanced_due_diligence":
+            requests = list((state.get("edd_findings") or {}).get("additional_info_needed", []))
+            requests += list(state.get("edd_missing_docs", []))
+        elif stage == "standard_review":
+            requests = [state.get("decision_rationale") or "Additional information requested by standard review"]
+        else:  # intake, identity_screening
+            requests = list(state.get("missing_documents", []))
+
+        seen: set[str] = set()
+        unique = []
+        for r in requests:
+            text = str(r).strip()
+            if text and text not in seen:
+                seen.add(text)
+                unique.append(text)
+        return unique or ["Additional information required — see review findings"]
+
+    def request_info_node(self, state: ReviewState) -> dict:
+        stage = self._resolve_info_stage(state)
+        info_requests = self._collect_info_requests(state, stage)
+        round_no = state.get("info_request_round", 0) + 1
+        exceeded = round_no > MAX_INFO_REQUEST_ROUNDS
+
+        if exceeded:
+            details = (
+                f"Round {round_no} would exceed the limit of {MAX_INFO_REQUEST_ROUNDS}; "
+                f"information still outstanding from '{stage}': {'; '.join(info_requests)}. "
+                f"Handing to human review with an escalate recommendation."
+            )
+            update = {
+                "decision": "escalate",
+                "decision_rationale": details,
+                "human_review_required": True,
+            }
+        else:
+            details = f"Round {round_no}, requested by '{stage}': {'; '.join(info_requests)}"
+            update = {"decision": "request_more_info"}
+
+        return {
+            **update,
             "info_requests": info_requests,
+            "info_request_stage": stage,
+            "info_request_round": round_no,
+            "info_round_exceeded": exceeded,
             "current_step": "request_info",
+            "audit_trail": _add_audit(state, "request_info", "information_requested", details),
+        }
+
+    def await_info_node(self, state: ReviewState) -> dict:
+        """Passthrough that runs only after the graph was resumed with the
+        supplemental information (the graph pauses before this node)."""
+        target = resume_target(state)
+        update: dict = {}
+        if "edd_missing_docs" in state:
+            # Refresh the outstanding-EDD-docs list against the supplemented
+            # submission so a resumed EDD run is not told that documents that
+            # have now arrived are still missing.
+            update["edd_missing_docs"] = self._check_edd_documents(state["submission"])
+        return {
+            **update,
+            # The request that triggered the loop has been answered.
+            "human_decision": None,
+            "human_notes": None,
+            "current_step": "await_info",
             "audit_trail": _add_audit(
-                state, "request_info", "information_requested",
-                f"Requested: {', '.join(info_requests)}",
+                state, "await_info", "information_received",
+                f"Supplement received for '{state.get('info_request_stage', '')}'; resuming at '{target}'",
             ),
         }
