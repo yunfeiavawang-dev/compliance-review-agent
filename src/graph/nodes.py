@@ -146,7 +146,7 @@ class NodeRunner:
 
         elif tool == "search_precedent":
             query = tool_call.get("query", "")
-            results = self.kb.query(query, n_results=2, collection_filter="case_reviews")
+            results = self.kb.query(query, n_results=2, where={"document_id": {"$contains": "RETRO"}})
             if not results:
                 results = self.kb.query(query, n_results=2)
             if not results:
@@ -497,7 +497,7 @@ class NodeRunner:
         ]
 
         return {
-            "decision": result.get("recommendation", "approve"),
+            "decision": result.get("recommendation", "escalate"),
             "decision_rationale": result.get("rationale", ""),
             "ai_confidence": result.get("confidence", 0.85),
             "recommendations": result.get("conditions", []),
