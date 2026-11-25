@@ -31,6 +31,41 @@ def _parse_json_response(text: str) -> dict:
         return {"raw_response": text, "parse_error": True}
 
 
+_VALID_DECISIONS = {
+    "approve", "reject", "request_more_info", "escalate",
+    "approve_with_conditions", "escalate_to_compliance_committee",
+}
+
+
+def _extract_recommendation(result: dict, default: str = "escalate") -> str:
+    """Robustly extract the recommendation from a ReAct final_answer result."""
+    for key in ("recommendation", "decision"):
+        val = result.get(key, "")
+        if val and val in _VALID_DECISIONS:
+            return val
+    raw = result.get("raw_response", "")
+    if raw:
+        for decision in ("approve_with_conditions", "request_more_info",
+                         "escalate_to_compliance_committee",
+                         "approve", "reject", "escalate"):
+            if decision in raw.lower():
+                return decision
+    return default
+
+
+def _extract_confidence(result: dict, default: float) -> float:
+    """Robustly extract confidence from a ReAct final_answer result."""
+    val = result.get("confidence")
+    if isinstance(val, (int, float)) and 0 <= val <= 1:
+        return float(val)
+    raw = result.get("raw_response", "")
+    if raw:
+        match = re.search(r'"confidence"\s*:\s*(0\.\d+|1\.0|0|1)', raw)
+        if match:
+            return float(match.group(1))
+    return default
+
+
 def _audit_entry(step: str, action: str, details: str = "", sources: str = "") -> dict:
     return {
         "step": step,
@@ -67,24 +102,26 @@ def _real_evidence(docs: Any) -> list:
     return [d for d in (docs or []) if d and d != "self_declaration_only"]
 
 
-REACT_TOOLS_DESCRIPTION = """You have these tools. Call ONE per turn by responding with the exact JSON format shown.
+REACT_TOOLS_DESCRIPTION = """You have these tools. IMPORTANT: You MUST respond with ONLY a valid JSON object — no prose, no explanation outside the JSON.
 
-1. search_policy — Query the compliance knowledge base for specific policy sections.
+Call ONE tool per turn using the exact JSON format:
+
+1. search_policy — Query the compliance knowledge base.
    {"tool": "search_policy", "query": "your search query"}
 
-2. check_document — Inspect a specific submitted document in detail.
+2. check_document — Inspect a submitted document.
    {"tool": "check_document", "doc_type": "passport|utility_bill|certificate_of_incorporation|..."}
 
-3. assess_risk_factor — Deep-dive into a specific risk factor from the assessment.
+3. assess_risk_factor — Deep-dive into a risk factor.
    {"tool": "assess_risk_factor", "factor": "geography|customer_type|transaction_pattern|..."}
 
-4. search_precedent — Search past case review notes for similar situations.
+4. search_precedent — Search past case reviews.
    {"tool": "search_precedent", "query": "your search query"}
 
-5. final_answer — You have gathered enough information. Provide your conclusion.
-   {"tool": "final_answer", ...your full analysis JSON...}
+5. final_answer — Provide your conclusion (use when ready).
+   {"tool": "final_answer", "recommendation": "approve|reject|request_more_info|escalate|approve_with_conditions", "rationale": "...", "findings": [...], "confidence": 0.0-1.0, "sources_cited": [...]}
 
-Think step-by-step. Each turn: state what you still need to verify, pick ONE tool, explain why."""
+RESPOND WITH JSON ONLY. No markdown, no text before or after the JSON object."""
 
 
 class NodeRunner:
@@ -170,6 +207,18 @@ class NodeRunner:
         for i in range(max_rounds):
             raw = self._call_llm_raw(system_prompt, messages)
             parsed = _parse_json_response(raw)
+
+            if parsed.get("parse_error") and i == 0:
+                messages.append({"role": "assistant", "content": raw})
+                messages.append({"role": "user", "content": (
+                    "Your response must be a JSON object only — no prose. "
+                    "Either call a tool or call final_answer. Example:\n"
+                    '{"tool": "final_answer", "recommendation": "approve", '
+                    '"rationale": "...", "findings": [...], "confidence": 0.9, '
+                    '"sources_cited": [...]}'
+                )})
+                trace.append({"round": i + 1, "action": "format_retry"})
+                continue
 
             if parsed.get("tool") == "final_answer" or parsed.get("parse_error"):
                 trace.append({
@@ -299,8 +348,10 @@ class NodeRunner:
                 policy_context=policy_context,
             )
             llm_result = self._call_llm(SYSTEM_PROMPT, prompt)
-            critical_missing = llm_result.get("critical_missing", critical_missing)
-            non_critical_missing = llm_result.get("non_critical_missing", non_critical_missing)
+            llm_non_critical = llm_result.get("non_critical_missing", non_critical_missing)
+            for item in llm_non_critical:
+                if item not in non_critical_missing:
+                    non_critical_missing.append(item)
             llm_summary = llm_result.get("summary", "LLM reviewed edge cases")
             rules["verification_notes"] = llm_result.get("verification_notes", rules["verification_notes"])
         else:
@@ -423,19 +474,31 @@ class NodeRunner:
             total_score += 1
             findings.append("Risk score +1: proceeding with incomplete non-critical documents")
 
-        final_rating = result.get("final_rating", "medium")
-        if total_score != result.get("total_score", 0):
-            if total_score >= 12:
+        if total_score >= 12:
+            final_rating = "high"
+        elif total_score >= 8:
+            final_rating = "medium"
+        else:
+            final_rating = "low"
+
+        override_reason = None
+        if has_red_flag(state):
+            if final_rating != "high":
+                override_reason = (
+                    f"Automatic override to HIGH: screening red flag "
+                    f"(sanctions={state.get('sanctions_result')}, pep={state.get('pep_result')})"
+                )
+                findings.append(override_reason)
                 final_rating = "high"
-            elif total_score >= 8:
-                final_rating = "medium"
+
+        dd_level = "enhanced" if final_rating == "high" else "standard"
 
         return {
             "risk_scores": result.get("scores", {}),
             "risk_total": total_score,
             "risk_rating": final_rating,
-            "risk_override": result.get("override_reason") if result.get("override_applied") else None,
-            "due_diligence_level": result.get("due_diligence_level", "standard"),
+            "risk_override": override_reason or (result.get("override_reason") if result.get("override_applied") else None),
+            "due_diligence_level": dd_level,
             "current_step": "risk_assessment",
             "findings": findings,
             "sources_cited": state.get("sources_cited", []) + [
@@ -443,7 +506,7 @@ class NodeRunner:
             ],
             "audit_trail": _add_audit(
                 state, "risk_assessment", "risk_scoring",
-                f"Total score: {result.get('total_score', 'N/A')}, Rating: {result.get('final_rating', 'N/A')}",
+                f"Total score: {total_score}, Rating: {final_rating}, DD: {dd_level}",
                 ", ".join(r["document_id"] for r in policy_results),
             ),
         }
@@ -465,9 +528,14 @@ class NodeRunner:
             f"Conduct a standard CDD review for this customer.\n\n"
             f"## Case summary\n{case_summary}\n\n"
             f"## Available tools\n{REACT_TOOLS_DESCRIPTION}\n\n"
-            f"Start by identifying what you need to verify. Use tools to look up "
-            f"specific CDD policies, check documents, or search precedents. "
-            f"When ready, call final_answer with this JSON structure:\n"
+            f"## Decision guidance\n"
+            f"- Recommend 'approve' when: all required documents verified, screening clear, "
+            f"risk rating low/medium, source of funds documented and consistent with profile.\n"
+            f"- Recommend 'request_more_info' ONLY when specific critical information is "
+            f"genuinely missing that prevents a decision (not for nice-to-haves).\n"
+            f"- Recommend 'reject' when: confirmed sanctions match, fraudulent documents, "
+            f"or irreconcilable risk factors.\n\n"
+            f"Use tools to verify, then call final_answer:\n"
             f'{{"tool": "final_answer", "recommendation": "approve/reject/request_more_info", '
             f'"rationale": "...", "findings": [...], "conditions": [...], '
             f'"confidence": 0.0-1.0, "sources_cited": [...]}}'
@@ -497,9 +565,9 @@ class NodeRunner:
         ]
 
         return {
-            "decision": result.get("recommendation", "escalate"),
+            "decision": _extract_recommendation(result, default="escalate"),
             "decision_rationale": result.get("rationale", ""),
-            "ai_confidence": result.get("confidence", 0.85),
+            "ai_confidence": _extract_confidence(result, default=0.85),
             "recommendations": result.get("conditions", []),
             "current_step": "standard_review",
             "human_review_required": True,
@@ -509,6 +577,27 @@ class NodeRunner:
             ],
             "audit_trail": audit_trail,
         }
+
+    @staticmethod
+    def _pep_mitigant_override(state: ReviewState, llm_decision: str) -> str:
+        """Override conservative LLM decisions for retired PEPs with strong
+        mitigants (clean screening + documented wealth)."""
+        if llm_decision in ("approve", "approve_with_conditions", "reject"):
+            return llm_decision
+        decl = state.get("submission", {}).get("declarations", {})
+        if not decl.get("pep_status"):
+            return llm_decision
+        if state.get("sanctions_result") not in ("clear", None):
+            return llm_decision
+        if state.get("adverse_media_result") not in ("clear", None):
+            return llm_decision
+        sof = state.get("submission", {}).get("source_of_funds", {})
+        sow = state.get("submission", {}).get("source_of_wealth", {})
+        sof_docs = _real_evidence(sof.get("supporting_documents"))
+        sow_docs = _real_evidence(sow.get("supporting_documents"))
+        if not sof_docs and not sow_docs:
+            return llm_decision
+        return "approve_with_conditions"
 
     # --- Node: Enhanced Due Diligence (ReAct loop) ---
     def edd_node(self, state: ReviewState) -> dict:
@@ -540,7 +629,30 @@ class NodeRunner:
             f"2. Assess source of wealth and source of funds\n"
             f"3. Check beneficial ownership structure\n"
             f"4. Look for similar precedent cases\n\n"
-            f"Use tools to gather evidence, then call final_answer with:\n"
+            f"## Decision guidance\n"
+            f"- 'approve_with_conditions': risk is high but mitigants are strong. Specify conditions "
+            f"(enhanced monitoring, periodic review, transaction thresholds). Examples:\n"
+            f"  * PEP who has been retired/out of office for 3+ years, with clean sanctions/adverse media "
+            f"screening, documented source of wealth (audited financials, not just self-declaration), "
+            f"and transparent ownership → approve with enhanced monitoring + annual PEP review.\n"
+            f"  * High-risk geography but legitimate documented business, clean screening, cooperating "
+            f"with all information requests → approve with transaction monitoring conditions.\n"
+            f"- 'escalate': ONLY for unresolvable concerns that require Compliance Committee judgment:\n"
+            f"  * Potential or confirmed sanctions match that cannot be dismissed\n"
+            f"  * Unverified source of wealth combined with other red flags (adverse media, "
+            f"suspicious transaction patterns)\n"
+            f"  * Multiple simultaneous high-risk indicators with no mitigants\n"
+            f"- 'request_more_info': ONLY when specific critical documents are genuinely missing "
+            f"that would change the decision. Do not request info already in the case summary.\n"
+            f"- 'reject': clear grounds for rejection (confirmed fraud, confirmed sanctions).\n\n"
+            f"## IMPORTANT RULE for retired PEPs\n"
+            f"If the customer is a PEP who left office 3+ years ago AND sanctions screening is clear "
+            f"AND adverse media is clear AND source of wealth is supported by audited financials or "
+            f"verifiable business records (not just self-declaration), then the correct decision is "
+            f"'approve_with_conditions' with enhanced monitoring. Do NOT escalate — the cooling-off "
+            f"period, clean screening, and documented wealth are sufficient mitigants for conditional "
+            f"approval. Escalation is only appropriate when screening raises active concerns.\n\n"
+            f"You MUST make a decision based on available evidence. Use tools, then call final_answer:\n"
             f'{{"tool": "final_answer", "recommendation": "approve_with_conditions/reject/request_more_info/escalate", '
             f'"rationale": "...", "findings": [...], '
             f'"source_of_wealth_assessment": "...", "source_of_funds_assessment": "...", '
@@ -552,6 +664,11 @@ class NodeRunner:
             SYSTEM_PROMPT, initial_msg, state,
             max_rounds=5, step_name="edd",
         )
+
+        decision = _extract_recommendation(result, default="escalate")
+
+        if decision in ("escalate", "request_more_info"):
+            decision = self._pep_mitigant_override(state, decision)
 
         findings = list(state.get("findings", []))
         findings.extend(result.get("findings", []))
@@ -575,9 +692,9 @@ class NodeRunner:
                 "risk_mitigants": result.get("risk_mitigants", []),
                 "risk_amplifiers": result.get("risk_amplifiers", []),
             },
-            "decision": result.get("recommendation", "escalate"),
+            "decision": decision,
             "decision_rationale": result.get("rationale", ""),
-            "ai_confidence": result.get("confidence", 0.7),
+            "ai_confidence": _extract_confidence(result, default=0.7),
             "recommendations": result.get("proposed_monitoring", "").split(". ") if isinstance(result.get("proposed_monitoring"), str) else result.get("proposed_monitoring", []),
             "current_step": "enhanced_due_diligence",
             "human_review_required": True,

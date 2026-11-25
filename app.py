@@ -64,8 +64,25 @@ st.markdown("""
     .source-ref {
         display: inline-block; background: #e9ecef; padding: 1px 6px;
         border-radius: 4px; font-size: 11px; color: #495057; margin-right: 4px;
-        cursor: pointer;
+        cursor: help; position: relative;
     }
+    .source-ref:hover { background: #dee2e6; }
+    .source-ref .tip {
+        visibility: hidden; opacity: 0; position: absolute; bottom: 125%;
+        left: 50%; transform: translateX(-50%); width: 320px;
+        background: #1a1a2e; color: #e0e0e0; padding: 10px 12px;
+        border-radius: 6px; font-size: 12px; line-height: 1.5;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 999;
+        pointer-events: none; transition: opacity 0.15s;
+    }
+    .source-ref .tip::after {
+        content: ""; position: absolute; top: 100%; left: 50%;
+        margin-left: -5px; border-width: 5px; border-style: solid;
+        border-color: #1a1a2e transparent transparent transparent;
+    }
+    .source-ref:hover .tip { visibility: visible; opacity: 1; }
+    .tip-title { font-weight: 600; color: #90caf9; margin-bottom: 4px; }
+    .tip-chunk { color: #bbb; font-size: 11px; }
     .decision-panel {
         background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px;
         padding: 16px; position: sticky; top: 20px;
@@ -185,7 +202,7 @@ def render_queue_page():
         ["All Cases", "Pending Review", "Escalated", "Completed"]
     )
 
-    def render_case_table(cases_to_show):
+    def render_case_table(cases_to_show, tab_prefix="all"):
         if not cases_to_show:
             st.info("No cases in this category.")
             return
@@ -261,7 +278,7 @@ def render_queue_page():
                     unsafe_allow_html=True,
                 )
             with cols[6]:
-                st.button("Review", key=f"review_{case_id}", on_click=go_to_case, args=(case_id, case_data))
+                st.button("Review", key=f"review_{tab_prefix}_{case_id}", on_click=go_to_case, args=(case_id, case_data))
 
             st.divider()
 
@@ -296,16 +313,16 @@ def render_queue_page():
 
     with tab_all:
         _render_header()
-        render_case_table(all_cases)
+        render_case_table(all_cases, "all")
     with tab_pending:
         _render_header()
-        render_case_table(_filter_by_status(all_cases, "pending"))
+        render_case_table(_filter_by_status(all_cases, "pending"), "pending")
     with tab_escalated:
         _render_header()
-        render_case_table(_filter_by_status(all_cases, "escalated"))
+        render_case_table(_filter_by_status(all_cases, "escalated"), "escalated")
     with tab_completed:
         _render_header()
-        render_case_table(_filter_by_status(all_cases, "completed"))
+        render_case_table(_filter_by_status(all_cases, "completed"), "completed")
 
 
 # =============================================================================
@@ -502,24 +519,28 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
         else:
             st.markdown(f"**Company:** {customer.get('company_name', 'N/A')}")
             st.markdown(f"**Reg. Number:** {customer.get('registration_number', 'N/A')}")
-            st.markdown(f"**Jurisdiction:** {customer.get('jurisdiction', 'N/A')}")
-            st.markdown(f"**Industry:** {customer.get('industry', 'N/A')}")
+            jurisdiction = customer.get("country_of_incorporation", customer.get("jurisdiction", "N/A"))
+            industry = customer.get("business_type", customer.get("industry", "N/A"))
+            st.markdown(f"**Jurisdiction:** {jurisdiction}")
+            st.markdown(f"**Industry:** {industry}")
             revenue = customer.get("annual_revenue")
             if revenue:
-                st.markdown(f"**Annual Revenue:** USD {revenue:,.0f}")
+                st.markdown(f"**Annual Revenue:** {customer.get('revenue_currency', 'USD')} {revenue:,.0f}")
         st.markdown("</div>", unsafe_allow_html=True)
 
         # Risk summary card
         risk_rating = current_values.get("risk_rating", "N/A")
         risk_total = current_values.get("risk_total", 0)
         dd_level = current_values.get("due_diligence_level", "standard")
+        # 5 factors x 3 = 15, plus 1 when intake was conditional (see risk_assessment_node)
+        max_score = 15 + (1 if current_values.get("intake_status") == "conditional" else 0)
         rating_color = {"low": "#28a745", "medium": "#ffc107", "high": "#dc3545"}.get(risk_rating, "#6c757d")
 
         st.markdown("### Risk Summary")
         st.markdown(
             f'<div class="info-card" style="border-left:4px solid {rating_color};">'
             f'<div style="font-size:24px;font-weight:bold;color:{rating_color};">{risk_rating.upper()}</div>'
-            f'<div style="font-size:13px;color:#666;">Score: {risk_total}/15 | DD: {dd_level.upper()}</div>'
+            f'<div style="font-size:13px;color:#666;">Score: {risk_total}/{max_score} | DD: {dd_level.upper()}</div>'
             f'</div>',
             unsafe_allow_html=True,
         )
@@ -577,23 +598,57 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
 
         st.markdown("### AI Reasoning Steps")
 
-        # Build footnote references from sources_cited
+        # Build source lookup: doc_id → {title, chunk_preview}
         all_sources = []
         source_footnotes = {}
+        source_details = {}
         ref_counter = 1
+        kb = get_knowledge_base()
         for src_group in current_values.get("sources_cited", []):
             step_name = src_group.get("step", "unknown")
             for src in src_group.get("sources", []):
                 if src not in source_footnotes:
                     source_footnotes[src] = ref_counter
-                    all_sources.append({"ref": ref_counter, "source": src, "step": step_name})
+                    chunks = kb.query(src, n_results=1)
+                    if chunks:
+                        title = chunks[0].get("source", src)
+                        version = chunks[0].get("version", "")
+                        section = chunks[0].get("section", "")
+                        raw = chunks[0]["text"].replace("#", "").replace("**", "").replace("*", "")
+                        raw = " ".join(raw.split())
+                        preview = raw[:150].strip()
+                        if len(raw) > 150:
+                            preview += "..."
+                    else:
+                        title = src
+                        version = ""
+                        section = ""
+                        preview = ""
+                    source_details[ref_counter] = {
+                        "doc_id": src, "title": title, "version": version,
+                        "section": section, "preview": preview,
+                    }
+                    all_sources.append({"ref": ref_counter, "doc_id": src, "title": title, "version": version})
                     ref_counter += 1
 
-        # Show each workflow finding as a reasoning step
+        def _make_ref_html(ref_num):
+            info = source_details.get(ref_num, {})
+            title = info.get("title", "")
+            section = info.get("section", "")
+            preview = info.get("preview", "").replace('"', "&quot;").replace("<", "&lt;").replace(">", "&gt;")
+            tip_title = f"{title}"
+            if section:
+                tip_title += f" — {section}"
+            return (
+                f'<span class="source-ref">[{ref_num}]'
+                f'<span class="tip"><div class="tip-title">{tip_title}</div>'
+                f'<div class="tip-chunk">{preview}</div></span>'
+                f'</span>'
+            )
+
         findings = current_values.get("findings", [])
         step_sources = current_values.get("sources_cited", [])
 
-        # Map step names for display
         step_display = {
             "intake": "Document Intake & Validation",
             "screening": "Identity Screening (Sanctions / PEP / Adverse Media)",
@@ -604,7 +659,9 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
             "enhanced_due_diligence": "Enhanced Due Diligence",
         }
 
-        # Group findings by step (from audit trail)
+        # sources_cited uses "edd"; the audit trail uses "enhanced_due_diligence"
+        _SOURCE_STEP_ALIASES = {"edd": "enhanced_due_diligence"}
+
         audit_trail = current_values.get("audit_trail", [])
         displayed_steps = set()
         for entry in audit_trail:
@@ -617,15 +674,15 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
             details = entry.get("details", "")
             sources_used = entry.get("sources_used", "")
 
-            # Find matching footnotes
             footnote_refs = []
             for src_group in step_sources:
-                if src_group.get("step", "") == step or src_group.get("step", "") in step:
+                group_step = _SOURCE_STEP_ALIASES.get(src_group.get("step", ""), src_group.get("step", ""))
+                if group_step == step or group_step in step:
                     for s in src_group.get("sources", []):
                         if s in source_footnotes:
                             footnote_refs.append(source_footnotes[s])
 
-            refs_html = " ".join(f'<span class="source-ref">[{r}]</span>' for r in footnote_refs)
+            refs_html = " ".join(_make_ref_html(r) for r in footnote_refs)
 
             st.markdown(
                 f'<div class="info-card">'
@@ -648,27 +705,20 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
                 if edd.get("risk_amplifiers"):
                     st.markdown("**Risk Amplifiers:** " + "; ".join(edd["risk_amplifiers"]))
 
-        # Additional findings list
         if findings:
             with st.expander("All Findings"):
                 for f in findings:
                     st.markdown(f"- {f}")
 
-        # --- Source Footnotes ---
+        # Policy Sources — simple list
         if all_sources:
             st.markdown("### Policy Sources Referenced")
             for src_info in all_sources:
                 ref_num = src_info["ref"]
-                source_name = src_info["source"]
-                step_name = src_info["step"]
-                with st.expander(f"[{ref_num}] {source_name} (Step: {step_name})"):
-                    kb = get_knowledge_base()
-                    chunks = kb.query(source_name, n_results=1)
-                    if chunks:
-                        st.markdown(chunks[0]["text"][:500])
-                        st.caption(f"Document: {chunks[0].get('document_id', 'N/A')} v{chunks[0].get('version', 'N/A')}")
-                    else:
-                        st.caption("Source document content not available.")
+                title = src_info["title"]
+                version = src_info["version"]
+                ver_str = f" v{version}" if version else ""
+                st.markdown(f"**[{ref_num}]** {title}{ver_str}")
 
     # === RIGHT COLUMN: AI Recommendation + Human Decision (always visible) ===
     with col_right:
@@ -680,6 +730,7 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
         decision_colors = {
             "approve": "#28a745", "reject": "#dc3545",
             "request_more_info": "#ffc107", "escalate": "#17a2b8",
+            "approve_with_conditions": "#20c997",
         }
         decision_color = decision_colors.get(agent_decision, "#6c757d")
 
@@ -716,7 +767,7 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
 
         if current_step == "human_review":
             st.markdown('<div class="decision-panel">', unsafe_allow_html=True)
-            decision_options = ["approve", "reject", "request_more_info", "escalate"]
+            decision_options = ["approve", "approve_with_conditions", "reject", "request_more_info", "escalate"]
             default_idx = decision_options.index(agent_decision) if agent_decision in decision_options else 0
             human_decision = st.selectbox("Decision:", decision_options, index=default_idx, key=f"dec_{case_id}")
             human_notes = st.text_area(
@@ -800,23 +851,92 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
 
 
 def _render_case_details_tab(case_data):
-    """Render the raw case details tab."""
+    """Render the case details tab as readable text."""
     col_a, col_b = st.columns(2)
     with col_a:
         st.subheader("Customer Information")
-        st.json(case_data.get("customer", {}))
+        customer = case_data.get("customer", {})
+        ctype = customer.get("type", "unknown")
+        if ctype == "individual":
+            fields = [
+                ("Full Name", customer.get("full_name")),
+                ("Date of Birth", customer.get("date_of_birth")),
+                ("Nationality", customer.get("nationality")),
+                ("Country of Residence", customer.get("country_of_residence")),
+                ("Occupation", customer.get("occupation")),
+                ("Employer", customer.get("employer")),
+            ]
+            income = customer.get("annual_income")
+            if income:
+                currency = customer.get("income_currency", "")
+                fields.append(("Annual Income", f"{currency} {income:,.0f}"))
+        else:
+            fields = [
+                ("Company Name", customer.get("company_name")),
+                ("Registration No.", customer.get("registration_number")),
+                ("Jurisdiction", customer.get("country_of_incorporation", customer.get("jurisdiction"))),
+                ("Business Type", customer.get("business_type", customer.get("industry"))),
+            ]
+            revenue = customer.get("annual_revenue")
+            if revenue:
+                currency = customer.get("revenue_currency", "USD")
+                fields.append(("Annual Revenue", f"{currency} {revenue:,.0f}"))
+        for label, value in fields:
+            if value:
+                st.markdown(f"**{label}:** {value}")
+
         st.subheader("Account Request")
-        st.json(case_data.get("account_request", {}))
+        acct = case_data.get("account_request", {})
+        acct_fields = [
+            ("Product Type", acct.get("product_type", "").replace("_", " ").title()),
+            ("Purpose", acct.get("purpose")),
+            ("Initial Deposit", f"{acct.get('initial_deposit', 0):,.0f}" if acct.get("initial_deposit") else None),
+            ("Source of Initial Deposit", acct.get("source_of_initial_deposit")),
+        ]
+        countries = acct.get("primary_transaction_countries")
+        if countries:
+            acct_fields.append(("Transaction Countries", ", ".join(countries)))
+        for label, value in acct_fields:
+            if value:
+                st.markdown(f"**{label}:** {value}")
+
     with col_b:
         st.subheader("Documents")
         for doc in case_data.get("identification_documents", []):
             icon = "✅" if doc.get("verified") or doc.get("provided") else "❌"
-            st.markdown(
-                f"{icon} **{doc.get('type', 'unknown')}** — {doc.get('note', doc.get('document_number', 'N/A'))}"
-            )
+            doc_type = doc.get("type", "unknown").replace("_", " ").title()
+            note = doc.get("note", doc.get("document_number", "N/A"))
+            st.markdown(f"{icon} **{doc_type}** — {note}")
+
+        sof = case_data.get("source_of_funds", {})
+        if sof:
+            st.subheader("Source of Funds")
+            st.markdown(f"**Primary:** {sof.get('primary', 'N/A').replace('_', ' ').title()}")
+            if sof.get("details"):
+                st.markdown(sof["details"])
+
+        decl = case_data.get("declarations", {})
+        if decl:
+            st.subheader("Declarations")
+            pep = "Yes" if decl.get("pep_status") else "No"
+            st.markdown(f"**PEP Status:** {pep}")
+            if decl.get("pep_details"):
+                st.caption(decl["pep_details"])
+            st.markdown(f"**US Person:** {'Yes' if decl.get('us_person') else 'No'}")
+            tax = decl.get("tax_residency", [])
+            if tax:
+                st.markdown(f"**Tax Residency:** {', '.join(tax)}")
+
         if case_data.get("screening_flags"):
             st.subheader("Pre-existing Screening Flags")
-            st.json(case_data["screening_flags"])
+            flags = case_data["screening_flags"]
+            for flag_name, flag_data in flags.items():
+                label = flag_name.replace("_", " ").title()
+                result = flag_data.get("result", "N/A") if isinstance(flag_data, dict) else str(flag_data)
+                icon = {"clear": "✅", "confirmed_match": "❌", "potential_match": "⚠️"}.get(result, "•")
+                st.markdown(f"{icon} **{label}:** {result.replace('_', ' ').title()}")
+                if isinstance(flag_data, dict) and flag_data.get("details"):
+                    st.caption(flag_data["details"])
 
 
 def _render_audit_timeline(current_values, review_info):
@@ -833,23 +953,18 @@ def _render_audit_timeline(current_values, review_info):
     config = get_config()
     model_version = f"{config.llm.provider}/{config.llm.model}"
 
-    # Classify step types for dot colors
     ai_steps = {"intake", "identity_screening", "risk_assessment", "standard_review", "enhanced_due_diligence", "decision"}
     human_steps = {"human_review"}
 
-    timeline_html = '<div style="padding:8px 0;">'
-
-    for i, entry in enumerate(audit_trail):
+    for entry in audit_trail:
         step = entry.get("step", "unknown")
         action = entry.get("action", "")
         details = entry.get("details", "")
         sources_used = entry.get("sources_used", "")
         ts = entry.get("timestamp", "")
 
-        # Format timestamp
         ts_display = ts[:19].replace("T", " ") if ts else "—"
 
-        # Determine dot type
         if step in human_steps:
             dot_class = "timeline-dot-human"
             step_type = "HUMAN"
@@ -865,38 +980,52 @@ def _render_audit_timeline(current_values, review_info):
 
         step_label = step.replace("_", " ").title()
         action_label = action.replace("_", " ").title()
-
-        # Truncate details
         details_display = (details[:250] + "...") if len(details) > 250 else details
 
-        # Source chips
         source_chips = ""
         if sources_used:
             for src_id in sources_used.split(", ")[:5]:
                 if src_id.strip():
                     source_chips += f'<span class="source-ref">{src_id.strip()}</span>'
 
-        timeline_html += f'''
-        <div class="timeline-item">
-            <div class="timeline-dot {dot_class}"></div>
-            <div class="timeline-ts">{ts_display} | {step_type} | Model: {model_version}</div>
-            <div class="timeline-label">{step_label}: {action_label}</div>
-            <div class="timeline-detail">{details_display}</div>
-            {f'<div style="margin-top:4px;">{source_chips}</div>' if source_chips else ''}
-        </div>
-        '''
-
-    timeline_html += '</div>'
-    st.markdown(timeline_html, unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="timeline-item">'
+            f'<div class="timeline-dot {dot_class}"></div>'
+            f'<div class="timeline-ts">{ts_display} | {step_type} | Model: {model_version}</div>'
+            f'<div class="timeline-label">{step_label}: {action_label}</div>'
+            f'<div class="timeline-detail">{details_display}</div>'
+            f'{f"<div style=margin-top:4px;>{source_chips}</div>" if source_chips else ""}'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
     # Also show raw step results expandable
     step_results = review_info.get("step_results", [])
     if step_results:
         st.divider()
-        st.markdown("### Raw Workflow Step Outputs")
+        st.markdown("### Detailed Step Outputs")
         for i, step in enumerate(step_results):
             with st.expander(f"Step {i+1}: {step['node'].replace('_', ' ').title()}"):
-                st.json(step["output"])
+                output = step["output"]
+                if isinstance(output, dict):
+                    for k, v in output.items():
+                        label = k.replace("_", " ").title()
+                        if isinstance(v, list):
+                            st.markdown(f"**{label}:**")
+                            for item in v:
+                                if isinstance(item, dict):
+                                    summary = item.get("details", item.get("action", str(item)))
+                                    st.markdown(f"- {summary}")
+                                else:
+                                    st.markdown(f"- {item}")
+                        elif isinstance(v, dict):
+                            st.markdown(f"**{label}:**")
+                            for sk, sv in v.items():
+                                st.markdown(f"  - {sk.replace('_', ' ').title()}: {sv}")
+                        else:
+                            st.markdown(f"**{label}:** {v}")
+                else:
+                    st.write(output)
 
 
 # =============================================================================

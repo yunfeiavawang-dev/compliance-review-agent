@@ -107,8 +107,20 @@ Score each risk factor from 1-3 based on the risk rating matrix:
 4. Transaction Pattern Risk
 5. Source of Funds Risk
 
+Total score thresholds (5 factors × 1-3 each = range 5-15):
+- 5-7 = Low risk → standard CDD
+- 8-11 = Medium risk → standard CDD with enhanced monitoring
+- 12-15 = High risk → enhanced due diligence required
+
+Scoring guidance per factor:
+- Customer Type: 1=domestic salaried individual or established local company; 2=foreign national from low-risk country, or self-employed with documented income; 3=complex corporate structure, shell company, or undisclosed ownership
+- Geography: 1=single low-risk domestic jurisdiction; 2=cross-border involving low/medium-risk countries (e.g. Japan, Hong Kong, Australia) or dual tax residency; 3=high-risk jurisdictions (sanctioned, tax haven, conflict zone — e.g. Russia, BVI, Cayman Islands, Myanmar)
+- Product/Service: 1=standard savings/current account; 2=investment account, wealth management, or business account with moderate volumes; 3=private banking, trade finance, or correspondent banking
+- Transaction Pattern: 1=domestic-only, predictable amounts consistent with profile; 2=cross-border transactions with low-risk countries, or moderate volumes; 3=high-volume cross-border with high-risk countries, or patterns inconsistent with profile
+- Source of Funds: 1=salaried employment income, well-documented; 2=business revenue with audited financials, or investment returns; 3=unverified self-declarations, complex multi-source, or high-risk sectors
+
 Then calculate the total score and determine the risk rating.
-Check for any automatic override conditions (PEP, sanctions, etc.)
+Check for any automatic override conditions (PEP, sanctions match → automatic high risk regardless of score).
 
 Respond in this JSON format:
 {{
