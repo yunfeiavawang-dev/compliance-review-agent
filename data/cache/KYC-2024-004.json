@@ -1,0 +1,621 @@
+{
+  "case_id": "KYC-2024-004",
+  "current_step": "human_review",
+  "step_results": [
+    {
+      "node": "intake",
+      "output": {
+        "documents_complete": true,
+        "missing_documents": [],
+        "document_verification": [
+          "passport: verified",
+          "utility_bill: verified",
+          "tax_certificate: verified"
+        ],
+        "intake_status": "complete",
+        "critical_missing": [],
+        "non_critical_missing": [],
+        "current_step": "intake",
+        "next_step": "identity_screening",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 3.0yr relationship, last KYC=approved"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          }
+        ],
+        "customer_profile": {
+          "customer_id": "C-2024-004",
+          "relationship_start": "2021-09-01",
+          "relationship_tenure_years": 3.0,
+          "customer_segment": "mass_affluent",
+          "relationship_manager": "RM-SG-055",
+          "products_held": [
+            "savings",
+            "investment_account",
+            "credit_card"
+          ],
+          "transaction_summary": {
+            "avg_monthly_inflow": 80000,
+            "avg_monthly_outflow": 65000,
+            "max_single_transaction": 250000,
+            "cross_border_tx_pct": 0.55,
+            "primary_counterparty_countries": [
+              "Japan",
+              "Hong Kong",
+              "Singapore"
+            ],
+            "cash_deposit_frequency": "none",
+            "unusual_pattern_flags": 1
+          },
+          "risk_events": [
+            {
+              "date": "2023-06-10",
+              "event_type": "transaction_monitoring_alert",
+              "description": "Unusual spike in FX trading volume ($180K in one week vs avg $40K/month)",
+              "outcome": "dismissed_after_review",
+              "reviewed_by": "Compliance Officer CO-015"
+            }
+          ],
+          "compliance_history": {
+            "previous_kyc_reviews": 1,
+            "last_kyc_date": "2021-09-01",
+            "last_kyc_outcome": "approved",
+            "last_risk_rating": "low",
+            "risk_rating_trajectory": [
+              "low",
+              "medium"
+            ],
+            "sar_filed": false,
+            "regulatory_inquiries": 0
+          },
+          "service_summary": {
+            "total_interactions": 12,
+            "complaints": 0,
+            "account_freezes": 0,
+            "login_anomalies": 0
+          },
+          "external_data": {
+            "credit_score": 710,
+            "other_bank_loans": 1,
+            "bankruptcy_records": false,
+            "litigation_records": 0
+          },
+          "internal_tags": [
+            "expat_professional"
+          ]
+        },
+        "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 3.0 years (since 2021-09-01)\nCustomer segment: mass_affluent\nProducts held: savings, investment_account, credit_card\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $80,000\n  Avg monthly outflow: $65,000\n  Max single transaction: $250,000\n  Cross-border tx ratio: 55%\n  Primary counterparty countries: Japan, Hong Kong, Singapore\n  Cash deposit frequency: none\n  Transaction monitoring alerts (12m): 1\n\nHistorical risk events (1):\n  [2023-06-10] transaction_monitoring_alert: Unusual spike in FX trading volume ($180K in one week vs avg $40K/month) → dismissed_after_review\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2021-09-01 → approved\n  Risk rating trajectory: low → medium\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 710\n  Other bank loans: 1\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 12\n  Complaints: 0\n  Account freezes: 0\n\nInternal tags: expat_professional",
+        "is_existing_customer": true,
+        "audit_trail": [
+          {
+            "step": "intake",
+            "action": "document_completeness_check",
+            "details": "[COMPLETE] All required documents present and verified. Customer profile loaded: 3.0yr relationship, last KYC=approved",
+            "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+            "timestamp": "2026-11-28T14:03:09.169336+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "identity_screening",
+      "output": {
+        "sanctions_result": "clear",
+        "pep_result": "clear",
+        "adverse_media_result": "clear",
+        "screening_details": [
+          {
+            "type": "sanctions",
+            "result": "clear",
+            "analysis": "本次为无预存数据的全新筛查，基于客户核心身份要素（全名Tanaka Yuki、出生日期1990-04-18、国籍日本、居住国新加坡），对照政策要求的5类强制筛查范围开展全量匹配核查，未发现任何制裁类匹配记录；客户3年历史合规档案中无制裁相关风险事件、监管处罚或SAR记录。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "pep",
+            "result": "clear",
+            "analysis": "PEP属于强制筛查的内部观察名单范畴，结合客户申报的职业（三菱电机亚洲私人有限公司区域销售总监）、内部外籍专业人士标签、第三方背景数据核查，未发现客户本人或其关联方存在政治公众人物身份匹配记录，无PEP相关风险提示。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1"
+          },
+          {
+            "type": "adverse_media",
+            "result": "clear",
+            "analysis": "负面媒体筛查纳入内部观察名单强制筛查范围，经核查全部可用内部行为数据、第三方信用/合规数据，未发现客户涉及负面媒体报道、违法违规、失信等相关记录；历史仅有的1次2023年FX交易量异常监控警报已完成审核并驳回，不属于负面媒体筛查范畴，无其他负面合规痕迹。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1"
+          }
+        ],
+        "current_step": "identity_screening",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 3.0yr relationship, last KYC=approved",
+          "本次对个人客户Tanaka Yuki开展的制裁、PEP、负面媒体三类全新筛查均未发现匹配项，符合PRFG筛查政策要求，整体筛查通过，无需升级或额外排查。"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "identity_screening",
+            "action": "sanctions_pep_adverse_media_screening",
+            "details": "本次对个人客户Tanaka Yuki开展的制裁、PEP、负面媒体三类全新筛查均未发现匹配项，符合PRFG筛查政策要求，整体筛查通过，无需升级或额外排查。",
+            "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+            "timestamp": "2026-11-28T14:04:24.144965+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "risk_assessment",
+      "output": {
+        "risk_scores": {
+          "customer_type": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》客户类型评分规则，客户为日本籍（规则列明低风险国家）外籍受雇个人，任职于三菱电机 Asia Pte Ltd正规企业，收入具备合规证明文件，符合2分（中等风险）判定标准"
+          },
+          "geography": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》地理风险评分规则，客户跨境交易涉及新加坡、日本、香港，均为规则列明的低/中风险司法辖区，无高风险、受制裁或冲突地区交易，符合2分（中等风险）判定标准"
+          },
+          "product_service": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》产品/服务风险评分规则，客户申请开立投资账户，属于规则列明的中等风险产品范畴，未涉及私人银行、贸易融资、代理行业务等高风险产品，符合2分（中等风险）判定标准"
+          },
+          "transaction_pattern": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》交易模式评分规则，客户历史12个月跨境交易占比55%，交易对手均为低风险司法辖区，交易量与其区域销售总监的高收入属性基本匹配；仅1次外汇交易量异常预警且已被合规审核驳回，无确认异常模式、SAR记录及监管处罚，符合2分（中等风险）判定标准"
+          },
+          "source_of_funds": {
+            "score": 1,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》资金来源评分规则，客户资金来源为三菱电机 Asia发放的雇佣薪资及年度奖金，已提供雇佣信、近6个月工资单、税务证明等完整验证文件，来源清晰可查，符合1分（低风险）判定标准。本次提交材料未包含财富来源（source of wealth）相关证明，需后续补充收集"
+          }
+        },
+        "risk_total": 9,
+        "risk_rating": "medium",
+        "risk_override": null,
+        "due_diligence_level": "standard",
+        "current_step": "risk_assessment",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 3.0yr relationship, last KYC=approved",
+          "本次对个人客户Tanaka Yuki开展的制裁、PEP、负面媒体三类全新筛查均未发现匹配项，符合PRFG筛查政策要求，整体筛查通过，无需升级或额外排查。",
+          "本次风险评估严格遵循《KYC Policy v3.2》第4章、《Customer Due Diligence (CDD) Guidelines v1.8》第6章、《Customer Risk Rating Matrix and Classification Guide v1.5》要求开展：客户为日本籍在新加坡任职的受薪个人，制裁、PEP、负面媒体筛查均无异常；5项风险因子累计得分为9分，对应中等风险等级，未适用评级override规则，最终风险等级为中等，需执行标准尽职调查并附加增强交易监控。需关注：客户未提交财富来源证明材料，需要求补充；历史存在1次已驳回的外汇交易预警，需持续核查后续交易合理性。"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "risk_assessment",
+            "action": "risk_scoring",
+            "details": "Total score: 9, Rating: medium, DD: standard",
+            "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+            "timestamp": "2026-11-28T14:06:41.177394+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "standard_review",
+      "output": {
+        "decision": "approve_with_conditions",
+        "decision_rationale": "本次标准CDD审查的核心准入要求均已满足：1. 客户身份、地址、税务类强制要求文件均已核验通过；2. 制裁、政治公众人物（PEP）、负面媒体三类强制筛查均无异常结果；3. 客户综合风险评分为9分，风险等级为中等，符合投资账户的风险准入要求；4. 账户资金来源为三菱电机亚洲发放的雇佣薪酬及奖金，已通过雇佣信、近6个月工资单、税务证书充分验证，与客户职业、收入水平及历史交易特征高度匹配；5. 客户与本行3年合作期内合规记录良好，无已确认的异常交易、可疑活动报告（SAR）记录或监管处罚，仅1次外汇交易异常警报已审核驳回。本次仅缺失财富来源（SOW）的正式申报及支持材料，根据风险评估要求该材料可后续补充收集，不影响当前风险判断的合理性，故作出附条件批准决定。",
+        "ai_confidence": 0.95,
+        "recommendations": [
+          "客户需在投资账户开立后30个自然日内提交财富来源（SOW）的正式申报及相关支持证明材料",
+          "后续补充材料核查若发现未披露的风险因素，本行有权重新评估客户风险等级，并采取账户限制、关停等相应风控措施",
+          "账户交易需严格符合申报的用途（组合投资及财富积累）、预期交易规模及交易对手国家/地区范围要求"
+        ],
+        "current_step": "standard_review",
+        "human_review_required": true,
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 3.0yr relationship, last KYC=approved",
+          "本次对个人客户Tanaka Yuki开展的制裁、PEP、负面媒体三类全新筛查均未发现匹配项，符合PRFG筛查政策要求，整体筛查通过，无需升级或额外排查。",
+          "本次风险评估严格遵循《KYC Policy v3.2》第4章、《Customer Due Diligence (CDD) Guidelines v1.8》第6章、《Customer Risk Rating Matrix and Classification Guide v1.5》要求开展：客户为日本籍在新加坡任职的受薪个人，制裁、PEP、负面媒体筛查均无异常；5项风险因子累计得分为9分，对应中等风险等级，未适用评级override规则，最终风险等级为中等，需执行标准尽职调查并附加增强交易监控。需关注：客户未提交财富来源证明材料，需要求补充；历史存在1次已驳回的外汇交易预警，需持续核查后续交易合理性。",
+          "文件核验：护照、水电账单、税务证书三类提交文件均已验证通过，符合KYC政策的文件要求",
+          "筛查结果：制裁、PEP、负面媒体筛查均未发现匹配风险记录，符合强制筛查政策要求",
+          "风险评估：客户综合风险得分为9分，评级为中等，各风险维度均无高风险因素，风险可控",
+          "资金来源：初始存款及整体资金来源为合法雇佣收入，支撑文件完整，来源清晰可查，与客户背景及申报信息一致",
+          "合规历史：过往3年无SAR、监管查询、破产及诉讼记录，仅1次交易监控警报已完成审核并驳回，无确认的异常交易模式",
+          "申报核验：PEP身份、关联关系、税务居民、美国纳税人身份等申报内容与筛查结果、第三方数据一致，声明已签署，客户授权有效",
+          "待补材料：客户未提交财富来源（SOW）的正式申报及对应证明文件，需按要求补充收集"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          },
+          {
+            "step": "standard_review",
+            "sources": [
+              "Know Your Customer (KYC) Policy v3.2 §6.1",
+              "Sanctions and Watchlist Screening Procedures v2.1 §1",
+              "Customer Risk Rating Matrix and Classification Guide v1.5"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "standard_review",
+            "action": "react_round_1: final_answer",
+            "details": "",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:09:09.689292+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "__interrupt__",
+      "output": []
+    }
+  ],
+  "state_values": {
+    "case_id": "KYC-2024-004",
+    "tenant_id": "pacific_rim_fg",
+    "data_classification": "confidential",
+    "submission": {
+      "case_id": "KYC-2024-004",
+      "submission_type": "individual_onboarding",
+      "submitted_by": "Branch Officer - Orchard Road Branch",
+      "submitted_at": "2024-09-10T10:00:00Z",
+      "customer": {
+        "type": "individual",
+        "full_name": "Tanaka Yuki",
+        "date_of_birth": "1990-04-18",
+        "nationality": "Japanese",
+        "country_of_residence": "Singapore",
+        "occupation": "Regional Sales Director",
+        "employer": "Mitsubishi Electric Asia Pte Ltd",
+        "annual_income": 320000,
+        "income_currency": "SGD"
+      },
+      "identification_documents": [
+        {
+          "type": "passport",
+          "category": "A",
+          "document_number": "TK8912345",
+          "issuing_country": "Japan",
+          "issue_date": "2022-03-01",
+          "expiry_date": "2032-02-28",
+          "verified": true
+        },
+        {
+          "type": "utility_bill",
+          "category": "B",
+          "description": "Singapore Power electricity bill",
+          "document_date": "2024-08-20",
+          "address": "8 Nassim Road, #05-02, Singapore 258372",
+          "verified": true
+        },
+        {
+          "type": "tax_certificate",
+          "category": "C",
+          "document_number": "TX-2024-FIN-8912",
+          "tax_year": 2023,
+          "issuing_authority": "Inland Revenue Authority of Singapore",
+          "verified": true
+        }
+      ],
+      "account_request": {
+        "product_type": "investment_account",
+        "purpose": "Portfolio investment and wealth accumulation",
+        "expected_monthly_deposit": 25000,
+        "expected_monthly_withdrawal": 10000,
+        "initial_deposit": 200000,
+        "source_of_initial_deposit": "Savings accumulated from employment at Mitsubishi Electric",
+        "primary_transaction_countries": [
+          "Singapore",
+          "Japan",
+          "Hong Kong"
+        ]
+      },
+      "source_of_funds": {
+        "primary": "employment_income",
+        "details": "Monthly salary and annual bonus from Mitsubishi Electric Asia. Employed since 2018 as Regional Sales Director covering APAC markets.",
+        "supporting_documents": [
+          "employment_letter",
+          "latest_6_month_payslips",
+          "tax_certificate"
+        ]
+      },
+      "declarations": {
+        "pep_status": false,
+        "pep_association": false,
+        "tax_residency": [
+          "Singapore",
+          "Japan"
+        ],
+        "us_person": false,
+        "consent_given": true,
+        "declaration_signed": true,
+        "declaration_date": "2024-09-10"
+      },
+      "expected_outcome": {
+        "risk_rating": "medium",
+        "risk_score": 8,
+        "due_diligence_level": "standard",
+        "decision": "approve",
+        "reasoning": "Japanese national in Singapore, salaried professional at established multinational. Investment account is a medium-risk product. Dual tax residency (SG + JP) and cross-border transactions to Japan and Hong Kong add moderate geographic complexity but are consistent with employment profile. All documents complete and verified. Standard CDD sufficient — no adverse screening expected."
+      }
+    },
+    "documents_complete": true,
+    "missing_documents": [],
+    "document_verification": [
+      "passport: verified",
+      "utility_bill: verified",
+      "tax_certificate: verified"
+    ],
+    "intake_status": "complete",
+    "critical_missing": [],
+    "non_critical_missing": [],
+    "sanctions_result": "clear",
+    "pep_result": "clear",
+    "adverse_media_result": "clear",
+    "screening_details": [
+      {
+        "type": "sanctions",
+        "result": "clear",
+        "analysis": "本次为无预存数据的全新筛查，基于客户核心身份要素（全名Tanaka Yuki、出生日期1990-04-18、国籍日本、居住国新加坡），对照政策要求的5类强制筛查范围开展全量匹配核查，未发现任何制裁类匹配记录；客户3年历史合规档案中无制裁相关风险事件、监管处罚或SAR记录。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "pep",
+        "result": "clear",
+        "analysis": "PEP属于强制筛查的内部观察名单范畴，结合客户申报的职业（三菱电机亚洲私人有限公司区域销售总监）、内部外籍专业人士标签、第三方背景数据核查，未发现客户本人或其关联方存在政治公众人物身份匹配记录，无PEP相关风险提示。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1"
+      },
+      {
+        "type": "adverse_media",
+        "result": "clear",
+        "analysis": "负面媒体筛查纳入内部观察名单强制筛查范围，经核查全部可用内部行为数据、第三方信用/合规数据，未发现客户涉及负面媒体报道、违法违规、失信等相关记录；历史仅有的1次2023年FX交易量异常监控警报已完成审核并驳回，不属于负面媒体筛查范畴，无其他负面合规痕迹。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1"
+      }
+    ],
+    "risk_scores": {
+      "customer_type": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》客户类型评分规则，客户为日本籍（规则列明低风险国家）外籍受雇个人，任职于三菱电机 Asia Pte Ltd正规企业，收入具备合规证明文件，符合2分（中等风险）判定标准"
+      },
+      "geography": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》地理风险评分规则，客户跨境交易涉及新加坡、日本、香港，均为规则列明的低/中风险司法辖区，无高风险、受制裁或冲突地区交易，符合2分（中等风险）判定标准"
+      },
+      "product_service": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》产品/服务风险评分规则，客户申请开立投资账户，属于规则列明的中等风险产品范畴，未涉及私人银行、贸易融资、代理行业务等高风险产品，符合2分（中等风险）判定标准"
+      },
+      "transaction_pattern": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》交易模式评分规则，客户历史12个月跨境交易占比55%，交易对手均为低风险司法辖区，交易量与其区域销售总监的高收入属性基本匹配；仅1次外汇交易量异常预警且已被合规审核驳回，无确认异常模式、SAR记录及监管处罚，符合2分（中等风险）判定标准"
+      },
+      "source_of_funds": {
+        "score": 1,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》资金来源评分规则，客户资金来源为三菱电机 Asia发放的雇佣薪资及年度奖金，已提供雇佣信、近6个月工资单、税务证明等完整验证文件，来源清晰可查，符合1分（低风险）判定标准。本次提交材料未包含财富来源（source of wealth）相关证明，需后续补充收集"
+      }
+    },
+    "risk_total": 9,
+    "risk_rating": "medium",
+    "risk_override": null,
+    "due_diligence_level": "standard",
+    "findings": [
+      "All required documents present and verified. Customer profile loaded: 3.0yr relationship, last KYC=approved",
+      "本次对个人客户Tanaka Yuki开展的制裁、PEP、负面媒体三类全新筛查均未发现匹配项，符合PRFG筛查政策要求，整体筛查通过，无需升级或额外排查。",
+      "本次风险评估严格遵循《KYC Policy v3.2》第4章、《Customer Due Diligence (CDD) Guidelines v1.8》第6章、《Customer Risk Rating Matrix and Classification Guide v1.5》要求开展：客户为日本籍在新加坡任职的受薪个人，制裁、PEP、负面媒体筛查均无异常；5项风险因子累计得分为9分，对应中等风险等级，未适用评级override规则，最终风险等级为中等，需执行标准尽职调查并附加增强交易监控。需关注：客户未提交财富来源证明材料，需要求补充；历史存在1次已驳回的外汇交易预警，需持续核查后续交易合理性。",
+      "文件核验：护照、水电账单、税务证书三类提交文件均已验证通过，符合KYC政策的文件要求",
+      "筛查结果：制裁、PEP、负面媒体筛查均未发现匹配风险记录，符合强制筛查政策要求",
+      "风险评估：客户综合风险得分为9分，评级为中等，各风险维度均无高风险因素，风险可控",
+      "资金来源：初始存款及整体资金来源为合法雇佣收入，支撑文件完整，来源清晰可查，与客户背景及申报信息一致",
+      "合规历史：过往3年无SAR、监管查询、破产及诉讼记录，仅1次交易监控警报已完成审核并驳回，无确认的异常交易模式",
+      "申报核验：PEP身份、关联关系、税务居民、美国纳税人身份等申报内容与筛查结果、第三方数据一致，声明已签署，客户授权有效",
+      "待补材料：客户未提交财富来源（SOW）的正式申报及对应证明文件，需按要求补充收集"
+    ],
+    "recommendations": [
+      "客户需在投资账户开立后30个自然日内提交财富来源（SOW）的正式申报及相关支持证明材料",
+      "后续补充材料核查若发现未披露的风险因素，本行有权重新评估客户风险等级，并采取账户限制、关停等相应风控措施",
+      "账户交易需严格符合申报的用途（组合投资及财富积累）、预期交易规模及交易对手国家/地区范围要求"
+    ],
+    "sources_cited": [
+      {
+        "step": "intake",
+        "sources": [
+          "Customer Due Diligence (CDD) Guidelines",
+          "Sanctions and Watchlist Screening Procedures",
+          "Customer Due Diligence (CDD) Guidelines"
+        ]
+      },
+      {
+        "step": "screening",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Sanctions and Watchlist Screening Procedures",
+          "Sanctions and Watchlist Screening Procedures"
+        ]
+      },
+      {
+        "step": "risk_assessment",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Customer Due Diligence (CDD) Guidelines",
+          "Customer Risk Rating Matrix and Classification Guide"
+        ]
+      },
+      {
+        "step": "standard_review",
+        "sources": [
+          "Know Your Customer (KYC) Policy v3.2 §6.1",
+          "Sanctions and Watchlist Screening Procedures v2.1 §1",
+          "Customer Risk Rating Matrix and Classification Guide v1.5"
+        ]
+      }
+    ],
+    "decision": "approve_with_conditions",
+    "decision_rationale": "本次标准CDD审查的核心准入要求均已满足：1. 客户身份、地址、税务类强制要求文件均已核验通过；2. 制裁、政治公众人物（PEP）、负面媒体三类强制筛查均无异常结果；3. 客户综合风险评分为9分，风险等级为中等，符合投资账户的风险准入要求；4. 账户资金来源为三菱电机亚洲发放的雇佣薪酬及奖金，已通过雇佣信、近6个月工资单、税务证书充分验证，与客户职业、收入水平及历史交易特征高度匹配；5. 客户与本行3年合作期内合规记录良好，无已确认的异常交易、可疑活动报告（SAR）记录或监管处罚，仅1次外汇交易异常警报已审核驳回。本次仅缺失财富来源（SOW）的正式申报及支持材料，根据风险评估要求该材料可后续补充收集，不影响当前风险判断的合理性，故作出附条件批准决定。",
+    "human_review_required": true,
+    "ai_confidence": 0.95,
+    "review_status": "in_review",
+    "current_step": "standard_review",
+    "next_step": "identity_screening",
+    "info_requests": [],
+    "audit_trail": [
+      {
+        "step": "intake",
+        "action": "document_completeness_check",
+        "details": "[COMPLETE] All required documents present and verified. Customer profile loaded: 3.0yr relationship, last KYC=approved",
+        "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+        "timestamp": "2026-11-28T14:03:09.169336+00:00"
+      },
+      {
+        "step": "identity_screening",
+        "action": "sanctions_pep_adverse_media_screening",
+        "details": "本次对个人客户Tanaka Yuki开展的制裁、PEP、负面媒体三类全新筛查均未发现匹配项，符合PRFG筛查政策要求，整体筛查通过，无需升级或额外排查。",
+        "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+        "timestamp": "2026-11-28T14:04:24.144965+00:00"
+      },
+      {
+        "step": "risk_assessment",
+        "action": "risk_scoring",
+        "details": "Total score: 9, Rating: medium, DD: standard",
+        "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+        "timestamp": "2026-11-28T14:06:41.177394+00:00"
+      },
+      {
+        "step": "standard_review",
+        "action": "react_round_1: final_answer",
+        "details": "",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:09:09.689292+00:00"
+      }
+    ],
+    "customer_profile": {
+      "customer_id": "C-2024-004",
+      "relationship_start": "2021-09-01",
+      "relationship_tenure_years": 3.0,
+      "customer_segment": "mass_affluent",
+      "relationship_manager": "RM-SG-055",
+      "products_held": [
+        "savings",
+        "investment_account",
+        "credit_card"
+      ],
+      "transaction_summary": {
+        "avg_monthly_inflow": 80000,
+        "avg_monthly_outflow": 65000,
+        "max_single_transaction": 250000,
+        "cross_border_tx_pct": 0.55,
+        "primary_counterparty_countries": [
+          "Japan",
+          "Hong Kong",
+          "Singapore"
+        ],
+        "cash_deposit_frequency": "none",
+        "unusual_pattern_flags": 1
+      },
+      "risk_events": [
+        {
+          "date": "2023-06-10",
+          "event_type": "transaction_monitoring_alert",
+          "description": "Unusual spike in FX trading volume ($180K in one week vs avg $40K/month)",
+          "outcome": "dismissed_after_review",
+          "reviewed_by": "Compliance Officer CO-015"
+        }
+      ],
+      "compliance_history": {
+        "previous_kyc_reviews": 1,
+        "last_kyc_date": "2021-09-01",
+        "last_kyc_outcome": "approved",
+        "last_risk_rating": "low",
+        "risk_rating_trajectory": [
+          "low",
+          "medium"
+        ],
+        "sar_filed": false,
+        "regulatory_inquiries": 0
+      },
+      "service_summary": {
+        "total_interactions": 12,
+        "complaints": 0,
+        "account_freezes": 0,
+        "login_anomalies": 0
+      },
+      "external_data": {
+        "credit_score": 710,
+        "other_bank_loans": 1,
+        "bankruptcy_records": false,
+        "litigation_records": 0
+      },
+      "internal_tags": [
+        "expat_professional"
+      ]
+    },
+    "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 3.0 years (since 2021-09-01)\nCustomer segment: mass_affluent\nProducts held: savings, investment_account, credit_card\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $80,000\n  Avg monthly outflow: $65,000\n  Max single transaction: $250,000\n  Cross-border tx ratio: 55%\n  Primary counterparty countries: Japan, Hong Kong, Singapore\n  Cash deposit frequency: none\n  Transaction monitoring alerts (12m): 1\n\nHistorical risk events (1):\n  [2023-06-10] transaction_monitoring_alert: Unusual spike in FX trading volume ($180K in one week vs avg $40K/month) → dismissed_after_review\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2021-09-01 → approved\n  Risk rating trajectory: low → medium\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 710\n  Other bank loans: 1\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 12\n  Complaints: 0\n  Account freezes: 0\n\nInternal tags: expat_professional",
+    "is_existing_customer": true
+  }
+}

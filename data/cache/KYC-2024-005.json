@@ -1,0 +1,812 @@
+{
+  "case_id": "KYC-2024-005",
+  "current_step": "human_review",
+  "step_results": [
+    {
+      "node": "intake",
+      "output": {
+        "documents_complete": true,
+        "missing_documents": [],
+        "document_verification": [
+          "passport: verified",
+          "national_id: verified",
+          "utility_bill: verified",
+          "tax_certificate: verified"
+        ],
+        "intake_status": "complete",
+        "critical_missing": [],
+        "non_critical_missing": [],
+        "current_step": "intake",
+        "next_step": "identity_screening",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 8.0yr relationship, last KYC=approved_with_conditions"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          }
+        ],
+        "customer_profile": {
+          "customer_id": "C-2024-005",
+          "relationship_start": "2016-11-20",
+          "relationship_tenure_years": 8.0,
+          "customer_segment": "hnwi",
+          "relationship_manager": "RM-PB-003",
+          "products_held": [
+            "private_banking",
+            "savings",
+            "fx_trading",
+            "trust_services",
+            "credit_card"
+          ],
+          "transaction_summary": {
+            "avg_monthly_inflow": 150000,
+            "avg_monthly_outflow": 95000,
+            "max_single_transaction": 500000,
+            "cross_border_tx_pct": 0.4,
+            "primary_counterparty_countries": [
+              "Malaysia",
+              "Singapore",
+              "Indonesia"
+            ],
+            "cash_deposit_frequency": "rare",
+            "unusual_pattern_flags": 0
+          },
+          "risk_events": [],
+          "compliance_history": {
+            "previous_kyc_reviews": 3,
+            "last_kyc_date": "2023-01-15",
+            "last_kyc_outcome": "approved_with_conditions",
+            "last_risk_rating": "high",
+            "risk_rating_trajectory": [
+              "high",
+              "high",
+              "high"
+            ],
+            "sar_filed": false,
+            "regulatory_inquiries": 0
+          },
+          "service_summary": {
+            "total_interactions": 45,
+            "complaints": 0,
+            "account_freezes": 0,
+            "login_anomalies": 0
+          },
+          "external_data": {
+            "credit_score": 750,
+            "other_bank_loans": 0,
+            "bankruptcy_records": false,
+            "litigation_records": 0
+          },
+          "internal_tags": [
+            "pep_related",
+            "high_value_client",
+            "long_term_relationship"
+          ]
+        },
+        "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 8.0 years (since 2016-11-20)\nCustomer segment: hnwi\nProducts held: private_banking, savings, fx_trading, trust_services, credit_card\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $150,000\n  Avg monthly outflow: $95,000\n  Max single transaction: $500,000\n  Cross-border tx ratio: 40%\n  Primary counterparty countries: Malaysia, Singapore, Indonesia\n  Cash deposit frequency: rare\n  Transaction monitoring alerts (12m): 0\n\nHistorical risk events: None\n\nCompliance history:\n  Previous KYC reviews: 3\n  Last KYC: 2023-01-15 → approved_with_conditions\n  Risk rating trajectory: high → high → high\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 750\n  Other bank loans: 0\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 45\n  Complaints: 0\n  Account freezes: 0\n\nInternal tags: pep_related, high_value_client, long_term_relationship",
+        "is_existing_customer": true,
+        "audit_trail": [
+          {
+            "step": "intake",
+            "action": "document_completeness_check",
+            "details": "[COMPLETE] All required documents present and verified. Customer profile loaded: 8.0yr relationship, last KYC=approved_with_conditions",
+            "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+            "timestamp": "2026-11-28T14:09:09.748224+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "identity_screening",
+      "output": {
+        "sanctions_result": "clear",
+        "pep_result": "confirmed_match",
+        "adverse_media_result": "clear",
+        "screening_details": [
+          {
+            "type": "sanctions",
+            "result": "clear",
+            "analysis": "依据《Know Your Customer (KYC) Policy v3.2》第6.1条强制筛查要求，已完成对联合国安理会综合名单、OFAC特别指定国民（SDN）名单、欧盟综合金融制裁名单、马来西亚本地监管制裁名单及PRFG内部观察名单的全量筛查，未发现任何匹配结果；本次筛查属于第6.2条规定的定期审查触发场景，筛查流程合规，客户无制裁类风险。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "pep",
+            "result": "confirmed_match",
+            "analysis": "筛查确认客户为马来西亚前国际贸易及工业部副部长（2010-2018），分类为国内退休PEP，客户已主动申报该身份；客户2018年卸任至今已逾6年，超出各司法辖区通用的12-24个月PEP冷却期；结合客户8年合作期内无合规风险事件、无可疑活动报告（SAR）、无监管查询、12个月内交易监测零警报的良好合规历史，未发现PEP相关潜在风险。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1（内部观察名单筛查范畴）; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "adverse_media",
+            "result": "clear",
+            "analysis": "筛查未发现客户涉及腐败、洗钱、金融犯罪等违法违规活动的指控或负面媒体报道；仅存在马来西亚商业媒体对其名下Ibrahim Holdings建筑合同的常规业务报道，无负面风险指向，客户无声誉及合规类风险。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6 客户风险筛查框架"
+          }
+        ],
+        "current_step": "identity_screening",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 8.0yr relationship, last KYC=approved_with_conditions",
+          "本次对马来西亚籍HNWI客户Dato' Ahmad bin Ibrahim的三类筛查结果如下：1. 制裁筛查无任何名单匹配，流程符合政策要求；2. PEP筛查确认其为已退休国内PEP，客户主动申报身份且卸任已超通用冷却期，历史合规记录良好无相关风险；3. 负面媒体筛查无金融犯罪相关负面信息，仅存在无风险的常规业务报道。整体筛查通过，无需升级处置。"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "identity_screening",
+            "action": "sanctions_pep_adverse_media_screening",
+            "details": "本次对马来西亚籍HNWI客户Dato' Ahmad bin Ibrahim的三类筛查结果如下：1. 制裁筛查无任何名单匹配，流程符合政策要求；2. PEP筛查确认其为已退休国内PEP，客户主动申报身份且卸任已超通用冷却期，历史合规记录良好无相关风险；3. 负面媒体筛查无金融犯罪相关负面信息，仅存在无风险的常规业务报道。整体筛查通过，无需升级处置。",
+            "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+            "timestamp": "2026-11-28T14:11:40.966899+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "risk_assessment",
+      "output": {
+        "risk_scores": {
+          "customer_type": {
+            "score": 2,
+            "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, the customer is a locally resident Malaysian self-employed individual serving as chairman of a family-owned conglomerate, with documented income and supporting business records, no complex corporate structure, shell company or undisclosed ownership indicators, aligning with the 2-point criterion for self-employed persons with verifiable income."
+          },
+          "geography": {
+            "score": 2,
+            "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, customer transactions involve Malaysia, Singapore and Indonesia, none of which are categorized as high-risk jurisdictions (sanctioned, tax haven, conflict zone). Cross-border activity is present but all counterparty countries are low/medium risk, aligning with the 2-point criterion."
+          },
+          "product_service": {
+            "score": 3,
+            "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, the customer is applying for and holds private banking services, which is explicitly classified as a 3-point high-risk product under the framework."
+          },
+          "transaction_pattern": {
+            "score": 2,
+            "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, cross-border transactions account for 40% of total activity, all with low/medium risk countries. Transaction volumes are consistent with the customer's HNWI profile, declared income and net worth, with no transaction monitoring alerts in 12 months and no anomalous patterns, aligning with the 2-point criterion."
+          },
+          "source_of_funds": {
+            "score": 2,
+            "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, funds are sourced from family conglomerate dividends, director fees and commercial property rental income. Business revenue is supported by 2023 audited financial statements, rental income by property title deeds, with only partial source of wealth verification. There are no unverified self-declarations, complex multi-source structures or high-risk sector exposure, aligning with the 2-point criterion for business revenue with audited financials."
+          }
+        },
+        "risk_total": 11,
+        "risk_rating": "high",
+        "risk_override": "Automatic override to HIGH: screening red flag (sanctions=clear, pep=confirmed_match)",
+        "due_diligence_level": "enhanced",
+        "current_step": "risk_assessment",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 8.0yr relationship, last KYC=approved_with_conditions",
+          "本次对马来西亚籍HNWI客户Dato' Ahmad bin Ibrahim的三类筛查结果如下：1. 制裁筛查无任何名单匹配，流程符合政策要求；2. PEP筛查确认其为已退休国内PEP，客户主动申报身份且卸任已超通用冷却期，历史合规记录良好无相关风险；3. 负面媒体筛查无金融犯罪相关负面信息，仅存在无风险的常规业务报道。整体筛查通过，无需升级处置。",
+          "This assessment follows KYC Policy v3.2 Section 4, CDD Guidelines v1.8 Section 6 and Customer Risk Rating Matrix and Classification Guide v1.5. The customer's initial calculated risk score is 11, corresponding to a medium risk rating. The customer is a Malaysian HNWI with an 8-year established relationship, applying for private banking services, with transactions limited to low/medium risk Southeast Asian jurisdictions, consistent transaction behavior, no sanctions or adverse media records, and partially verified wealth documentation. The confirmed PEP status triggers an automatic high risk override, resulting in a final high risk rating that requires enhanced due diligence.",
+          "Automatic override to HIGH: screening red flag (sanctions=clear, pep=confirmed_match)"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "risk_assessment",
+            "action": "risk_scoring",
+            "details": "Total score: 11, Rating: high, DD: enhanced",
+            "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+            "timestamp": "2026-11-28T14:14:07.843106+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "edd_document_check",
+      "output": {
+        "edd_missing_docs": [],
+        "edd_docs_bypassed": false,
+        "current_step": "edd_document_check",
+        "audit_trail": [
+          {
+            "step": "edd_document_check",
+            "action": "edd_document_gate",
+            "details": "All mandatory EDD documents present",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:14:07.853039+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "enhanced_due_diligence",
+      "output": {
+        "edd_findings": {
+          "source_of_wealth": "申报的家族财富积累逻辑合理，Ibrahim Holdings成立于1992年，早于客户2010年开始的政治任职，无证据显示财富来源于政治职务的不当利益；已提供审计财报、公司年报、法定声明作为核心支撑材料，当前为部分验证状态，剩余验证缺口可通过补充家族企业受益所有权、股权传承相关材料完成，无明显财富来源造假或高风险迹象。",
+          "source_of_funds": "初始存款及日常运营资金来源为家族企业股息、董事费及商业物业租金，均有对应可验证的支撑材料（2023年审计财报、6个月银行流水、物业产权证明），资金来源合法合规，与客户申报的150万马币年收入、历史交易规模及行为特征完全匹配，无异常资金流入迹象。",
+          "additional_info_needed": [
+            "Ibrahim Holdings Sdn Bhd的官方受益所有权登记文件，含持股25%以上或享有实际控制权的自然人身份信息及证明材料",
+            "若存在家族股权传承安排，补充对应股权分配/传承的法定证明文件，以完成财富来源全量验证"
+          ],
+          "risk_mitigants": [
+            "退休PEP卸任已6年，远超12-24个月的通用冷却期，无现任任何政治职务",
+            "全量制裁、负面媒体筛查均无风险匹配，未发现PEP相关潜在合规风险",
+            "8年存量合作关系，历史合规记录优良，12个月交易监测零警报，无SAR、监管查询及风险事件",
+            "资金来源有审计财报、银行流水、物业产权证明等充分可验证支撑，与历史交易行为、收入水平高度匹配",
+            "家族企业成立时间（1992年）早于客户政治任职时间（2010年），无证据显示政治生涯与业务收益存在不当关联",
+            "客户主动申报PEP身份，信息透明度高，过往配合度良好",
+            "同类退休PEP附条件批准先例明确支持该处置方式，合规依据充分"
+          ],
+          "risk_amplifiers": [
+            "客户为确认匹配的退休国内PEP，系统自动触发高风险评级",
+            "申请产品为私人银行业务，属于EDD强制适用的高风险业务场景",
+            "涉及马来西亚、新加坡、印尼三国跨境交易，存在一定跨境洗钱风险敞口",
+            "财富来源当前为部分验证状态，未提供家族企业受益所有权结构信息"
+          ]
+        },
+        "decision": "approve_with_conditions",
+        "decision_rationale": "客户为高风险退休马来西亚国内PEP，2018年卸任至今已6年，远超行业通用12-24个月的PEP冷却期；全量制裁、负面媒体筛查均无风险匹配，与PRFG有8年存量合作历史且无任何合规风险事件，资金来源有审计财报、银行流水等充分可验证支撑，家族企业成立时间早于其政治任职时间，无证据显示政治生涯与业务收益存在不当关联，符合PRFG KYC政策及同类退休PEP处置先例的附条件批准标准。当前仅存在家族企业受益所有权信息缺失、财富来源部分验证的待补项，无不可控核心风险，故作出附条件批准决定。",
+        "ai_confidence": 0.95,
+        "recommendations": [
+          "1",
+          "客户需在批准后30个工作日内提交要求的受益所有权及财富来源补充材料，逾期无合理理由未提交的，将触发账户交易限制及专项合规复核；2",
+          "实施增强型交易监测：对单笔金额超过MYR 500,000的交易开展事前资金来源核验，重点核查跨境交易的对手方背景、资金用途合理性；3",
+          "每年开展1次专项PEP身份复核及全量制裁、负面媒体筛查，留存完整复核记录；4",
+          "设置跨境交易阈值预警：若月均跨境交易金额超过申报预期的150%（即MYR 150,000）自动触发合规审查；5",
+          "每半年核验1次资金来源、财富来源的更新材料，确保与客户业务发展、收入情况匹配；6",
+          "待补充材料提交并完成全量验证后，可调整为年度常规EDD复核频率"
+        ],
+        "current_step": "enhanced_due_diligence",
+        "human_review_required": true,
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 8.0yr relationship, last KYC=approved_with_conditions",
+          "本次对马来西亚籍HNWI客户Dato' Ahmad bin Ibrahim的三类筛查结果如下：1. 制裁筛查无任何名单匹配，流程符合政策要求；2. PEP筛查确认其为已退休国内PEP，客户主动申报身份且卸任已超通用冷却期，历史合规记录良好无相关风险；3. 负面媒体筛查无金融犯罪相关负面信息，仅存在无风险的常规业务报道。整体筛查通过，无需升级处置。",
+          "This assessment follows KYC Policy v3.2 Section 4, CDD Guidelines v1.8 Section 6 and Customer Risk Rating Matrix and Classification Guide v1.5. The customer's initial calculated risk score is 11, corresponding to a medium risk rating. The customer is a Malaysian HNWI with an 8-year established relationship, applying for private banking services, with transactions limited to low/medium risk Southeast Asian jurisdictions, consistent transaction behavior, no sanctions or adverse media records, and partially verified wealth documentation. The confirmed PEP status triggers an automatic high risk override, resulting in a final high risk rating that requires enhanced due diligence.",
+          "Automatic override to HIGH: screening red flag (sanctions=clear, pep=confirmed_match)",
+          "客户身份为马来西亚前贸易与工业部副部长（2010-2018任职），属于退休国内PEP，已主动申报PEP身份，卸任至今6年，超出12-24个月通用冷却期",
+          "制裁筛查覆盖联合国安理会综合名单、OFAC SDN名单、欧盟金融制裁名单、马来西亚本地监管制裁名单及PRFG内部观察名单，无任何匹配结果；负面媒体筛查无腐败、洗钱、金融犯罪等相关负面指控，仅存在家族企业常规业务报道，筛查结果均为clear",
+          "客户与PRFG合作年限达8年，最近12个月交易监测零警报，无SAR申报、监管查询及历史风险事件，合规记录优良",
+          "资金来源（SoF）申报为Ibrahim Holdings股息、董事薪酬及吉隆坡商业物业租金收入，支撑材料包括2023年审计财报、公司年报、6个月银行流水、物业产权证明，验证充分，与客户收入水平、历史交易行为匹配",
+          "财富来源（SoW）申报为1992年成立的家族企业长期积累，业务布局早于2010年的政治任职，无政治生涯与业务关联的相关证据；支撑材料包括审计财报、公司年报、财富来源法定声明，当前验证状态为部分验证",
+          "未提交Ibrahim Holdings Sdn Bhd的受益所有权结构材料，未明确持股25%以上或享有实际控制权的自然人信息",
+          "本次申请产品为私人银行业务，涉及马来西亚、新加坡、印尼跨境交易，属于MAS Notice 626及PRFG KYC政策规定的EDD强制适用场景",
+          "客户初始存款200万马币、预期月均存款10万马币的申报信息，与历史12个月月均15万美元流入的交易行为逻辑一致，无明显异常"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          },
+          {
+            "step": "edd",
+            "sources": [
+              "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2",
+              "Sanctions and Watchlist Screening Procedures v2.1 §1",
+              "MAS Notice 626 §3.1, §3.2 (Enhanced Due Diligence Requirements)",
+              "Customer Risk Rating Matrix and Classification Guide v1.5",
+              "POL-KYC-001 §3.3 (Beneficial Ownership Threshold Rules)",
+              "PRFG Precedent Case KYC-2024-005 (Retired Deputy Minister PEP Approval with Conditions)"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_1: search_policy(Enhanced Due Diligence (EDD) requirements under PRFG KYC Policy v3.2 for high-risk retired domestic PEP private banking customers, covering source of wealth verification, source of funds verification, beneficial ownership disclosure, and ongoing monitoring obligations)",
+            "details": "[Know Your Customer (KYC) Policy — 2. Regulatory Framework] (relevance: 0.86)\n## 2. Regulatory Framework\n\nThis policy is aligned with:\n- Anti-Money La",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:17:27.650311+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_2: search_policy(KYC Policy v3.2 full EDD measures for high-risk retired domestic PEP private banking clients: beneficial ownership disclosure mandates, source of wealth/source of funds verification standards, retired PEP cooling-off period rules, ongoing monitoring and review frequency requirements)",
+            "details": "[Wiki: Cross-Border Corporate Structures — Policy References] (relevance: 0.82)\n## Policy References\n\n- **POL-KYC-001 §3.2** — Corporate customers req",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:17:27.650575+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_3: assess_risk_factor(source_of_wealth_and_source_of_funds)",
+            "details": "Risk factor 'source_of_wealth_and_source_of_funds' not found. Available: ['customer_type', 'geography', 'product_service', 'transaction_pattern', 'sou",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:17:27.650583+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_4: assess_risk_factor(source_of_funds)",
+            "details": "{\n  \"score\": 2,\n  \"justification\": \"Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, funds are sourced from family cong",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:17:27.650587+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_5: search_precedent(Retired domestic PEP 6+ years out of office, high-risk private banking client, clean sanctions/adverse media, 8-year relationship with no compliance events, partially verified source of wealth, missing beneficial ownership disclosure for family-owned source company)",
+            "details": "[Wiki: PEP with Mitigating Factors] ## Case Examples\n\n### Example 1: Retired Deputy Minister — Approved with Conditions\n\n- **Profile:** Malaysian form",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:17:27.650593+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_6: forced_final_answer",
+            "details": "",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:17:27.650598+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "__interrupt__",
+      "output": []
+    }
+  ],
+  "state_values": {
+    "case_id": "KYC-2024-005",
+    "tenant_id": "pacific_rim_fg",
+    "data_classification": "confidential",
+    "submission": {
+      "case_id": "KYC-2024-005",
+      "submission_type": "individual_onboarding",
+      "submitted_by": "Private Banking Relationship Manager",
+      "submitted_at": "2024-09-15T14:30:00Z",
+      "customer": {
+        "type": "individual",
+        "full_name": "Dato' Ahmad bin Ibrahim",
+        "date_of_birth": "1965-08-12",
+        "nationality": "Malaysian",
+        "country_of_residence": "Malaysia",
+        "occupation": "Chairman, Ibrahim Holdings Sdn Bhd",
+        "employer": "Self-employed",
+        "annual_income": 1500000,
+        "income_currency": "MYR",
+        "additional_info": "Former Deputy Minister of Trade and Industry, Malaysia (2010-2018). Retired from politics. Now runs family conglomerate focused on palm oil and construction."
+      },
+      "identification_documents": [
+        {
+          "type": "passport",
+          "category": "A",
+          "document_number": "A45678901",
+          "issuing_country": "Malaysia",
+          "issue_date": "2023-06-15",
+          "expiry_date": "2033-06-14",
+          "verified": true
+        },
+        {
+          "type": "national_id",
+          "category": "A",
+          "document_number": "650812-10-5577",
+          "issuing_country": "Malaysia",
+          "issue_date": "2020-01-10",
+          "expiry_date": "2035-01-09",
+          "verified": true
+        },
+        {
+          "type": "utility_bill",
+          "category": "B",
+          "description": "Tenaga Nasional electricity bill",
+          "document_date": "2024-08-28",
+          "address": "12 Jalan Bukit Tunku, 50480 Kuala Lumpur, Malaysia",
+          "verified": true
+        },
+        {
+          "type": "tax_certificate",
+          "category": "C",
+          "document_number": "LHDN-2024-ABI-9900",
+          "tax_year": 2023,
+          "issuing_authority": "Lembaga Hasil Dalam Negeri (LHDN)",
+          "verified": true
+        }
+      ],
+      "account_request": {
+        "product_type": "private_banking",
+        "purpose": "Wealth management and cross-border investment portfolio",
+        "expected_monthly_deposit": 100000,
+        "expected_monthly_withdrawal": 50000,
+        "initial_deposit": 2000000,
+        "source_of_initial_deposit": "Dividend from Ibrahim Holdings Sdn Bhd",
+        "primary_transaction_countries": [
+          "Malaysia",
+          "Singapore",
+          "Indonesia"
+        ]
+      },
+      "source_of_funds": {
+        "primary": "business_revenue",
+        "details": "Dividends and director fees from Ibrahim Holdings Sdn Bhd (family conglomerate, established 1992, palm oil plantations and construction). Also receives rental income from commercial properties in Kuala Lumpur.",
+        "supporting_documents": [
+          "company_annual_report",
+          "audited_financial_statements_2023",
+          "bank_statements_6_months",
+          "property_title_deeds"
+        ]
+      },
+      "source_of_wealth": {
+        "declared": "Family wealth built through Ibrahim Holdings Sdn Bhd since 1992 (father founded). Business expanded into palm oil (2000s) and construction (2010s). Personal net worth estimated at MYR 50 million. No connection between political career and business dealings — family business predates political appointment.",
+        "supporting_documents": [
+          "company_annual_report",
+          "audited_financial_statements_2023",
+          "statutory_declaration_source_of_wealth"
+        ],
+        "verification_status": "partially_verified"
+      },
+      "declarations": {
+        "pep_status": true,
+        "pep_details": "Former Deputy Minister of Trade and Industry, Malaysia (2010-2018). Retired from all government positions.",
+        "pep_association": false,
+        "tax_residency": [
+          "Malaysia"
+        ],
+        "us_person": false,
+        "consent_given": true,
+        "declaration_signed": true,
+        "declaration_date": "2024-09-15"
+      },
+      "screening_flags": {
+        "pep_screening": {
+          "result": "confirmed_match",
+          "details": "Dato' Ahmad bin Ibrahim confirmed as former Deputy Minister of Trade and Industry, Malaysia (2010-2018). PEP status declared by customer. PEP classification: domestic PEP (retired). PEP cooling-off period: varies by jurisdiction, typically 12-24 months post-retirement (last office 2018, now 6+ years retired)."
+        },
+        "sanctions_screening": {
+          "result": "clear",
+          "details": "No matches found on OFAC SDN, EU Consolidated, UN Security Council, or APAC regional lists."
+        },
+        "adverse_media": {
+          "result": "clear",
+          "details": "No adverse media findings related to corruption, money laundering, or financial crime. Minor mentions in Malaysian business press regarding Ibrahim Holdings' construction contracts — routine reporting, no allegations."
+        }
+      },
+      "expected_outcome": {
+        "risk_rating": "high",
+        "risk_score": 12,
+        "due_diligence_level": "enhanced",
+        "decision": "approve_with_conditions",
+        "reasoning": "Declared PEP (retired 6+ years) triggers automatic high-risk classification per Risk Rating Matrix Section 3.2. However, risk mitigants are strong: (1) PEP status self-declared — demonstrates transparency; (2) family business predates political career by 18 years; (3) source of wealth documented with audited financials and company annual reports; (4) sanctions clear, no adverse media; (5) well past typical PEP cooling-off period. EDD required but approval recommended with conditions: enhanced ongoing monitoring, annual review of PEP status, source of funds verification for any single transaction >MYR 500,000. Senior management approval needed per CDD Guidelines for PEP accounts."
+      }
+    },
+    "documents_complete": true,
+    "missing_documents": [],
+    "document_verification": [
+      "passport: verified",
+      "national_id: verified",
+      "utility_bill: verified",
+      "tax_certificate: verified"
+    ],
+    "intake_status": "complete",
+    "critical_missing": [],
+    "non_critical_missing": [],
+    "sanctions_result": "clear",
+    "pep_result": "confirmed_match",
+    "adverse_media_result": "clear",
+    "screening_details": [
+      {
+        "type": "sanctions",
+        "result": "clear",
+        "analysis": "依据《Know Your Customer (KYC) Policy v3.2》第6.1条强制筛查要求，已完成对联合国安理会综合名单、OFAC特别指定国民（SDN）名单、欧盟综合金融制裁名单、马来西亚本地监管制裁名单及PRFG内部观察名单的全量筛查，未发现任何匹配结果；本次筛查属于第6.2条规定的定期审查触发场景，筛查流程合规，客户无制裁类风险。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "pep",
+        "result": "confirmed_match",
+        "analysis": "筛查确认客户为马来西亚前国际贸易及工业部副部长（2010-2018），分类为国内退休PEP，客户已主动申报该身份；客户2018年卸任至今已逾6年，超出各司法辖区通用的12-24个月PEP冷却期；结合客户8年合作期内无合规风险事件、无可疑活动报告（SAR）、无监管查询、12个月内交易监测零警报的良好合规历史，未发现PEP相关潜在风险。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1（内部观察名单筛查范畴）; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "adverse_media",
+        "result": "clear",
+        "analysis": "筛查未发现客户涉及腐败、洗钱、金融犯罪等违法违规活动的指控或负面媒体报道；仅存在马来西亚商业媒体对其名下Ibrahim Holdings建筑合同的常规业务报道，无负面风险指向，客户无声誉及合规类风险。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6 客户风险筛查框架"
+      }
+    ],
+    "risk_scores": {
+      "customer_type": {
+        "score": 2,
+        "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, the customer is a locally resident Malaysian self-employed individual serving as chairman of a family-owned conglomerate, with documented income and supporting business records, no complex corporate structure, shell company or undisclosed ownership indicators, aligning with the 2-point criterion for self-employed persons with verifiable income."
+      },
+      "geography": {
+        "score": 2,
+        "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, customer transactions involve Malaysia, Singapore and Indonesia, none of which are categorized as high-risk jurisdictions (sanctioned, tax haven, conflict zone). Cross-border activity is present but all counterparty countries are low/medium risk, aligning with the 2-point criterion."
+      },
+      "product_service": {
+        "score": 3,
+        "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, the customer is applying for and holds private banking services, which is explicitly classified as a 3-point high-risk product under the framework."
+      },
+      "transaction_pattern": {
+        "score": 2,
+        "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, cross-border transactions account for 40% of total activity, all with low/medium risk countries. Transaction volumes are consistent with the customer's HNWI profile, declared income and net worth, with no transaction monitoring alerts in 12 months and no anomalous patterns, aligning with the 2-point criterion."
+      },
+      "source_of_funds": {
+        "score": 2,
+        "justification": "Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, funds are sourced from family conglomerate dividends, director fees and commercial property rental income. Business revenue is supported by 2023 audited financial statements, rental income by property title deeds, with only partial source of wealth verification. There are no unverified self-declarations, complex multi-source structures or high-risk sector exposure, aligning with the 2-point criterion for business revenue with audited financials."
+      }
+    },
+    "risk_total": 11,
+    "risk_rating": "high",
+    "risk_override": "Automatic override to HIGH: screening red flag (sanctions=clear, pep=confirmed_match)",
+    "due_diligence_level": "enhanced",
+    "edd_findings": {
+      "source_of_wealth": "申报的家族财富积累逻辑合理，Ibrahim Holdings成立于1992年，早于客户2010年开始的政治任职，无证据显示财富来源于政治职务的不当利益；已提供审计财报、公司年报、法定声明作为核心支撑材料，当前为部分验证状态，剩余验证缺口可通过补充家族企业受益所有权、股权传承相关材料完成，无明显财富来源造假或高风险迹象。",
+      "source_of_funds": "初始存款及日常运营资金来源为家族企业股息、董事费及商业物业租金，均有对应可验证的支撑材料（2023年审计财报、6个月银行流水、物业产权证明），资金来源合法合规，与客户申报的150万马币年收入、历史交易规模及行为特征完全匹配，无异常资金流入迹象。",
+      "additional_info_needed": [
+        "Ibrahim Holdings Sdn Bhd的官方受益所有权登记文件，含持股25%以上或享有实际控制权的自然人身份信息及证明材料",
+        "若存在家族股权传承安排，补充对应股权分配/传承的法定证明文件，以完成财富来源全量验证"
+      ],
+      "risk_mitigants": [
+        "退休PEP卸任已6年，远超12-24个月的通用冷却期，无现任任何政治职务",
+        "全量制裁、负面媒体筛查均无风险匹配，未发现PEP相关潜在合规风险",
+        "8年存量合作关系，历史合规记录优良，12个月交易监测零警报，无SAR、监管查询及风险事件",
+        "资金来源有审计财报、银行流水、物业产权证明等充分可验证支撑，与历史交易行为、收入水平高度匹配",
+        "家族企业成立时间（1992年）早于客户政治任职时间（2010年），无证据显示政治生涯与业务收益存在不当关联",
+        "客户主动申报PEP身份，信息透明度高，过往配合度良好",
+        "同类退休PEP附条件批准先例明确支持该处置方式，合规依据充分"
+      ],
+      "risk_amplifiers": [
+        "客户为确认匹配的退休国内PEP，系统自动触发高风险评级",
+        "申请产品为私人银行业务，属于EDD强制适用的高风险业务场景",
+        "涉及马来西亚、新加坡、印尼三国跨境交易，存在一定跨境洗钱风险敞口",
+        "财富来源当前为部分验证状态，未提供家族企业受益所有权结构信息"
+      ]
+    },
+    "edd_missing_docs": [],
+    "edd_docs_bypassed": false,
+    "findings": [
+      "All required documents present and verified. Customer profile loaded: 8.0yr relationship, last KYC=approved_with_conditions",
+      "本次对马来西亚籍HNWI客户Dato' Ahmad bin Ibrahim的三类筛查结果如下：1. 制裁筛查无任何名单匹配，流程符合政策要求；2. PEP筛查确认其为已退休国内PEP，客户主动申报身份且卸任已超通用冷却期，历史合规记录良好无相关风险；3. 负面媒体筛查无金融犯罪相关负面信息，仅存在无风险的常规业务报道。整体筛查通过，无需升级处置。",
+      "This assessment follows KYC Policy v3.2 Section 4, CDD Guidelines v1.8 Section 6 and Customer Risk Rating Matrix and Classification Guide v1.5. The customer's initial calculated risk score is 11, corresponding to a medium risk rating. The customer is a Malaysian HNWI with an 8-year established relationship, applying for private banking services, with transactions limited to low/medium risk Southeast Asian jurisdictions, consistent transaction behavior, no sanctions or adverse media records, and partially verified wealth documentation. The confirmed PEP status triggers an automatic high risk override, resulting in a final high risk rating that requires enhanced due diligence.",
+      "Automatic override to HIGH: screening red flag (sanctions=clear, pep=confirmed_match)",
+      "客户身份为马来西亚前贸易与工业部副部长（2010-2018任职），属于退休国内PEP，已主动申报PEP身份，卸任至今6年，超出12-24个月通用冷却期",
+      "制裁筛查覆盖联合国安理会综合名单、OFAC SDN名单、欧盟金融制裁名单、马来西亚本地监管制裁名单及PRFG内部观察名单，无任何匹配结果；负面媒体筛查无腐败、洗钱、金融犯罪等相关负面指控，仅存在家族企业常规业务报道，筛查结果均为clear",
+      "客户与PRFG合作年限达8年，最近12个月交易监测零警报，无SAR申报、监管查询及历史风险事件，合规记录优良",
+      "资金来源（SoF）申报为Ibrahim Holdings股息、董事薪酬及吉隆坡商业物业租金收入，支撑材料包括2023年审计财报、公司年报、6个月银行流水、物业产权证明，验证充分，与客户收入水平、历史交易行为匹配",
+      "财富来源（SoW）申报为1992年成立的家族企业长期积累，业务布局早于2010年的政治任职，无政治生涯与业务关联的相关证据；支撑材料包括审计财报、公司年报、财富来源法定声明，当前验证状态为部分验证",
+      "未提交Ibrahim Holdings Sdn Bhd的受益所有权结构材料，未明确持股25%以上或享有实际控制权的自然人信息",
+      "本次申请产品为私人银行业务，涉及马来西亚、新加坡、印尼跨境交易，属于MAS Notice 626及PRFG KYC政策规定的EDD强制适用场景",
+      "客户初始存款200万马币、预期月均存款10万马币的申报信息，与历史12个月月均15万美元流入的交易行为逻辑一致，无明显异常"
+    ],
+    "recommendations": [
+      "1",
+      "客户需在批准后30个工作日内提交要求的受益所有权及财富来源补充材料，逾期无合理理由未提交的，将触发账户交易限制及专项合规复核；2",
+      "实施增强型交易监测：对单笔金额超过MYR 500,000的交易开展事前资金来源核验，重点核查跨境交易的对手方背景、资金用途合理性；3",
+      "每年开展1次专项PEP身份复核及全量制裁、负面媒体筛查，留存完整复核记录；4",
+      "设置跨境交易阈值预警：若月均跨境交易金额超过申报预期的150%（即MYR 150,000）自动触发合规审查；5",
+      "每半年核验1次资金来源、财富来源的更新材料，确保与客户业务发展、收入情况匹配；6",
+      "待补充材料提交并完成全量验证后，可调整为年度常规EDD复核频率"
+    ],
+    "sources_cited": [
+      {
+        "step": "intake",
+        "sources": [
+          "Customer Due Diligence (CDD) Guidelines",
+          "Sanctions and Watchlist Screening Procedures",
+          "Customer Due Diligence (CDD) Guidelines"
+        ]
+      },
+      {
+        "step": "screening",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Sanctions and Watchlist Screening Procedures",
+          "Sanctions and Watchlist Screening Procedures"
+        ]
+      },
+      {
+        "step": "risk_assessment",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Customer Due Diligence (CDD) Guidelines",
+          "Customer Risk Rating Matrix and Classification Guide"
+        ]
+      },
+      {
+        "step": "edd",
+        "sources": [
+          "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2",
+          "Sanctions and Watchlist Screening Procedures v2.1 §1",
+          "MAS Notice 626 §3.1, §3.2 (Enhanced Due Diligence Requirements)",
+          "Customer Risk Rating Matrix and Classification Guide v1.5",
+          "POL-KYC-001 §3.3 (Beneficial Ownership Threshold Rules)",
+          "PRFG Precedent Case KYC-2024-005 (Retired Deputy Minister PEP Approval with Conditions)"
+        ]
+      }
+    ],
+    "decision": "approve_with_conditions",
+    "decision_rationale": "客户为高风险退休马来西亚国内PEP，2018年卸任至今已6年，远超行业通用12-24个月的PEP冷却期；全量制裁、负面媒体筛查均无风险匹配，与PRFG有8年存量合作历史且无任何合规风险事件，资金来源有审计财报、银行流水等充分可验证支撑，家族企业成立时间早于其政治任职时间，无证据显示政治生涯与业务收益存在不当关联，符合PRFG KYC政策及同类退休PEP处置先例的附条件批准标准。当前仅存在家族企业受益所有权信息缺失、财富来源部分验证的待补项，无不可控核心风险，故作出附条件批准决定。",
+    "human_review_required": true,
+    "ai_confidence": 0.95,
+    "review_status": "in_review",
+    "current_step": "enhanced_due_diligence",
+    "next_step": "identity_screening",
+    "info_requests": [],
+    "audit_trail": [
+      {
+        "step": "intake",
+        "action": "document_completeness_check",
+        "details": "[COMPLETE] All required documents present and verified. Customer profile loaded: 8.0yr relationship, last KYC=approved_with_conditions",
+        "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+        "timestamp": "2026-11-28T14:09:09.748224+00:00"
+      },
+      {
+        "step": "identity_screening",
+        "action": "sanctions_pep_adverse_media_screening",
+        "details": "本次对马来西亚籍HNWI客户Dato' Ahmad bin Ibrahim的三类筛查结果如下：1. 制裁筛查无任何名单匹配，流程符合政策要求；2. PEP筛查确认其为已退休国内PEP，客户主动申报身份且卸任已超通用冷却期，历史合规记录良好无相关风险；3. 负面媒体筛查无金融犯罪相关负面信息，仅存在无风险的常规业务报道。整体筛查通过，无需升级处置。",
+        "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+        "timestamp": "2026-11-28T14:11:40.966899+00:00"
+      },
+      {
+        "step": "risk_assessment",
+        "action": "risk_scoring",
+        "details": "Total score: 11, Rating: high, DD: enhanced",
+        "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+        "timestamp": "2026-11-28T14:14:07.843106+00:00"
+      },
+      {
+        "step": "edd_document_check",
+        "action": "edd_document_gate",
+        "details": "All mandatory EDD documents present",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:14:07.853039+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_1: search_policy(Enhanced Due Diligence (EDD) requirements under PRFG KYC Policy v3.2 for high-risk retired domestic PEP private banking customers, covering source of wealth verification, source of funds verification, beneficial ownership disclosure, and ongoing monitoring obligations)",
+        "details": "[Know Your Customer (KYC) Policy — 2. Regulatory Framework] (relevance: 0.86)\n## 2. Regulatory Framework\n\nThis policy is aligned with:\n- Anti-Money La",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:17:27.650311+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_2: search_policy(KYC Policy v3.2 full EDD measures for high-risk retired domestic PEP private banking clients: beneficial ownership disclosure mandates, source of wealth/source of funds verification standards, retired PEP cooling-off period rules, ongoing monitoring and review frequency requirements)",
+        "details": "[Wiki: Cross-Border Corporate Structures — Policy References] (relevance: 0.82)\n## Policy References\n\n- **POL-KYC-001 §3.2** — Corporate customers req",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:17:27.650575+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_3: assess_risk_factor(source_of_wealth_and_source_of_funds)",
+        "details": "Risk factor 'source_of_wealth_and_source_of_funds' not found. Available: ['customer_type', 'geography', 'product_service', 'transaction_pattern', 'sou",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:17:27.650583+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_4: assess_risk_factor(source_of_funds)",
+        "details": "{\n  \"score\": 2,\n  \"justification\": \"Per Customer Risk Rating Matrix and Classification Guide v1.5 scoring guidance, funds are sourced from family cong",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:17:27.650587+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_5: search_precedent(Retired domestic PEP 6+ years out of office, high-risk private banking client, clean sanctions/adverse media, 8-year relationship with no compliance events, partially verified source of wealth, missing beneficial ownership disclosure for family-owned source company)",
+        "details": "[Wiki: PEP with Mitigating Factors] ## Case Examples\n\n### Example 1: Retired Deputy Minister — Approved with Conditions\n\n- **Profile:** Malaysian form",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:17:27.650593+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_6: forced_final_answer",
+        "details": "",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:17:27.650598+00:00"
+      }
+    ],
+    "customer_profile": {
+      "customer_id": "C-2024-005",
+      "relationship_start": "2016-11-20",
+      "relationship_tenure_years": 8.0,
+      "customer_segment": "hnwi",
+      "relationship_manager": "RM-PB-003",
+      "products_held": [
+        "private_banking",
+        "savings",
+        "fx_trading",
+        "trust_services",
+        "credit_card"
+      ],
+      "transaction_summary": {
+        "avg_monthly_inflow": 150000,
+        "avg_monthly_outflow": 95000,
+        "max_single_transaction": 500000,
+        "cross_border_tx_pct": 0.4,
+        "primary_counterparty_countries": [
+          "Malaysia",
+          "Singapore",
+          "Indonesia"
+        ],
+        "cash_deposit_frequency": "rare",
+        "unusual_pattern_flags": 0
+      },
+      "risk_events": [],
+      "compliance_history": {
+        "previous_kyc_reviews": 3,
+        "last_kyc_date": "2023-01-15",
+        "last_kyc_outcome": "approved_with_conditions",
+        "last_risk_rating": "high",
+        "risk_rating_trajectory": [
+          "high",
+          "high",
+          "high"
+        ],
+        "sar_filed": false,
+        "regulatory_inquiries": 0
+      },
+      "service_summary": {
+        "total_interactions": 45,
+        "complaints": 0,
+        "account_freezes": 0,
+        "login_anomalies": 0
+      },
+      "external_data": {
+        "credit_score": 750,
+        "other_bank_loans": 0,
+        "bankruptcy_records": false,
+        "litigation_records": 0
+      },
+      "internal_tags": [
+        "pep_related",
+        "high_value_client",
+        "long_term_relationship"
+      ]
+    },
+    "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 8.0 years (since 2016-11-20)\nCustomer segment: hnwi\nProducts held: private_banking, savings, fx_trading, trust_services, credit_card\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $150,000\n  Avg monthly outflow: $95,000\n  Max single transaction: $500,000\n  Cross-border tx ratio: 40%\n  Primary counterparty countries: Malaysia, Singapore, Indonesia\n  Cash deposit frequency: rare\n  Transaction monitoring alerts (12m): 0\n\nHistorical risk events: None\n\nCompliance history:\n  Previous KYC reviews: 3\n  Last KYC: 2023-01-15 → approved_with_conditions\n  Risk rating trajectory: high → high → high\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 750\n  Other bank loans: 0\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 45\n  Complaints: 0\n  Account freezes: 0\n\nInternal tags: pep_related, high_value_client, long_term_relationship",
+    "is_existing_customer": true
+  }
+}

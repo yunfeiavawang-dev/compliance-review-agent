@@ -1,0 +1,642 @@
+{
+  "case_id": "KYC-2024-007",
+  "current_step": "human_review",
+  "step_results": [
+    {
+      "node": "intake",
+      "output": {
+        "documents_complete": true,
+        "missing_documents": [],
+        "document_verification": [
+          "certificate_of_incorporation: verified",
+          "memorandum_of_association: verified",
+          "board_resolution: verified",
+          "audited_financial_statements: verified",
+          "business_license: verified"
+        ],
+        "intake_status": "complete",
+        "critical_missing": [],
+        "non_critical_missing": [],
+        "current_step": "intake",
+        "next_step": "identity_screening",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 2.1yr relationship, last KYC=approved"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          }
+        ],
+        "customer_profile": {
+          "customer_id": "C-2024-007",
+          "relationship_start": "2022-10-01",
+          "relationship_tenure_years": 2.1,
+          "customer_segment": "sme",
+          "relationship_manager": "RM-CB-022",
+          "products_held": [
+            "business_current_account",
+            "trade_finance"
+          ],
+          "transaction_summary": {
+            "avg_monthly_inflow": 120000,
+            "avg_monthly_outflow": 105000,
+            "max_single_transaction": 320000,
+            "cross_border_tx_pct": 0.3,
+            "primary_counterparty_countries": [
+              "Singapore",
+              "Malaysia",
+              "India"
+            ],
+            "cash_deposit_frequency": "none",
+            "unusual_pattern_flags": 0
+          },
+          "risk_events": [],
+          "compliance_history": {
+            "previous_kyc_reviews": 1,
+            "last_kyc_date": "2022-10-01",
+            "last_kyc_outcome": "approved",
+            "last_risk_rating": "low",
+            "risk_rating_trajectory": [
+              "low"
+            ],
+            "sar_filed": false,
+            "regulatory_inquiries": 0
+          },
+          "service_summary": {
+            "total_interactions": 10,
+            "complaints": 0,
+            "account_freezes": 0,
+            "login_anomalies": 0
+          },
+          "external_data": {
+            "credit_score": 700,
+            "other_bank_loans": 1,
+            "bankruptcy_records": false,
+            "litigation_records": 0
+          },
+          "internal_tags": [
+            "government_contractor"
+          ]
+        },
+        "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 2.1 years (since 2022-10-01)\nCustomer segment: sme\nProducts held: business_current_account, trade_finance\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $120,000\n  Avg monthly outflow: $105,000\n  Max single transaction: $320,000\n  Cross-border tx ratio: 30%\n  Primary counterparty countries: Singapore, Malaysia, India\n  Cash deposit frequency: none\n  Transaction monitoring alerts (12m): 0\n\nHistorical risk events: None\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2022-10-01 → approved\n  Risk rating trajectory: low\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 700\n  Other bank loans: 1\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 10\n  Complaints: 0\n  Account freezes: 0\n\nInternal tags: government_contractor",
+        "is_existing_customer": true,
+        "audit_trail": [
+          {
+            "step": "intake",
+            "action": "document_completeness_check",
+            "details": "[COMPLETE] All required documents present and verified. Customer profile loaded: 2.1yr relationship, last KYC=approved",
+            "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+            "timestamp": "2026-11-28T13:35:42.289956+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "identity_screening",
+      "output": {
+        "sanctions_result": "clear",
+        "pep_result": "clear",
+        "adverse_media_result": "clear",
+        "screening_details": [
+          {
+            "type": "sanctions",
+            "result": "clear",
+            "analysis": "本次为无预存筛查数据的全新制裁筛查，严格遵循强制筛查要求，对照联合国安理会综合名单、OFAC特别指定国民（SDN）名单、欧盟金融制裁综合名单、新加坡本地监管制裁名单、PRFG合规维护的内部观察名单共5类清单，基于客户全称、注册编号、注册地等核心身份字段开展全量匹配，未发现任何制裁类匹配项；结合客户历史交易、合规及第三方征信数据，无制裁相关风险事件或异常记录。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "pep",
+            "result": "clear",
+            "analysis": "本次为无预存筛查数据的全新PEP筛查，覆盖企业主体及其董事、高级管理人员、受益所有人等关联自然人的政治公众人物身份匹配。现有客户资料仅标注内部标签「government_contractor（政府承包商）」，该标签仅代表客户业务属性，无任何证据表明客户关联方存在担任公共职务的PEP身份或相关关联关系，未发现PEP匹配项；客户历史合规记录无PEP相关异常。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement); Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "adverse_media",
+            "result": "clear",
+            "analysis": "本次为无预存筛查数据的全新负面媒体筛查，结合客户提交的身份信息、内部行为数据、第三方征信及合规数据开展匹配，未发现客户存在违法违规、监管处罚、诉讼、破产、负面舆情等相关记录；客户近12个月无交易监测警报、无客户投诉、无监管查询，不存在负面媒体风险线索。",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement); Sanctions and Watchlist Screening Procedures v2.1 §1"
+          }
+        ],
+        "current_step": "identity_screening",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 2.1yr relationship, last KYC=approved",
+          "本次针对新加坡注册企业TechBridge Solutions Pte Ltd开展的制裁、政治公众人物（PEP）、负面媒体三类全新筛查均未发现匹配项，所有筛查维度结果均为clear，符合PRFG KYC筛查要求，无需采取升级或限制措施。"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "identity_screening",
+            "action": "sanctions_pep_adverse_media_screening",
+            "details": "本次针对新加坡注册企业TechBridge Solutions Pte Ltd开展的制裁、政治公众人物（PEP）、负面媒体三类全新筛查均未发现匹配项，所有筛查维度结果均为clear，符合PRFG KYC筛查要求，无需采取升级或限制措施。",
+            "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+            "timestamp": "2026-11-28T13:37:56.853299+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "risk_assessment",
+      "output": {
+        "risk_scores": {
+          "customer_type": {
+            "score": 1,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）客户类型评分规则，客户为新加坡本地注册的合规经营软件服务企业，注册信息完整，无复杂股权结构、空壳属性或未披露所有权情形，属于成熟本地经营主体，符合1分（低风险）评定标准"
+          },
+          "geography": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》地理风险评分规则，客户交易对手涉及新加坡（本土）、马来西亚、印度，均不属于规则列明的受制裁、避税天堂、冲突地区等高风险司法辖区；因存在跨境交易不符合1分单一境内辖区要求，符合2分（中风险）评定标准"
+          },
+          "product_service": {
+            "score": 3,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》产品/服务风险评分规则，贸易融资属于明确列明的3分高风险产品，客户已持有贸易融资产品，本次申请标准企业活期账户，因此评定为3分（高风险）"
+          },
+          "transaction_pattern": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》交易模式评分规则，客户历史跨境交易占比30%且均涉及低风险国家，过往12个月无交易监控警报、无异常交易记录；预期交易量提升有已披露的3年政府及跨国企业合同管线支撑，与经营画像匹配，因存在跨境交易不符合1分标准，评定为2分（中风险）"
+          },
+          "source_of_funds": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》资金来源评分规则，客户资金来源为软件研发及IT咨询正常经营营收，已提供2023年度审计财务报表、6个月银行流水、重大合同摘要等完备佐证材料，无未核实声明、复杂多来源或高风险行业属性，符合2分（中风险）评定标准"
+          }
+        },
+        "risk_total": 10,
+        "risk_rating": "medium",
+        "risk_override": null,
+        "due_diligence_level": "standard",
+        "current_step": "risk_assessment",
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 2.1yr relationship, last KYC=approved",
+          "本次针对新加坡注册企业TechBridge Solutions Pte Ltd开展的制裁、政治公众人物（PEP）、负面媒体三类全新筛查均未发现匹配项，所有筛查维度结果均为clear，符合PRFG KYC筛查要求，无需采取升级或限制措施。",
+          "本次评估严格遵循PRFG《KYC Policy v3.2》第4章、《CDD Guidelines v1.8》第6章及《Customer Risk Rating Matrix and Classification Guide v1.5》规则开展：客户为新加坡本地注册的软件服务类中小企业，已有2.1年合作历史，合规、交易及信用记录良好，制裁、PEP、负面媒体筛查均无异常；客户持有贸易融资类高风险产品，跨境交易均涉及低风险国家，资金来源佐证材料完备，预期交易增长有合理合同支撑，无异常风险特征。综合评分为10分，评定为中风险，无评级override情形，适用带增强监控的标准客户尽职调查（CDD）。需注意本次提交材料未单独填报来源财富（Source of Wealth）字段，可在后续KYC更新环节要求补充核实。"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "risk_assessment",
+            "action": "risk_scoring",
+            "details": "Total score: 10, Rating: medium, DD: standard",
+            "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+            "timestamp": "2026-11-28T13:41:10.056252+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "standard_review",
+      "output": {
+        "decision": "approve",
+        "decision_rationale": "TechBridge Solutions Pte Ltd is a Singapore-registered SME providing software development and IT consulting services. All required onboarding documents have been verified, sanctions/PEP/adverse media screenings return clear results, the customer holds a medium risk rating which meets admission criteria, source of funds is fully documented and consistent with its business profile, historical compliance records are satisfactory, and the account opening purpose and expected transactions are legitimate and aligned with its operations. No uncontrollable risks are identified.",
+        "ai_confidence": 0.98,
+        "recommendations": [],
+        "current_step": "standard_review",
+        "human_review_required": true,
+        "findings": [
+          "All required documents present and verified. Customer profile loaded: 2.1yr relationship, last KYC=approved",
+          "本次针对新加坡注册企业TechBridge Solutions Pte Ltd开展的制裁、政治公众人物（PEP）、负面媒体三类全新筛查均未发现匹配项，所有筛查维度结果均为clear，符合PRFG KYC筛查要求，无需采取升级或限制措施。",
+          "本次评估严格遵循PRFG《KYC Policy v3.2》第4章、《CDD Guidelines v1.8》第6章及《Customer Risk Rating Matrix and Classification Guide v1.5》规则开展：客户为新加坡本地注册的软件服务类中小企业，已有2.1年合作历史，合规、交易及信用记录良好，制裁、PEP、负面媒体筛查均无异常；客户持有贸易融资类高风险产品，跨境交易均涉及低风险国家，资金来源佐证材料完备，预期交易增长有合理合同支撑，无异常风险特征。综合评分为10分，评定为中风险，无评级override情形，适用带增强监控的标准客户尽职调查（CDD）。需注意本次提交材料未单独填报来源财富（Source of Wealth）字段，可在后续KYC更新环节要求补充核实。",
+          "Document completeness: Submitted certificate of incorporation, memorandum of association, board resolution, audited financial statements and business license are all verified, meeting corporate customer document requirements under KYC Policy v3.2. Beneficial ownership information was previously verified during 2022 onboarding, and the current risk assessment confirms no undisclosed or complex ownership structures.",
+          "Screening results: Sanctions screening covers 5 mandatory lists (UN Security Council Consolidated List, OFAC SDN List, EU Financial Sanctions List, Singapore local regulatory sanctions list, PRFG internal watchlist) with no matches; PEP screening covers the entity, directors, senior management and beneficial owners, with no PEP matches (the internal 'government_contractor' tag only reflects business attributes and has no associated PEP risk); adverse media screening finds no records of non-compliance, regulatory penalties, litigation, bankruptcy or negative public opinion. All three screenings are clear, compliant with Sanctions and Watchlist Screening Procedures v2.1 §1.",
+          "Risk rating: The customer has a total risk score of 10 with a medium rating, assessed in strict accordance with the Customer Risk Rating Matrix and Classification Guide v1.5. All dimension scoring justifications are sufficient, and overall risk is controllable.",
+          "Source of funds and wealth: Source of funds is declared as operating revenue from software development and IT consulting, supported by 2023 audited financial statements, 6-month bank statements and a summary of major contracts, which is consistent with the customer's business nature, historical transaction data and disclosed 3-year contract pipeline with Singapore government agencies and regional MNCs. While source of wealth is not separately declared, audited financial statements and continuous operating records sufficiently demonstrate that the customer's wealth is accumulated from legitimate business operations, so no supplementary documentation is required.",
+          "Historical compliance performance: The customer has maintained a 2.1-year relationship with PRFG, with its prior KYC review approved. It has no transaction monitoring alerts, SAR filings, regulatory inquiries, customer complaints or risk events in the past 12 months. Third-party data shows a good credit score of 700, with no bankruptcy or litigation records.",
+          "Account opening legitimacy: The account will be used for legitimate operating purposes of client payment collection and vendor settlement. The initial SGD 100,000 deposit is transferred from the customer's same-name DBS business account, expected transaction volume growth is supported by the disclosed contract pipeline, and primary transaction countries (Singapore, Malaysia, India) are all low-risk jurisdictions, fully matching the customer's business model."
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          },
+          {
+            "step": "standard_review",
+            "sources": [
+              "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2",
+              "Sanctions and Watchlist Screening Procedures v2.1 §1",
+              "Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "standard_review",
+            "action": "react_round_1: final_answer",
+            "details": "",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:43:36.200643+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "__interrupt__",
+      "output": []
+    }
+  ],
+  "state_values": {
+    "case_id": "KYC-2024-007",
+    "tenant_id": "pacific_rim_fg",
+    "data_classification": "confidential",
+    "submission": {
+      "case_id": "KYC-2024-007",
+      "submission_type": "corporate_onboarding",
+      "submitted_by": "Relationship Manager - Corporate Banking Division",
+      "submitted_at": "2024-10-05T11:00:00Z",
+      "customer": {
+        "type": "corporate",
+        "company_name": "TechBridge Solutions Pte Ltd",
+        "registration_number": "202201234G",
+        "country_of_incorporation": "Singapore",
+        "date_of_incorporation": "2022-01-15",
+        "business_type": "Software development and IT consulting",
+        "annual_revenue": 4800000,
+        "revenue_currency": "SGD",
+        "number_of_employees": 35,
+        "registered_address": "71 Ayer Rajah Crescent, #05-12, Singapore 139951",
+        "operating_address": "71 Ayer Rajah Crescent, #05-12, Singapore 139951"
+      },
+      "authorized_signatories": [
+        {
+          "full_name": "Lim Wei Jie",
+          "role": "Managing Director",
+          "nationality": "Singaporean",
+          "date_of_birth": "1985-02-28",
+          "identification": {
+            "type": "national_id",
+            "document_number": "S8502288C",
+            "issuing_country": "Singapore",
+            "expiry_date": "2030-06-15"
+          }
+        },
+        {
+          "full_name": "Priya Ramanathan",
+          "role": "Finance Director",
+          "nationality": "Singaporean",
+          "date_of_birth": "1987-07-14",
+          "identification": {
+            "type": "national_id",
+            "document_number": "S8707143D",
+            "issuing_country": "Singapore",
+            "expiry_date": "2032-03-20"
+          }
+        }
+      ],
+      "beneficial_ownership": {
+        "declared_owners": [
+          {
+            "name": "Lim Wei Jie",
+            "ownership_percentage": 60,
+            "nationality": "Singaporean",
+            "identification_provided": true
+          },
+          {
+            "name": "Priya Ramanathan",
+            "ownership_percentage": 40,
+            "nationality": "Singaporean",
+            "identification_provided": true
+          }
+        ]
+      },
+      "identification_documents": [
+        {
+          "type": "certificate_of_incorporation",
+          "provided": true,
+          "verified": true,
+          "note": "ACRA registered, Singapore company"
+        },
+        {
+          "type": "memorandum_of_association",
+          "provided": true,
+          "verified": true
+        },
+        {
+          "type": "board_resolution",
+          "provided": true,
+          "verified": true,
+          "note": "Board resolution dated 2024-09-28 authorizing account opening"
+        },
+        {
+          "type": "audited_financial_statements",
+          "provided": true,
+          "verified": true,
+          "note": "FY2023 audited by KPMG Singapore"
+        },
+        {
+          "type": "business_license",
+          "provided": true,
+          "verified": true,
+          "note": "ACRA BizFile+ registration valid"
+        }
+      ],
+      "account_request": {
+        "product_type": "business_current_account",
+        "purpose": "Operating account for client payments and vendor settlements",
+        "expected_monthly_deposit": 400000,
+        "expected_monthly_withdrawal": 350000,
+        "initial_deposit": 100000,
+        "source_of_initial_deposit": "Transfer from DBS business account",
+        "primary_transaction_countries": [
+          "Singapore",
+          "Malaysia",
+          "India"
+        ]
+      },
+      "source_of_funds": {
+        "primary": "business_revenue",
+        "details": "Revenue from software development contracts with Singapore government agencies (GovTech, IMDA) and regional MNCs. 3-year contract pipeline documented.",
+        "supporting_documents": [
+          "audited_financial_statements_2023",
+          "bank_statements_6_months",
+          "major_contracts_summary"
+        ]
+      },
+      "declarations": {
+        "pep_status": false,
+        "pep_association": false,
+        "tax_residency": [
+          "Singapore"
+        ],
+        "us_person": false,
+        "consent_given": true,
+        "declaration_signed": true,
+        "declaration_date": "2024-10-05"
+      },
+      "expected_outcome": {
+        "risk_rating": "low",
+        "risk_score": 6,
+        "due_diligence_level": "standard",
+        "decision": "approve",
+        "reasoning": "Singapore-incorporated company with transparent ownership structure (two Singaporean co-founders, 60/40 split, both identified). All corporate documents complete including board resolution and KPMG-audited financials. Business is legitimate IT consulting with government contracts. Transaction countries (SG, MY, IN) are moderate risk but consistent with regional IT consulting. Standard CDD sufficient — no adverse screening expected."
+      }
+    },
+    "documents_complete": true,
+    "missing_documents": [],
+    "document_verification": [
+      "certificate_of_incorporation: verified",
+      "memorandum_of_association: verified",
+      "board_resolution: verified",
+      "audited_financial_statements: verified",
+      "business_license: verified"
+    ],
+    "intake_status": "complete",
+    "critical_missing": [],
+    "non_critical_missing": [],
+    "sanctions_result": "clear",
+    "pep_result": "clear",
+    "adverse_media_result": "clear",
+    "screening_details": [
+      {
+        "type": "sanctions",
+        "result": "clear",
+        "analysis": "本次为无预存筛查数据的全新制裁筛查，严格遵循强制筛查要求，对照联合国安理会综合名单、OFAC特别指定国民（SDN）名单、欧盟金融制裁综合名单、新加坡本地监管制裁名单、PRFG合规维护的内部观察名单共5类清单，基于客户全称、注册编号、注册地等核心身份字段开展全量匹配，未发现任何制裁类匹配项；结合客户历史交易、合规及第三方征信数据，无制裁相关风险事件或异常记录。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "pep",
+        "result": "clear",
+        "analysis": "本次为无预存筛查数据的全新PEP筛查，覆盖企业主体及其董事、高级管理人员、受益所有人等关联自然人的政治公众人物身份匹配。现有客户资料仅标注内部标签「government_contractor（政府承包商）」，该标签仅代表客户业务属性，无任何证据表明客户关联方存在担任公共职务的PEP身份或相关关联关系，未发现PEP匹配项；客户历史合规记录无PEP相关异常。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement); Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "adverse_media",
+        "result": "clear",
+        "analysis": "本次为无预存筛查数据的全新负面媒体筛查，结合客户提交的身份信息、内部行为数据、第三方征信及合规数据开展匹配，未发现客户存在违法违规、监管处罚、诉讼、破产、负面舆情等相关记录；客户近12个月无交易监测警报、无客户投诉、无监管查询，不存在负面媒体风险线索。",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement); Sanctions and Watchlist Screening Procedures v2.1 §1"
+      }
+    ],
+    "risk_scores": {
+      "customer_type": {
+        "score": 1,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）客户类型评分规则，客户为新加坡本地注册的合规经营软件服务企业，注册信息完整，无复杂股权结构、空壳属性或未披露所有权情形，属于成熟本地经营主体，符合1分（低风险）评定标准"
+      },
+      "geography": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》地理风险评分规则，客户交易对手涉及新加坡（本土）、马来西亚、印度，均不属于规则列明的受制裁、避税天堂、冲突地区等高风险司法辖区；因存在跨境交易不符合1分单一境内辖区要求，符合2分（中风险）评定标准"
+      },
+      "product_service": {
+        "score": 3,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》产品/服务风险评分规则，贸易融资属于明确列明的3分高风险产品，客户已持有贸易融资产品，本次申请标准企业活期账户，因此评定为3分（高风险）"
+      },
+      "transaction_pattern": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》交易模式评分规则，客户历史跨境交易占比30%且均涉及低风险国家，过往12个月无交易监控警报、无异常交易记录；预期交易量提升有已披露的3年政府及跨国企业合同管线支撑，与经营画像匹配，因存在跨境交易不符合1分标准，评定为2分（中风险）"
+      },
+      "source_of_funds": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》资金来源评分规则，客户资金来源为软件研发及IT咨询正常经营营收，已提供2023年度审计财务报表、6个月银行流水、重大合同摘要等完备佐证材料，无未核实声明、复杂多来源或高风险行业属性，符合2分（中风险）评定标准"
+      }
+    },
+    "risk_total": 10,
+    "risk_rating": "medium",
+    "risk_override": null,
+    "due_diligence_level": "standard",
+    "findings": [
+      "All required documents present and verified. Customer profile loaded: 2.1yr relationship, last KYC=approved",
+      "本次针对新加坡注册企业TechBridge Solutions Pte Ltd开展的制裁、政治公众人物（PEP）、负面媒体三类全新筛查均未发现匹配项，所有筛查维度结果均为clear，符合PRFG KYC筛查要求，无需采取升级或限制措施。",
+      "本次评估严格遵循PRFG《KYC Policy v3.2》第4章、《CDD Guidelines v1.8》第6章及《Customer Risk Rating Matrix and Classification Guide v1.5》规则开展：客户为新加坡本地注册的软件服务类中小企业，已有2.1年合作历史，合规、交易及信用记录良好，制裁、PEP、负面媒体筛查均无异常；客户持有贸易融资类高风险产品，跨境交易均涉及低风险国家，资金来源佐证材料完备，预期交易增长有合理合同支撑，无异常风险特征。综合评分为10分，评定为中风险，无评级override情形，适用带增强监控的标准客户尽职调查（CDD）。需注意本次提交材料未单独填报来源财富（Source of Wealth）字段，可在后续KYC更新环节要求补充核实。",
+      "Document completeness: Submitted certificate of incorporation, memorandum of association, board resolution, audited financial statements and business license are all verified, meeting corporate customer document requirements under KYC Policy v3.2. Beneficial ownership information was previously verified during 2022 onboarding, and the current risk assessment confirms no undisclosed or complex ownership structures.",
+      "Screening results: Sanctions screening covers 5 mandatory lists (UN Security Council Consolidated List, OFAC SDN List, EU Financial Sanctions List, Singapore local regulatory sanctions list, PRFG internal watchlist) with no matches; PEP screening covers the entity, directors, senior management and beneficial owners, with no PEP matches (the internal 'government_contractor' tag only reflects business attributes and has no associated PEP risk); adverse media screening finds no records of non-compliance, regulatory penalties, litigation, bankruptcy or negative public opinion. All three screenings are clear, compliant with Sanctions and Watchlist Screening Procedures v2.1 §1.",
+      "Risk rating: The customer has a total risk score of 10 with a medium rating, assessed in strict accordance with the Customer Risk Rating Matrix and Classification Guide v1.5. All dimension scoring justifications are sufficient, and overall risk is controllable.",
+      "Source of funds and wealth: Source of funds is declared as operating revenue from software development and IT consulting, supported by 2023 audited financial statements, 6-month bank statements and a summary of major contracts, which is consistent with the customer's business nature, historical transaction data and disclosed 3-year contract pipeline with Singapore government agencies and regional MNCs. While source of wealth is not separately declared, audited financial statements and continuous operating records sufficiently demonstrate that the customer's wealth is accumulated from legitimate business operations, so no supplementary documentation is required.",
+      "Historical compliance performance: The customer has maintained a 2.1-year relationship with PRFG, with its prior KYC review approved. It has no transaction monitoring alerts, SAR filings, regulatory inquiries, customer complaints or risk events in the past 12 months. Third-party data shows a good credit score of 700, with no bankruptcy or litigation records.",
+      "Account opening legitimacy: The account will be used for legitimate operating purposes of client payment collection and vendor settlement. The initial SGD 100,000 deposit is transferred from the customer's same-name DBS business account, expected transaction volume growth is supported by the disclosed contract pipeline, and primary transaction countries (Singapore, Malaysia, India) are all low-risk jurisdictions, fully matching the customer's business model."
+    ],
+    "recommendations": [],
+    "sources_cited": [
+      {
+        "step": "intake",
+        "sources": [
+          "Customer Due Diligence (CDD) Guidelines",
+          "Sanctions and Watchlist Screening Procedures",
+          "Customer Due Diligence (CDD) Guidelines"
+        ]
+      },
+      {
+        "step": "screening",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Sanctions and Watchlist Screening Procedures",
+          "Sanctions and Watchlist Screening Procedures"
+        ]
+      },
+      {
+        "step": "risk_assessment",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Customer Due Diligence (CDD) Guidelines",
+          "Customer Risk Rating Matrix and Classification Guide"
+        ]
+      },
+      {
+        "step": "standard_review",
+        "sources": [
+          "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2",
+          "Sanctions and Watchlist Screening Procedures v2.1 §1",
+          "Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)"
+        ]
+      }
+    ],
+    "decision": "approve",
+    "decision_rationale": "TechBridge Solutions Pte Ltd is a Singapore-registered SME providing software development and IT consulting services. All required onboarding documents have been verified, sanctions/PEP/adverse media screenings return clear results, the customer holds a medium risk rating which meets admission criteria, source of funds is fully documented and consistent with its business profile, historical compliance records are satisfactory, and the account opening purpose and expected transactions are legitimate and aligned with its operations. No uncontrollable risks are identified.",
+    "human_review_required": true,
+    "ai_confidence": 0.98,
+    "review_status": "in_review",
+    "current_step": "standard_review",
+    "next_step": "identity_screening",
+    "info_requests": [],
+    "audit_trail": [
+      {
+        "step": "intake",
+        "action": "document_completeness_check",
+        "details": "[COMPLETE] All required documents present and verified. Customer profile loaded: 2.1yr relationship, last KYC=approved",
+        "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+        "timestamp": "2026-11-28T13:35:42.289956+00:00"
+      },
+      {
+        "step": "identity_screening",
+        "action": "sanctions_pep_adverse_media_screening",
+        "details": "本次针对新加坡注册企业TechBridge Solutions Pte Ltd开展的制裁、政治公众人物（PEP）、负面媒体三类全新筛查均未发现匹配项，所有筛查维度结果均为clear，符合PRFG KYC筛查要求，无需采取升级或限制措施。",
+        "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+        "timestamp": "2026-11-28T13:37:56.853299+00:00"
+      },
+      {
+        "step": "risk_assessment",
+        "action": "risk_scoring",
+        "details": "Total score: 10, Rating: medium, DD: standard",
+        "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+        "timestamp": "2026-11-28T13:41:10.056252+00:00"
+      },
+      {
+        "step": "standard_review",
+        "action": "react_round_1: final_answer",
+        "details": "",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:43:36.200643+00:00"
+      }
+    ],
+    "customer_profile": {
+      "customer_id": "C-2024-007",
+      "relationship_start": "2022-10-01",
+      "relationship_tenure_years": 2.1,
+      "customer_segment": "sme",
+      "relationship_manager": "RM-CB-022",
+      "products_held": [
+        "business_current_account",
+        "trade_finance"
+      ],
+      "transaction_summary": {
+        "avg_monthly_inflow": 120000,
+        "avg_monthly_outflow": 105000,
+        "max_single_transaction": 320000,
+        "cross_border_tx_pct": 0.3,
+        "primary_counterparty_countries": [
+          "Singapore",
+          "Malaysia",
+          "India"
+        ],
+        "cash_deposit_frequency": "none",
+        "unusual_pattern_flags": 0
+      },
+      "risk_events": [],
+      "compliance_history": {
+        "previous_kyc_reviews": 1,
+        "last_kyc_date": "2022-10-01",
+        "last_kyc_outcome": "approved",
+        "last_risk_rating": "low",
+        "risk_rating_trajectory": [
+          "low"
+        ],
+        "sar_filed": false,
+        "regulatory_inquiries": 0
+      },
+      "service_summary": {
+        "total_interactions": 10,
+        "complaints": 0,
+        "account_freezes": 0,
+        "login_anomalies": 0
+      },
+      "external_data": {
+        "credit_score": 700,
+        "other_bank_loans": 1,
+        "bankruptcy_records": false,
+        "litigation_records": 0
+      },
+      "internal_tags": [
+        "government_contractor"
+      ]
+    },
+    "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 2.1 years (since 2022-10-01)\nCustomer segment: sme\nProducts held: business_current_account, trade_finance\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $120,000\n  Avg monthly outflow: $105,000\n  Max single transaction: $320,000\n  Cross-border tx ratio: 30%\n  Primary counterparty countries: Singapore, Malaysia, India\n  Cash deposit frequency: none\n  Transaction monitoring alerts (12m): 0\n\nHistorical risk events: None\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2022-10-01 → approved\n  Risk rating trajectory: low\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 700\n  Other bank loans: 1\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 10\n  Complaints: 0\n  Account freezes: 0\n\nInternal tags: government_contractor",
+    "is_existing_customer": true
+  }
+}

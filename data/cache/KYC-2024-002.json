@@ -1,0 +1,317 @@
+{
+  "case_id": "KYC-2024-002",
+  "current_step": "awaiting_info",
+  "step_results": [
+    {
+      "node": "intake",
+      "output": {
+        "documents_complete": false,
+        "missing_documents": [
+          "board resolution",
+          "audited financial statements",
+          "business license / local registration",
+          "Latest audited financial statements",
+          "Singapore ACRA business registration (applicable business license)",
+          "Identity documentation for Pacific Ventures Holdings Ltd",
+          "Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd"
+        ],
+        "document_verification": [
+          "Certificate of incorporation: Provided and verified, confirms BVI registration and incorporation date of 2023-06-15 (less than 2 years of operation)",
+          "Memorandum of association: Provided and verified with no validity issues identified",
+          "Authorized signatory Li Jian Ming's Malaysian passport (document no. A32567891): Provided, valid through 2026-04-20, meets corporate authorized signatory ID requirements",
+          "Board resolution: Not submitted, classified as a critical missing document per CDD Guidelines v1.8",
+          "Audited financial statements: Not submitted, entity claims first audit is currently underway, classified as non-critical missing",
+          "Singapore ACRA business registration: Not submitted, required as the entity maintains a Singapore operating address, classified as non-critical missing",
+          "Beneficial ownership declaration: Submitted but does not meet full CDD requirements due to missing identity records for Pacific Ventures Holdings Ltd and undisclosed ultimate beneficial owner",
+          "Source of funds supporting documentation (3-month bank statements): Submitted as declared in the application",
+          "Signed customer compliance declarations: Provided, with PEP status marked as false, tax residency listed as Singapore and Malaysia, and required consent and signature confirmed"
+        ],
+        "intake_status": "blocked",
+        "critical_missing": [
+          "board resolution"
+        ],
+        "non_critical_missing": [
+          "audited financial statements",
+          "business license / local registration",
+          "Latest audited financial statements",
+          "Singapore ACRA business registration (applicable business license)",
+          "Identity documentation for Pacific Ventures Holdings Ltd",
+          "Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd"
+        ],
+        "current_step": "intake",
+        "next_step": "request_info",
+        "findings": [
+          "BLOCKED — critical documents missing: board resolution. No prior bank relationship — new customer. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8, this corporate onboarding submission fails document completeness checks. A critical required document (board resolution for account opening) is missing, alongside non-critical gaps including audited financial statements, Singapore ACRA business registration, and supporting beneficial ownership materials for the 40% Cayman Islands shareholder. Intake status is blocked, so review cannot proceed. A standardized 10-business-day information request must be sent to the submitter to remediate all gaps per CDD Guidelines v1.8 Section 3.3; if incomplete after the deadline, the application will be marked as Expired - Incomplete and require full resubmission."
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          }
+        ],
+        "customer_profile": null,
+        "customer_profile_summary": "【Customer Profile】No prior bank relationship found — this is a NEW customer. All assessments must rely entirely on the current submission materials.",
+        "is_existing_customer": false,
+        "audit_trail": [
+          {
+            "step": "intake",
+            "action": "document_completeness_check",
+            "details": "[BLOCKED] BLOCKED — critical documents missing: board resolution. No prior bank relationship — new customer. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8, this corporate onboarding submission fails document completeness checks. A critical required document (board resolution for account opening) is missing, alongside non-critical gaps including audited financial statements, Singapore ACRA business registration, and supporting beneficial ownership materials for the 40% Cayman Islands shareholder. Intake status is blocked, so review cannot proceed. A standardized 10-business-day information request must be sent to the submitter to remediate all gaps per CDD Guidelines v1.8 Section 3.3; if incomplete after the deadline, the application will be marked as Expired - Incomplete and require full resubmission.",
+            "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+            "timestamp": "2026-11-28T13:56:14.679059+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "request_info",
+      "output": {
+        "decision": "request_more_info",
+        "info_requests": [
+          "board resolution",
+          "audited financial statements",
+          "business license / local registration",
+          "Latest audited financial statements",
+          "Singapore ACRA business registration (applicable business license)",
+          "Identity documentation for Pacific Ventures Holdings Ltd",
+          "Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd"
+        ],
+        "info_request_stage": "intake",
+        "info_request_round": 1,
+        "info_round_exceeded": false,
+        "current_step": "request_info",
+        "audit_trail": [
+          {
+            "step": "request_info",
+            "action": "information_requested",
+            "details": "Round 1, requested by 'intake': board resolution; audited financial statements; business license / local registration; Latest audited financial statements; Singapore ACRA business registration (applicable business license); Identity documentation for Pacific Ventures Holdings Ltd; Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:56:14.686814+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "__interrupt__",
+      "output": []
+    }
+  ],
+  "state_values": {
+    "case_id": "KYC-2024-002",
+    "tenant_id": "pacific_rim_fg",
+    "data_classification": "confidential",
+    "submission": {
+      "case_id": "KYC-2024-002",
+      "submission_type": "corporate_onboarding",
+      "submitted_by": "Relationship Manager - Commercial Banking Division",
+      "submitted_at": "2024-08-20T14:15:00Z",
+      "customer": {
+        "type": "corporate",
+        "company_name": "Golden Dragon Trading Co. Ltd",
+        "registration_number": "BVI-2023-88451",
+        "country_of_incorporation": "British Virgin Islands",
+        "date_of_incorporation": "2023-06-15",
+        "business_type": "International trade - electronics and consumer goods",
+        "annual_revenue": 2500000,
+        "revenue_currency": "USD",
+        "number_of_employees": 8,
+        "registered_address": "Craigmuir Chambers, Road Town, Tortola, BVI",
+        "operating_address": "88 Robinson Road, #12-03, Singapore 068898"
+      },
+      "authorized_signatories": [
+        {
+          "full_name": "Li Jian Ming",
+          "role": "Director and Sole Signatory",
+          "nationality": "Malaysian",
+          "date_of_birth": "1978-11-05",
+          "identification": {
+            "type": "passport",
+            "document_number": "A32567891",
+            "issuing_country": "Malaysia",
+            "expiry_date": "2026-04-20"
+          }
+        }
+      ],
+      "beneficial_ownership": {
+        "declared_owners": [
+          {
+            "name": "Li Jian Ming",
+            "ownership_percentage": 60,
+            "nationality": "Malaysian",
+            "identification_provided": true
+          },
+          {
+            "name": "Pacific Ventures Holdings Ltd",
+            "ownership_percentage": 40,
+            "country_of_incorporation": "Cayman Islands",
+            "identification_provided": false,
+            "note": "Nominee structure — ultimate beneficial owner not disclosed"
+          }
+        ]
+      },
+      "identification_documents": [
+        {
+          "type": "certificate_of_incorporation",
+          "provided": true,
+          "verified": true,
+          "note": "BVI registered company, less than 2 years old"
+        },
+        {
+          "type": "memorandum_of_association",
+          "provided": true,
+          "verified": true
+        },
+        {
+          "type": "board_resolution",
+          "provided": false,
+          "note": "MISSING — not included in submission package"
+        },
+        {
+          "type": "audited_financial_statements",
+          "provided": false,
+          "note": "MISSING — company claims first audit is in progress (incorporated June 2023)"
+        },
+        {
+          "type": "business_license",
+          "provided": false,
+          "note": "MISSING — operating in Singapore but no ACRA registration provided"
+        }
+      ],
+      "account_request": {
+        "product_type": "business_current_account",
+        "purpose": "Trade settlement and supplier payments",
+        "expected_monthly_deposit": 500000,
+        "expected_monthly_withdrawal": 450000,
+        "initial_deposit": 100000,
+        "source_of_initial_deposit": "Transfer from HSBC Hong Kong business account",
+        "primary_transaction_countries": [
+          "China",
+          "Hong Kong",
+          "Vietnam",
+          "Indonesia"
+        ]
+      },
+      "source_of_funds": {
+        "primary": "business_revenue",
+        "details": "Revenue from electronics trading between Southeast Asian suppliers and buyers",
+        "supporting_documents": [
+          "bank_statements_3_months"
+        ]
+      },
+      "declarations": {
+        "pep_status": false,
+        "pep_association": false,
+        "tax_residency": [
+          "Singapore",
+          "Malaysia"
+        ],
+        "us_person": false,
+        "consent_given": true,
+        "declaration_signed": true,
+        "declaration_date": "2024-08-20"
+      },
+      "issues_for_review": [
+        "Missing board resolution for account opening",
+        "Missing audited financial statements (company claims first audit in progress)",
+        "Missing Singapore business registration (ACRA) despite operating address in Singapore",
+        "40% beneficial ownership held by Cayman Islands entity with undisclosed UBO",
+        "BVI-incorporated company less than 2 years old",
+        "High transaction volume relative to company size (8 employees, $500K monthly)",
+        "Multi-jurisdiction cross-border transaction pattern"
+      ],
+      "expected_outcome": {
+        "risk_rating": "high",
+        "risk_score": 14,
+        "due_diligence_level": "enhanced",
+        "decision": "request_more_information",
+        "reasoning": "Multiple missing documents (board resolution, audited financials, ACRA registration). BVI shell company with Cayman Islands nominee shareholder — beneficial ownership cannot be fully established. High-risk geography (BVI incorporation), complex ownership structure, and high transaction volumes for company size all trigger EDD. Must request: (1) board resolution, (2) full UBO disclosure for Pacific Ventures Holdings Ltd, (3) ACRA registration or explanation, (4) detailed source of wealth for Li Jian Ming. Cannot proceed until beneficial ownership is fully established per KYC Policy Section 3.3."
+      }
+    },
+    "documents_complete": false,
+    "missing_documents": [
+      "board resolution",
+      "audited financial statements",
+      "business license / local registration",
+      "Latest audited financial statements",
+      "Singapore ACRA business registration (applicable business license)",
+      "Identity documentation for Pacific Ventures Holdings Ltd",
+      "Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd"
+    ],
+    "document_verification": [
+      "Certificate of incorporation: Provided and verified, confirms BVI registration and incorporation date of 2023-06-15 (less than 2 years of operation)",
+      "Memorandum of association: Provided and verified with no validity issues identified",
+      "Authorized signatory Li Jian Ming's Malaysian passport (document no. A32567891): Provided, valid through 2026-04-20, meets corporate authorized signatory ID requirements",
+      "Board resolution: Not submitted, classified as a critical missing document per CDD Guidelines v1.8",
+      "Audited financial statements: Not submitted, entity claims first audit is currently underway, classified as non-critical missing",
+      "Singapore ACRA business registration: Not submitted, required as the entity maintains a Singapore operating address, classified as non-critical missing",
+      "Beneficial ownership declaration: Submitted but does not meet full CDD requirements due to missing identity records for Pacific Ventures Holdings Ltd and undisclosed ultimate beneficial owner",
+      "Source of funds supporting documentation (3-month bank statements): Submitted as declared in the application",
+      "Signed customer compliance declarations: Provided, with PEP status marked as false, tax residency listed as Singapore and Malaysia, and required consent and signature confirmed"
+    ],
+    "intake_status": "blocked",
+    "critical_missing": [
+      "board resolution"
+    ],
+    "non_critical_missing": [
+      "audited financial statements",
+      "business license / local registration",
+      "Latest audited financial statements",
+      "Singapore ACRA business registration (applicable business license)",
+      "Identity documentation for Pacific Ventures Holdings Ltd",
+      "Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd"
+    ],
+    "findings": [
+      "BLOCKED — critical documents missing: board resolution. No prior bank relationship — new customer. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8, this corporate onboarding submission fails document completeness checks. A critical required document (board resolution for account opening) is missing, alongside non-critical gaps including audited financial statements, Singapore ACRA business registration, and supporting beneficial ownership materials for the 40% Cayman Islands shareholder. Intake status is blocked, so review cannot proceed. A standardized 10-business-day information request must be sent to the submitter to remediate all gaps per CDD Guidelines v1.8 Section 3.3; if incomplete after the deadline, the application will be marked as Expired - Incomplete and require full resubmission."
+    ],
+    "recommendations": [],
+    "sources_cited": [
+      {
+        "step": "intake",
+        "sources": [
+          "Customer Due Diligence (CDD) Guidelines",
+          "Sanctions and Watchlist Screening Procedures",
+          "Customer Due Diligence (CDD) Guidelines"
+        ]
+      }
+    ],
+    "decision": "request_more_info",
+    "review_status": "in_review",
+    "current_step": "request_info",
+    "next_step": "request_info",
+    "info_requests": [
+      "board resolution",
+      "audited financial statements",
+      "business license / local registration",
+      "Latest audited financial statements",
+      "Singapore ACRA business registration (applicable business license)",
+      "Identity documentation for Pacific Ventures Holdings Ltd",
+      "Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd"
+    ],
+    "info_request_stage": "intake",
+    "info_request_round": 1,
+    "info_round_exceeded": false,
+    "audit_trail": [
+      {
+        "step": "intake",
+        "action": "document_completeness_check",
+        "details": "[BLOCKED] BLOCKED — critical documents missing: board resolution. No prior bank relationship — new customer. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8, this corporate onboarding submission fails document completeness checks. A critical required document (board resolution for account opening) is missing, alongside non-critical gaps including audited financial statements, Singapore ACRA business registration, and supporting beneficial ownership materials for the 40% Cayman Islands shareholder. Intake status is blocked, so review cannot proceed. A standardized 10-business-day information request must be sent to the submitter to remediate all gaps per CDD Guidelines v1.8 Section 3.3; if incomplete after the deadline, the application will be marked as Expired - Incomplete and require full resubmission.",
+        "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+        "timestamp": "2026-11-28T13:56:14.679059+00:00"
+      },
+      {
+        "step": "request_info",
+        "action": "information_requested",
+        "details": "Round 1, requested by 'intake': board resolution; audited financial statements; business license / local registration; Latest audited financial statements; Singapore ACRA business registration (applicable business license); Identity documentation for Pacific Ventures Holdings Ltd; Ultimate beneficial owner (UBO) disclosure supporting materials for Pacific Ventures Holdings Ltd",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:56:14.686814+00:00"
+      }
+    ],
+    "customer_profile": null,
+    "customer_profile_summary": "【Customer Profile】No prior bank relationship found — this is a NEW customer. All assessments must rely entirely on the current submission materials.",
+    "is_existing_customer": false
+  }
+}

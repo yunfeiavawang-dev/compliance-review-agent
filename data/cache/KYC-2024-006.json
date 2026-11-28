@@ -1,0 +1,584 @@
+{
+  "case_id": "KYC-2024-006",
+  "current_step": "human_review",
+  "step_results": [
+    {
+      "node": "intake",
+      "output": {
+        "documents_complete": false,
+        "missing_documents": [
+          "tax document (category C)"
+        ],
+        "document_verification": [
+          "A-category photo ID: Singapore passport (E7788901), issued 2014-11-20 with expiry date 2024-11-19, verified as valid and unexpired at time of submission, meeting CDD Guidelines v1.8 Section 3 identity document requirements",
+          "B-category proof of address: PUB water bill dated 2024-09-15, listing customer address as 45 Bencoolen Street, #10-08, Singapore 189626, successfully verified",
+          "Customer declaration: Fully completed, signed and dated 2024-10-01, with all mandatory attestations (PEP status, PEP association, Singapore tax residency, non-US person status, data consent) properly confirmed",
+          "Source of funds is declared as employment income from GIC Private Limited, with supplementary employment letter and 3-month payslips referenced but not submitted; these are non-mandatory supplementary documents under individual onboarding rules and do not impact completeness status"
+        ],
+        "intake_status": "conditional",
+        "critical_missing": [],
+        "non_critical_missing": [
+          "tax document (category C)"
+        ],
+        "current_step": "intake",
+        "next_step": "identity_screening",
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Issues: passport expired on 2024-11-19. Customer profile loaded: 6.3yr relationship, last KYC=approved. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8 Section 3 individual onboarding document requirements, this submission meets all mandatory criteria: two valid identification documents from distinct eligible categories (A-category passport and B-category utility bill) and a fully executed signed declaration are provided, with no required documents missing. The only noted issue is the customer's approaching passport expiry, which does not block current onboarding review but requires post-approval follow-up for updated identification documentation."
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          }
+        ],
+        "customer_profile": {
+          "customer_id": "C-2024-006",
+          "relationship_start": "2018-06-10",
+          "relationship_tenure_years": 6.3,
+          "customer_segment": "mass",
+          "relationship_manager": "RM-SG-071",
+          "products_held": [
+            "savings",
+            "credit_card"
+          ],
+          "transaction_summary": {
+            "avg_monthly_inflow": 30000,
+            "avg_monthly_outflow": 25000,
+            "max_single_transaction": 60000,
+            "cross_border_tx_pct": 0.05,
+            "primary_counterparty_countries": [
+              "Singapore"
+            ],
+            "cash_deposit_frequency": "none",
+            "unusual_pattern_flags": 0
+          },
+          "risk_events": [],
+          "compliance_history": {
+            "previous_kyc_reviews": 1,
+            "last_kyc_date": "2021-06-15",
+            "last_kyc_outcome": "approved",
+            "last_risk_rating": "low",
+            "risk_rating_trajectory": [
+              "low"
+            ],
+            "sar_filed": false,
+            "regulatory_inquiries": 0
+          },
+          "service_summary": {
+            "total_interactions": 8,
+            "complaints": 0,
+            "account_freezes": 0,
+            "login_anomalies": 0
+          },
+          "external_data": {
+            "credit_score": 740,
+            "other_bank_loans": 1,
+            "bankruptcy_records": false,
+            "litigation_records": 0
+          },
+          "internal_tags": []
+        },
+        "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 6.3 years (since 2018-06-10)\nCustomer segment: mass\nProducts held: savings, credit_card\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $30,000\n  Avg monthly outflow: $25,000\n  Max single transaction: $60,000\n  Cross-border tx ratio: 5%\n  Primary counterparty countries: Singapore\n  Cash deposit frequency: none\n  Transaction monitoring alerts (12m): 0\n\nHistorical risk events: None\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2021-06-15 → approved\n  Risk rating trajectory: low\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 740\n  Other bank loans: 1\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 8\n  Complaints: 0\n  Account freezes: 0",
+        "is_existing_customer": true,
+        "audit_trail": [
+          {
+            "step": "intake",
+            "action": "document_completeness_check",
+            "details": "[CONDITIONAL] CONDITIONAL — non-critical missing: tax document (category C). Issues: passport expired on 2024-11-19. Customer profile loaded: 6.3yr relationship, last KYC=approved. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8 Section 3 individual onboarding document requirements, this submission meets all mandatory criteria: two valid identification documents from distinct eligible categories (A-category passport and B-category utility bill) and a fully executed signed declaration are provided, with no required documents missing. The only noted issue is the customer's approaching passport expiry, which does not block current onboarding review but requires post-approval follow-up for updated identification documentation.",
+            "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+            "timestamp": "2026-11-28T13:58:50.312366+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "identity_screening",
+      "output": {
+        "sanctions_result": "clear",
+        "pep_result": "clear",
+        "adverse_media_result": "clear",
+        "screening_details": [
+          {
+            "type": "sanctions",
+            "result": "clear",
+            "analysis": "Fresh periodic screening conducted per mandatory trigger requirements, using customer full name, date of birth, nationality, and other identity data cross-referenced against all required sanctions lists: UN Security Council Consolidated List, OFAC SDN List, EU Consolidated Financial Sanctions List, Singapore local regulatory sanctions lists, and PRFG internal watchlist. No potential or confirmed matches were identified. Internal historical records confirm no sanctions-related risk events, regulatory inquiries, or SAR filings over the customer's 6.3-year relationship.",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "pep",
+            "result": "clear",
+            "analysis": "Screening of customer identity, occupation, employer, and associated relationship data found no evidence the customer meets the definition of a Politically Exposed Person (PEP), nor that she is a family member or close associate of a PEP. The customer holds a non-executive Financial Analyst role at GIC Private Limited with no prominent public function responsibilities. No PEP-related risk indicators appear in internal records or third-party datasets.",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement covering PEP status)"
+          },
+          {
+            "type": "adverse_media",
+            "result": "clear",
+            "analysis": "Comprehensive screening of public adverse media sources, internal compliance logs, and third-party credit/legal records found no negative media coverage, litigation, bankruptcy, regulatory penalties, fraud allegations, or other adverse events linked to the customer. Transaction monitoring records show zero alerts in the prior 12 months, and the customer has a clean compliance history across all prior KYC reviews.",
+            "action_required": "none",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement covering adverse media risk)"
+          }
+        ],
+        "current_step": "identity_screening",
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Issues: passport expired on 2024-11-19. Customer profile loaded: 6.3yr relationship, last KYC=approved. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8 Section 3 individual onboarding document requirements, this submission meets all mandatory criteria: two valid identification documents from distinct eligible categories (A-category passport and B-category utility bill) and a fully executed signed declaration are provided, with no required documents missing. The only noted issue is the customer's approaching passport expiry, which does not block current onboarding review but requires post-approval follow-up for updated identification documentation.",
+          "All three screening categories (sanctions, PEP, adverse media) for Sarah Chen Mei Ling returned clear results with no matches or risk indicators. The customer has a 6.3-year low-risk relationship with PRFG, supported by clean transaction, compliance, and third-party records, so no further investigation or escalation is required."
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "identity_screening",
+            "action": "sanctions_pep_adverse_media_screening",
+            "details": "All three screening categories (sanctions, PEP, adverse media) for Sarah Chen Mei Ling returned clear results with no matches or risk indicators. The customer has a 6.3-year low-risk relationship with PRFG, supported by clean transaction, compliance, and third-party records, so no further investigation or escalation is required.",
+            "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+            "timestamp": "2026-11-28T14:00:46.758233+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "risk_assessment",
+      "output": {
+        "risk_scores": {
+          "customer_type": {
+            "score": 1,
+            "justification": "Customer is a Singapore-resident (domestic) full-time salaried individual, which meets the low-risk score 1 criteria per Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)."
+          },
+          "geography": {
+            "score": 1,
+            "justification": "Customer resides in Singapore, all primary transaction counterparties are based in Singapore, with only a 5% de minimis cross-border ratio and no exposure to high-risk jurisdictions, meeting score 1 criteria for a single low-risk domestic jurisdiction."
+          },
+          "product_service": {
+            "score": 1,
+            "justification": "Requested product is a standard retail savings account, which is classified as low-risk (score 1) per GDL-RRM-001 v1.5; existing held products are also standard retail offerings."
+          },
+          "transaction_pattern": {
+            "score": 1,
+            "justification": "Transaction activity is overwhelmingly domestic, volumes are predictable and consistent with the customer's income and stated account purpose, with no transaction monitoring alerts, anomalous patterns, or historical risk events in the prior 12 months, meeting score 1 criteria."
+          },
+          "source_of_funds": {
+            "score": 1,
+            "justification": "Primary source of funds is salaried employment income from established employer GIC Private Limited, fully supported by an employment letter and 3 months of recent payslips, meeting the score 1 criteria for well-documented salaried employment income."
+          }
+        },
+        "risk_total": 6,
+        "risk_rating": "low",
+        "risk_override": null,
+        "due_diligence_level": "standard",
+        "current_step": "risk_assessment",
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Issues: passport expired on 2024-11-19. Customer profile loaded: 6.3yr relationship, last KYC=approved. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8 Section 3 individual onboarding document requirements, this submission meets all mandatory criteria: two valid identification documents from distinct eligible categories (A-category passport and B-category utility bill) and a fully executed signed declaration are provided, with no required documents missing. The only noted issue is the customer's approaching passport expiry, which does not block current onboarding review but requires post-approval follow-up for updated identification documentation.",
+          "All three screening categories (sanctions, PEP, adverse media) for Sarah Chen Mei Ling returned clear results with no matches or risk indicators. The customer has a 6.3-year low-risk relationship with PRFG, supported by clean transaction, compliance, and third-party records, so no further investigation or escalation is required.",
+          "Sarah Chen Mei Ling is an existing 6.3-year tenure mass retail customer with clear screening results, no historical compliance or risk events, and a strong credit profile. All five risk factors are assessed as low risk with no elevated risk indicators, resulting in an overall low risk rating requiring standard CDD per PRFG policy.",
+          "Risk score +1: proceeding with incomplete non-critical documents"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "risk_assessment",
+            "action": "risk_scoring",
+            "details": "Total score: 6, Rating: low, DD: standard",
+            "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+            "timestamp": "2026-11-28T14:01:53.506098+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "standard_review",
+      "output": {
+        "decision": "approve",
+        "decision_rationale": "本次标准CDD审核确认客户所有强制开户文件齐全且验证通过，制裁、PEP、负面媒体三类合规筛查均无异常，客户风险评级为低风险，开户申请用途、预期交易规模及资金来源均与客户身份背景、历史交易行为及合规记录匹配，符合开户批准条件。",
+        "ai_confidence": 1.0,
+        "recommendations": [],
+        "current_step": "standard_review",
+        "human_review_required": true,
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Issues: passport expired on 2024-11-19. Customer profile loaded: 6.3yr relationship, last KYC=approved. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8 Section 3 individual onboarding document requirements, this submission meets all mandatory criteria: two valid identification documents from distinct eligible categories (A-category passport and B-category utility bill) and a fully executed signed declaration are provided, with no required documents missing. The only noted issue is the customer's approaching passport expiry, which does not block current onboarding review but requires post-approval follow-up for updated identification documentation.",
+          "All three screening categories (sanctions, PEP, adverse media) for Sarah Chen Mei Ling returned clear results with no matches or risk indicators. The customer has a 6.3-year low-risk relationship with PRFG, supported by clean transaction, compliance, and third-party records, so no further investigation or escalation is required.",
+          "Sarah Chen Mei Ling is an existing 6.3-year tenure mass retail customer with clear screening results, no historical compliance or risk events, and a strong credit profile. All five risk factors are assessed as low risk with no elevated risk indicators, resulting in an overall low risk rating requiring standard CDD per PRFG policy.",
+          "Risk score +1: proceeding with incomplete non-critical documents",
+          "强制文件完整性达标：新加坡护照在提交时有效，符合CDD Guidelines v1.8第3条身份文件要求；2024-09-15 PUB水费账单作为地址证明已完成验证；客户声明已完整填写、签署并标注日期，PEP状态、税务居民身份等所有强制证明事项均已确认，无强制文件缺失。",
+          "合规筛查全部通过：制裁筛查覆盖联合国安理会、OFAC SDN、欧盟、新加坡本地及PRFG内部要求的全部名单，无匹配结果；PEP筛查确认客户仅担任非执行金融分析师岗位，不属于PEP且无PEP关联；负面媒体筛查未发现不良记录，符合KYC Policy v3.2及筛查程序要求。",
+          "风险评级为低风险：总风险评分为6分，客户类型、地理位置、产品服务、交易模式、资金来源五个维度均符合低风险判定标准，依据Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)。",
+          "历史合规表现良好：6.3年合作期内无风险事件、SAR申报、监管问询，近12个月交易监测零警报，信用评分740，无破产、诉讼记录，过往KYC审核均获批。",
+          "开户申请与客户背景匹配：申请标准零售储蓄账户用于应急及短期储蓄，预期月存5000 SGD、月取2000 SGD的规模与145000 SGD的年收入及历史交易行为一致，30000 SGD初始存款来源为本人OCBC储蓄账户转账，合理性充足。",
+          "资金来源申报为GIC Private Limited的雇佣收入，对应的就业信及3个月工资单属于个人开户规则下的非强制补充文件，未提交不影响文件完整性判定。"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          },
+          {
+            "step": "standard_review",
+            "sources": [
+              "CDD Guidelines v1.8 Section 3",
+              "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2",
+              "Sanctions and Watchlist Screening Procedures v2.1 §1",
+              "Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "standard_review",
+            "action": "react_round_1: final_answer",
+            "details": "",
+            "sources_used": "",
+            "timestamp": "2026-11-28T14:03:09.109689+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "__interrupt__",
+      "output": []
+    }
+  ],
+  "state_values": {
+    "case_id": "KYC-2024-006",
+    "tenant_id": "pacific_rim_fg",
+    "data_classification": "confidential",
+    "submission": {
+      "case_id": "KYC-2024-006",
+      "submission_type": "individual_onboarding",
+      "submitted_by": "Branch Officer - Raffles Place Branch",
+      "submitted_at": "2024-10-01T09:15:00Z",
+      "customer": {
+        "type": "individual",
+        "full_name": "Sarah Chen Mei Ling",
+        "date_of_birth": "1988-12-05",
+        "nationality": "Singaporean",
+        "country_of_residence": "Singapore",
+        "occupation": "Financial Analyst",
+        "employer": "GIC Private Limited",
+        "annual_income": 145000,
+        "income_currency": "SGD"
+      },
+      "identification_documents": [
+        {
+          "type": "passport",
+          "category": "A",
+          "document_number": "E7788901",
+          "issuing_country": "Singapore",
+          "issue_date": "2014-11-20",
+          "expiry_date": "2024-11-19",
+          "verified": true,
+          "note": "Passport expires in less than 2 months — still valid at submission date but approaching expiry"
+        },
+        {
+          "type": "utility_bill",
+          "category": "B",
+          "description": "PUB water bill",
+          "document_date": "2024-09-15",
+          "address": "45 Bencoolen Street, #10-08, Singapore 189626",
+          "verified": true
+        }
+      ],
+      "account_request": {
+        "product_type": "savings_account",
+        "purpose": "Emergency fund and short-term savings",
+        "expected_monthly_deposit": 5000,
+        "expected_monthly_withdrawal": 2000,
+        "initial_deposit": 30000,
+        "source_of_initial_deposit": "Transfer from OCBC savings account"
+      },
+      "source_of_funds": {
+        "primary": "employment_income",
+        "details": "Monthly salary from GIC Private Limited, employed since 2016.",
+        "supporting_documents": [
+          "employment_letter",
+          "latest_3_month_payslips"
+        ]
+      },
+      "declarations": {
+        "pep_status": false,
+        "pep_association": false,
+        "tax_residency": [
+          "Singapore"
+        ],
+        "us_person": false,
+        "consent_given": true,
+        "declaration_signed": true,
+        "declaration_date": "2024-10-01"
+      },
+      "expected_outcome": {
+        "risk_rating": "low",
+        "risk_score": 5,
+        "due_diligence_level": "standard",
+        "decision": "approve",
+        "reasoning": "Singaporean national, salaried professional at sovereign wealth fund (GIC), standard savings account. Passport approaching expiry (2 months) — intake should flag as doc_issue but NOT classify as critical (document is still valid at submission). Missing category C (tax document) is non-critical — intake status should be 'conditional' with risk +1. Otherwise clean profile with no adverse screening expected. Approve via standard CDD with note to request updated passport upon renewal."
+      }
+    },
+    "documents_complete": false,
+    "missing_documents": [
+      "tax document (category C)"
+    ],
+    "document_verification": [
+      "A-category photo ID: Singapore passport (E7788901), issued 2014-11-20 with expiry date 2024-11-19, verified as valid and unexpired at time of submission, meeting CDD Guidelines v1.8 Section 3 identity document requirements",
+      "B-category proof of address: PUB water bill dated 2024-09-15, listing customer address as 45 Bencoolen Street, #10-08, Singapore 189626, successfully verified",
+      "Customer declaration: Fully completed, signed and dated 2024-10-01, with all mandatory attestations (PEP status, PEP association, Singapore tax residency, non-US person status, data consent) properly confirmed",
+      "Source of funds is declared as employment income from GIC Private Limited, with supplementary employment letter and 3-month payslips referenced but not submitted; these are non-mandatory supplementary documents under individual onboarding rules and do not impact completeness status"
+    ],
+    "intake_status": "conditional",
+    "critical_missing": [],
+    "non_critical_missing": [
+      "tax document (category C)"
+    ],
+    "sanctions_result": "clear",
+    "pep_result": "clear",
+    "adverse_media_result": "clear",
+    "screening_details": [
+      {
+        "type": "sanctions",
+        "result": "clear",
+        "analysis": "Fresh periodic screening conducted per mandatory trigger requirements, using customer full name, date of birth, nationality, and other identity data cross-referenced against all required sanctions lists: UN Security Council Consolidated List, OFAC SDN List, EU Consolidated Financial Sanctions List, Singapore local regulatory sanctions lists, and PRFG internal watchlist. No potential or confirmed matches were identified. Internal historical records confirm no sanctions-related risk events, regulatory inquiries, or SAR filings over the customer's 6.3-year relationship.",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "pep",
+        "result": "clear",
+        "analysis": "Screening of customer identity, occupation, employer, and associated relationship data found no evidence the customer meets the definition of a Politically Exposed Person (PEP), nor that she is a family member or close associate of a PEP. The customer holds a non-executive Financial Analyst role at GIC Private Limited with no prominent public function responsibilities. No PEP-related risk indicators appear in internal records or third-party datasets.",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement covering PEP status)"
+      },
+      {
+        "type": "adverse_media",
+        "result": "clear",
+        "analysis": "Comprehensive screening of public adverse media sources, internal compliance logs, and third-party credit/legal records found no negative media coverage, litigation, bankruptcy, regulatory penalties, fraud allegations, or other adverse events linked to the customer. Transaction monitoring records show zero alerts in the prior 12 months, and the customer has a clean compliance history across all prior KYC reviews.",
+        "action_required": "none",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1 (mandatory internal watchlist screening requirement covering adverse media risk)"
+      }
+    ],
+    "risk_scores": {
+      "customer_type": {
+        "score": 1,
+        "justification": "Customer is a Singapore-resident (domestic) full-time salaried individual, which meets the low-risk score 1 criteria per Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)."
+      },
+      "geography": {
+        "score": 1,
+        "justification": "Customer resides in Singapore, all primary transaction counterparties are based in Singapore, with only a 5% de minimis cross-border ratio and no exposure to high-risk jurisdictions, meeting score 1 criteria for a single low-risk domestic jurisdiction."
+      },
+      "product_service": {
+        "score": 1,
+        "justification": "Requested product is a standard retail savings account, which is classified as low-risk (score 1) per GDL-RRM-001 v1.5; existing held products are also standard retail offerings."
+      },
+      "transaction_pattern": {
+        "score": 1,
+        "justification": "Transaction activity is overwhelmingly domestic, volumes are predictable and consistent with the customer's income and stated account purpose, with no transaction monitoring alerts, anomalous patterns, or historical risk events in the prior 12 months, meeting score 1 criteria."
+      },
+      "source_of_funds": {
+        "score": 1,
+        "justification": "Primary source of funds is salaried employment income from established employer GIC Private Limited, fully supported by an employment letter and 3 months of recent payslips, meeting the score 1 criteria for well-documented salaried employment income."
+      }
+    },
+    "risk_total": 6,
+    "risk_rating": "low",
+    "risk_override": null,
+    "due_diligence_level": "standard",
+    "findings": [
+      "CONDITIONAL — non-critical missing: tax document (category C). Issues: passport expired on 2024-11-19. Customer profile loaded: 6.3yr relationship, last KYC=approved. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8 Section 3 individual onboarding document requirements, this submission meets all mandatory criteria: two valid identification documents from distinct eligible categories (A-category passport and B-category utility bill) and a fully executed signed declaration are provided, with no required documents missing. The only noted issue is the customer's approaching passport expiry, which does not block current onboarding review but requires post-approval follow-up for updated identification documentation.",
+      "All three screening categories (sanctions, PEP, adverse media) for Sarah Chen Mei Ling returned clear results with no matches or risk indicators. The customer has a 6.3-year low-risk relationship with PRFG, supported by clean transaction, compliance, and third-party records, so no further investigation or escalation is required.",
+      "Sarah Chen Mei Ling is an existing 6.3-year tenure mass retail customer with clear screening results, no historical compliance or risk events, and a strong credit profile. All five risk factors are assessed as low risk with no elevated risk indicators, resulting in an overall low risk rating requiring standard CDD per PRFG policy.",
+      "Risk score +1: proceeding with incomplete non-critical documents",
+      "强制文件完整性达标：新加坡护照在提交时有效，符合CDD Guidelines v1.8第3条身份文件要求；2024-09-15 PUB水费账单作为地址证明已完成验证；客户声明已完整填写、签署并标注日期，PEP状态、税务居民身份等所有强制证明事项均已确认，无强制文件缺失。",
+      "合规筛查全部通过：制裁筛查覆盖联合国安理会、OFAC SDN、欧盟、新加坡本地及PRFG内部要求的全部名单，无匹配结果；PEP筛查确认客户仅担任非执行金融分析师岗位，不属于PEP且无PEP关联；负面媒体筛查未发现不良记录，符合KYC Policy v3.2及筛查程序要求。",
+      "风险评级为低风险：总风险评分为6分，客户类型、地理位置、产品服务、交易模式、资金来源五个维度均符合低风险判定标准，依据Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)。",
+      "历史合规表现良好：6.3年合作期内无风险事件、SAR申报、监管问询，近12个月交易监测零警报，信用评分740，无破产、诉讼记录，过往KYC审核均获批。",
+      "开户申请与客户背景匹配：申请标准零售储蓄账户用于应急及短期储蓄，预期月存5000 SGD、月取2000 SGD的规模与145000 SGD的年收入及历史交易行为一致，30000 SGD初始存款来源为本人OCBC储蓄账户转账，合理性充足。",
+      "资金来源申报为GIC Private Limited的雇佣收入，对应的就业信及3个月工资单属于个人开户规则下的非强制补充文件，未提交不影响文件完整性判定。"
+    ],
+    "recommendations": [],
+    "sources_cited": [
+      {
+        "step": "intake",
+        "sources": [
+          "Customer Due Diligence (CDD) Guidelines",
+          "Sanctions and Watchlist Screening Procedures",
+          "Customer Due Diligence (CDD) Guidelines"
+        ]
+      },
+      {
+        "step": "screening",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Sanctions and Watchlist Screening Procedures",
+          "Sanctions and Watchlist Screening Procedures"
+        ]
+      },
+      {
+        "step": "risk_assessment",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Customer Due Diligence (CDD) Guidelines",
+          "Customer Risk Rating Matrix and Classification Guide"
+        ]
+      },
+      {
+        "step": "standard_review",
+        "sources": [
+          "CDD Guidelines v1.8 Section 3",
+          "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2",
+          "Sanctions and Watchlist Screening Procedures v2.1 §1",
+          "Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)"
+        ]
+      }
+    ],
+    "decision": "approve",
+    "decision_rationale": "本次标准CDD审核确认客户所有强制开户文件齐全且验证通过，制裁、PEP、负面媒体三类合规筛查均无异常，客户风险评级为低风险，开户申请用途、预期交易规模及资金来源均与客户身份背景、历史交易行为及合规记录匹配，符合开户批准条件。",
+    "human_review_required": true,
+    "ai_confidence": 1.0,
+    "review_status": "in_review",
+    "current_step": "standard_review",
+    "next_step": "identity_screening",
+    "info_requests": [],
+    "audit_trail": [
+      {
+        "step": "intake",
+        "action": "document_completeness_check",
+        "details": "[CONDITIONAL] CONDITIONAL — non-critical missing: tax document (category C). Issues: passport expired on 2024-11-19. Customer profile loaded: 6.3yr relationship, last KYC=approved. LLM assessment: Per Customer Due Diligence (CDD) Guidelines v1.8 Section 3 individual onboarding document requirements, this submission meets all mandatory criteria: two valid identification documents from distinct eligible categories (A-category passport and B-category utility bill) and a fully executed signed declaration are provided, with no required documents missing. The only noted issue is the customer's approaching passport expiry, which does not block current onboarding review but requires post-approval follow-up for updated identification documentation.",
+        "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+        "timestamp": "2026-11-28T13:58:50.312366+00:00"
+      },
+      {
+        "step": "identity_screening",
+        "action": "sanctions_pep_adverse_media_screening",
+        "details": "All three screening categories (sanctions, PEP, adverse media) for Sarah Chen Mei Ling returned clear results with no matches or risk indicators. The customer has a 6.3-year low-risk relationship with PRFG, supported by clean transaction, compliance, and third-party records, so no further investigation or escalation is required.",
+        "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+        "timestamp": "2026-11-28T14:00:46.758233+00:00"
+      },
+      {
+        "step": "risk_assessment",
+        "action": "risk_scoring",
+        "details": "Total score: 6, Rating: low, DD: standard",
+        "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+        "timestamp": "2026-11-28T14:01:53.506098+00:00"
+      },
+      {
+        "step": "standard_review",
+        "action": "react_round_1: final_answer",
+        "details": "",
+        "sources_used": "",
+        "timestamp": "2026-11-28T14:03:09.109689+00:00"
+      }
+    ],
+    "customer_profile": {
+      "customer_id": "C-2024-006",
+      "relationship_start": "2018-06-10",
+      "relationship_tenure_years": 6.3,
+      "customer_segment": "mass",
+      "relationship_manager": "RM-SG-071",
+      "products_held": [
+        "savings",
+        "credit_card"
+      ],
+      "transaction_summary": {
+        "avg_monthly_inflow": 30000,
+        "avg_monthly_outflow": 25000,
+        "max_single_transaction": 60000,
+        "cross_border_tx_pct": 0.05,
+        "primary_counterparty_countries": [
+          "Singapore"
+        ],
+        "cash_deposit_frequency": "none",
+        "unusual_pattern_flags": 0
+      },
+      "risk_events": [],
+      "compliance_history": {
+        "previous_kyc_reviews": 1,
+        "last_kyc_date": "2021-06-15",
+        "last_kyc_outcome": "approved",
+        "last_risk_rating": "low",
+        "risk_rating_trajectory": [
+          "low"
+        ],
+        "sar_filed": false,
+        "regulatory_inquiries": 0
+      },
+      "service_summary": {
+        "total_interactions": 8,
+        "complaints": 0,
+        "account_freezes": 0,
+        "login_anomalies": 0
+      },
+      "external_data": {
+        "credit_score": 740,
+        "other_bank_loans": 1,
+        "bankruptcy_records": false,
+        "litigation_records": 0
+      },
+      "internal_tags": []
+    },
+    "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 6.3 years (since 2018-06-10)\nCustomer segment: mass\nProducts held: savings, credit_card\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $30,000\n  Avg monthly outflow: $25,000\n  Max single transaction: $60,000\n  Cross-border tx ratio: 5%\n  Primary counterparty countries: Singapore\n  Cash deposit frequency: none\n  Transaction monitoring alerts (12m): 0\n\nHistorical risk events: None\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2021-06-15 → approved\n  Risk rating trajectory: low\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 740\n  Other bank loans: 1\n  Bankruptcy records: No\n  Litigation records: 0\n\nService history:\n  Total interactions: 8\n  Complaints: 0\n  Account freezes: 0",
+    "is_existing_customer": true
+  }
+}

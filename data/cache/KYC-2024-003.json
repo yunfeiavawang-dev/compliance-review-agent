@@ -1,0 +1,859 @@
+{
+  "case_id": "KYC-2024-003",
+  "current_step": "human_review",
+  "step_results": [
+    {
+      "node": "intake",
+      "output": {
+        "documents_complete": false,
+        "missing_documents": [
+          "tax document (category C)"
+        ],
+        "document_verification": [
+          "passport: verified",
+          "utility_bill: verified",
+          "driver_license: verified"
+        ],
+        "intake_status": "conditional",
+        "critical_missing": [],
+        "non_critical_missing": [
+          "tax document (category C)"
+        ],
+        "current_step": "intake",
+        "next_step": "identity_screening",
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Customer profile loaded: 1.5yr relationship, last KYC=approved_with_conditions"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          }
+        ],
+        "customer_profile": {
+          "customer_id": "C-2024-003",
+          "relationship_start": "2023-03-10",
+          "relationship_tenure_years": 1.5,
+          "customer_segment": "hnwi",
+          "relationship_manager": "RM-PB-018",
+          "products_held": [
+            "current_account",
+            "fx_trading",
+            "securities"
+          ],
+          "transaction_summary": {
+            "avg_monthly_inflow": 200000,
+            "avg_monthly_outflow": 175000,
+            "max_single_transaction": 850000,
+            "cross_border_tx_pct": 0.72,
+            "primary_counterparty_countries": [
+              "UAE",
+              "Cyprus",
+              "Russia",
+              "Thailand"
+            ],
+            "cash_deposit_frequency": "occasional",
+            "unusual_pattern_flags": 2
+          },
+          "risk_events": [
+            {
+              "date": "2023-09-15",
+              "event_type": "transaction_monitoring_alert",
+              "description": "Large wire transfer ($420K) to Cyprus-based shell company flagged by TM system",
+              "outcome": "dismissed_after_review",
+              "reviewed_by": "Compliance Officer CO-012"
+            },
+            {
+              "date": "2024-04-22",
+              "event_type": "transaction_monitoring_alert",
+              "description": "Series of structured deposits ($49K each) over 5 business days totaling $245K",
+              "outcome": "under_investigation",
+              "reviewed_by": "Compliance Officer CO-008"
+            }
+          ],
+          "compliance_history": {
+            "previous_kyc_reviews": 1,
+            "last_kyc_date": "2023-03-10",
+            "last_kyc_outcome": "approved_with_conditions",
+            "last_risk_rating": "medium",
+            "risk_rating_trajectory": [
+              "medium"
+            ],
+            "sar_filed": false,
+            "regulatory_inquiries": 0
+          },
+          "service_summary": {
+            "total_interactions": 8,
+            "complaints": 1,
+            "account_freezes": 0,
+            "login_anomalies": 2
+          },
+          "external_data": {
+            "credit_score": 580,
+            "other_bank_loans": 2,
+            "bankruptcy_records": false,
+            "litigation_records": 1
+          },
+          "internal_tags": [
+            "high_risk_geography",
+            "structured_transaction_pattern",
+            "sanctions_watchlist_proximity"
+          ]
+        },
+        "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 1.5 years (since 2023-03-10)\nCustomer segment: hnwi\nProducts held: current_account, fx_trading, securities\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $200,000\n  Avg monthly outflow: $175,000\n  Max single transaction: $850,000\n  Cross-border tx ratio: 72%\n  Primary counterparty countries: UAE, Cyprus, Russia, Thailand\n  Cash deposit frequency: occasional\n  Transaction monitoring alerts (12m): 2\n\nHistorical risk events (2):\n  [2023-09-15] transaction_monitoring_alert: Large wire transfer ($420K) to Cyprus-based shell company flagged by TM system → dismissed_after_review\n  [2024-04-22] transaction_monitoring_alert: Series of structured deposits ($49K each) over 5 business days totaling $245K → under_investigation\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2023-03-10 → approved_with_conditions\n  Risk rating trajectory: medium\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 580\n  Other bank loans: 2\n  Bankruptcy records: No\n  Litigation records: 1\n\nService history:\n  Total interactions: 8\n  Complaints: 1\n  Account freezes: 0\n\nInternal tags: high_risk_geography, structured_transaction_pattern, sanctions_watchlist_proximity",
+        "is_existing_customer": true,
+        "audit_trail": [
+          {
+            "step": "intake",
+            "action": "document_completeness_check",
+            "details": "[CONDITIONAL] CONDITIONAL — non-critical missing: tax document (category C). Customer profile loaded: 1.5yr relationship, last KYC=approved_with_conditions",
+            "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+            "timestamp": "2026-11-28T13:43:36.271274+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "identity_screening",
+      "output": {
+        "sanctions_result": "potential_match",
+        "pep_result": "potential_match",
+        "adverse_media_result": "potential_match",
+        "screening_details": [
+          {
+            "type": "sanctions",
+            "result": "potential_match",
+            "analysis": "客户Mikhail Petrov的姓名与欧盟综合金融制裁名单所列主体Mikhail Vladimirovich Petrov匹配度为82%，二者出生年份均为1972年、国籍均为俄罗斯，客户内部标签标注为「制裁观察名单邻近」；但名单主体出生日期为1972-03-22，与客户出生日期1972-07-14存在差异，且名单主体完整中间名Vladimirovich未在客户提供的别名中明确列示，现有信息无法确认二者为同一主体，构成潜在制裁匹配。客户存在正在调查的结构化交易警报，符合可疑活动触发筛查的政策要求。",
+            "action_required": "investigate",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.3; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "pep",
+            "result": "potential_match",
+            "analysis": "PEP数据库返回同名主体Mikhail Petrov，身份为2010-2018年俄罗斯某地区政府前顾问，但数据库未披露该PEP的出生日期、完整身份标识等可交叉验证的信息，无法确认与当前客户为同一主体，构成潜在PEP匹配。客户为俄籍高净值人士且存在高风险地理关联，核实身份后需判定是否适用PEP增强尽职调查要求。",
+            "action_required": "investigate",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          },
+          {
+            "type": "adverse_media",
+            "result": "potential_match",
+            "analysis": "不利媒体筛查发现两项同名风险报道：一是2023年名为Mikhail Petrov的主体因迪拜房产交易涉嫌洗钱被阿联酋金融当局调查，调查结果尚未披露；二是2022年制裁实施后有同名俄罗斯商人向东南亚转移资产的相关报道。但报道均未披露涉事主体的出生日期、完整姓名等唯一身份标识，无法确认与当前客户为同一主体，构成潜在不利媒体匹配。结合客户72%的跨境交易占比、交易对手涉及高风险辖区、正在调查的结构化存款警报，需进一步核实风险关联性。",
+            "action_required": "investigate",
+            "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+          }
+        ],
+        "current_step": "identity_screening",
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Customer profile loaded: 1.5yr relationship, last KYC=approved_with_conditions",
+          "本次对俄籍高净值客户Mikhail Petrov开展的制裁、PEP、不利媒体三类筛查均返回未核实的潜在匹配，现有身份信息不足以确认或排除匹配；客户同时存在正在调查的疑似拆分存款交易、高风险地理标签、跨境交易占比高、交易对手涉及高风险司法辖区等风险特征，整体筛查未通过，需立即开展身份核实并升级合规处理。"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "identity_screening",
+            "action": "sanctions_pep_adverse_media_screening",
+            "details": "本次对俄籍高净值客户Mikhail Petrov开展的制裁、PEP、不利媒体三类筛查均返回未核实的潜在匹配，现有身份信息不足以确认或排除匹配；客户同时存在正在调查的疑似拆分存款交易、高风险地理标签、跨境交易占比高、交易对手涉及高风险司法辖区等风险特征，整体筛查未通过，需立即开展身份核实并升级合规处理。",
+            "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+            "timestamp": "2026-11-28T13:46:17.297717+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "risk_assessment",
+      "output": {
+        "risk_scores": {
+          "customer_type": {
+            "score": 2,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）客户类型评分规则，客户为自雇企业主/投资者，持有泰国公司注册证明、6个月银行流水等收入相关支持文件，符合有文件证明的自雇情形，无复杂企业结构、空壳或未披露所有权情况，故评2分"
+          },
+          "geography": {
+            "score": 3,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）地理风险评分规则，客户国籍为规则明确列明的高风险司法辖区俄罗斯，跨境交易对手包含俄罗斯、塞浦路斯等高风险国家，内部标记为高风险地理，涉及高风险司法辖区，故评3分"
+          },
+          "product_service": {
+            "score": 3,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）产品/服务风险评分规则，客户本次申请开立私人银行账户，属于规则明确列明的高风险产品类别，故评3分"
+          },
+          "transaction_pattern": {
+            "score": 3,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）交易模式风险评分规则，客户过去12个月跨境交易占比达72%，交易对手涉及俄罗斯等高风险司法辖区，累计触发2次交易监控警报（含1起正在调查的结构化存款交易），内部标记存在结构化交易模式，存在明确高风险指标，故评3分"
+          },
+          "source_of_funds": {
+            "score": 3,
+            "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）资金来源风险评分规则，客户整体财富来源仅为未验证的自我声明，资金来源涵盖房地产、石化进出口、科技投资多个复杂渠道，涉及石化高风险行业，符合高风险资金来源情形，故评3分"
+          }
+        },
+        "risk_total": 15,
+        "risk_rating": "high",
+        "risk_override": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）自动override规则，存在PEP或制裁匹配的客户无论基础评分高低，自动认定为高风险；当前客户筛查存在尚未核实排除的制裁潜在匹配、PEP潜在匹配，故触发自动override",
+        "due_diligence_level": "enhanced",
+        "current_step": "risk_assessment",
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Customer profile loaded: 1.5yr relationship, last KYC=approved_with_conditions",
+          "本次对俄籍高净值客户Mikhail Petrov开展的制裁、PEP、不利媒体三类筛查均返回未核实的潜在匹配，现有身份信息不足以确认或排除匹配；客户同时存在正在调查的疑似拆分存款交易、高风险地理标签、跨境交易占比高、交易对手涉及高风险司法辖区等风险特征，整体筛查未通过，需立即开展身份核实并升级合规处理。",
+          "客户基础风险评分14分，已符合高风险等级标准；同时因存在未排除的制裁、PEP潜在匹配触发自动高风险override，最终评定为高风险，需开展增强型尽职调查。核心风险包括高风险地理关联、私人银行高风险产品、可疑结构化交易记录、未验证的复杂多渠道资金来源、较低信用评分及未决诉讼等，后续需优先核实制裁/PEP匹配真实性、资金来源合法性及交易背景合理性。",
+          "Risk score +1: proceeding with incomplete non-critical documents"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "risk_assessment",
+            "action": "risk_scoring",
+            "details": "Total score: 15, Rating: high, DD: enhanced",
+            "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+            "timestamp": "2026-11-28T13:48:57.339283+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "edd_document_check",
+      "output": {
+        "edd_missing_docs": [
+          "source of wealth supporting documentation (independent evidence — a self-declaration alone is insufficient)"
+        ],
+        "edd_docs_bypassed": true,
+        "current_step": "edd_document_check",
+        "audit_trail": [
+          {
+            "step": "edd_document_check",
+            "action": "edd_document_gate",
+            "details": "EDD documents outstanding: source of wealth supporting documentation (independent evidence — a self-declaration alone is insufficient). NOT blocking — screening red flag (sanctions=potential_match, pep=potential_match) must reach EDD/escalation; gaps carried into EDD as conditions",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:48:57.357639+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "enhanced_due_diligence",
+      "output": {
+        "edd_findings": {
+          "source_of_wealth": "财富来源仅为客户自我声明，无任何独立第三方验证材料，验证状态为未核实，不符合《KYC Policy v3.2》中高风险客户EDD需独立验证财富来源的强制要求，无法确认其申报的1500万美元净资产及财富积累路径的合法性、真实性，属于核心高风险项。需补充审计财务报表、企业纳税记录、官方房产过户文件、投资交割凭证等独立佐证材料后方可完成验证。",
+          "source_of_funds": "申报初始存款来自迪拜商业房产出售，已提交部分佐证材料，但未提供房产交易全流程官方文件及资金从交易对手到本行账户的完整划转凭证，且资金来源涉及石化贸易等高风险行业，结合高跨境交易占比及正在调查的可疑交易警报，现有材料不足以充分证明资金来源的合法性，依据《Customer Risk Rating Matrix and Classification Guide v1.5》资金来源风险评分为3（高风险）。",
+          "additional_info_needed": [
+            "财富来源独立证明材料（如审计财务报表、企业纳税记录、官方房产过户文件、投资交割凭证等，自我声明无效），满足强制EDD文件要求",
+            "名下所有运营企业的受益所有权结构证明文件，明确各主体的所有权、控制关系及持股比例",
+            "可交叉验证身份的官方补充材料（如完整出生证明、显示完整中间名的身份文件、过往居住记录等），用于排查制裁、PEP及不利媒体匹配的身份关联性",
+            "2024年4月结构化存款警报对应的交易背景证明、资金来源及用途佐证材料，配合可疑交易调查",
+            "500万美元初始存款的完整交易链路证明，包括迪拜房产出售的全套官方交易文件、资金从交易对手至本行账户的全链路划转凭证",
+            "名下石化进出口业务、科技投资业务的运营及财务佐证材料，验证申报收入的真实性"
+          ],
+          "risk_mitigants": [
+            "基础身份文件（护照、水电账单、驾照）均已完成验证",
+            "已提交部分资金来源佐证材料（6个月银行流水、迪拜房产契约、泰国公司注册证明）",
+            "客户已配合签署合规声明，同意尽职调查相关要求，否认PEP身份及关联关系",
+            "1.5年合作期内无已确认的合规违规记录、无SAR提交记录、无监管机构查询记录"
+          ],
+          "risk_amplifiers": [
+            "存在未解决的潜在制裁、PEP、不利媒体三重筛查匹配，触发自动高风险评级，现有信息无法排除金融犯罪关联",
+            "财富来源仅为未验证的自我声明，无独立佐证材料，不符合EDD强制验证要求",
+            "正在调查的结构化存款可疑交易警报，过往曾触发向塞浦路斯空壳公司大额转账的监控警报",
+            "俄罗斯国籍，交易对手涉及俄罗斯、塞浦路斯、阿联酋等FATF高风险/受监管关注辖区，跨境交易占比达72%，地理风险极高",
+            "申请私人银行财富管理产品，初始存款达500万美元，预期交易规模大，风险暴露程度高",
+            "未披露名下多家企业的受益所有权结构，业务及所有权透明度不足",
+            "第三方信用评分仅580，存在未决诉讼记录，信用风险较高",
+            "内部标记存在高风险地理、结构化交易模式、制裁观察名单邻近三类高风险标签"
+          ]
+        },
+        "decision": "escalate",
+        "decision_rationale": "本客户为依据规则自动认定的高风险俄籍私人银行申请者，现有证据显示其存在未排除的潜在制裁、PEP及不利媒体三重匹配，财富来源仅为未验证的自我声明，同时伴随正在调查的结构化可疑交易、高风险辖区关联、72%跨境交易占比等多重高风险指标，符合合规委员会升级审议的触发条件。现有信息无法充分排除制裁关联及金融犯罪风险，需先收集全部缺失的EDD材料完成核验后，再由合规委员会作出最终准入判定，现阶段不具备直接批准或拒绝的充分依据。",
+        "ai_confidence": 0.9,
+        "recommendations": [
+          "若后续补充材料经审核排除全部筛查风险、验证来源合法性并获批准入，需适用以下强化监控要求：1",
+          "所有跨境交易（尤其是俄罗斯、塞浦路斯、阿联酋辖区交易）100%事前审核，单笔交易阈值超过10万美元的需额外提交交易背景证明；2",
+          "每季度审核交易行为，重点排查结构化交易、空壳公司交易等可疑模式，每年完成一次全面EDD审核；3",
+          "每季度回溯开展制裁、PEP、不利媒体筛查，动态更新匹配结果；4",
+          "每年要求客户提交最新的财务及所有权证明材料，完成财富来源与资金来源的更新验证；5",
+          "若再次触发可疑交易警报，立即暂停非柜面交易并启动专项调查。"
+        ],
+        "current_step": "enhanced_due_diligence",
+        "human_review_required": true,
+        "findings": [
+          "CONDITIONAL — non-critical missing: tax document (category C). Customer profile loaded: 1.5yr relationship, last KYC=approved_with_conditions",
+          "本次对俄籍高净值客户Mikhail Petrov开展的制裁、PEP、不利媒体三类筛查均返回未核实的潜在匹配，现有身份信息不足以确认或排除匹配；客户同时存在正在调查的疑似拆分存款交易、高风险地理标签、跨境交易占比高、交易对手涉及高风险司法辖区等风险特征，整体筛查未通过，需立即开展身份核实并升级合规处理。",
+          "客户基础风险评分14分，已符合高风险等级标准；同时因存在未排除的制裁、PEP潜在匹配触发自动高风险override，最终评定为高风险，需开展增强型尽职调查。核心风险包括高风险地理关联、私人银行高风险产品、可疑结构化交易记录、未验证的复杂多渠道资金来源、较低信用评分及未决诉讼等，后续需优先核实制裁/PEP匹配真实性、资金来源合法性及交易背景合理性。",
+          "Risk score +1: proceeding with incomplete non-critical documents",
+          "基础身份文件（护照、水电账单、驾照）已完成验证，但客户申报运营多家东南亚企业，未提交相关主体的受益所有权结构材料，所有权透明度不足",
+          "制裁筛查存在未解决潜在匹配：与欧盟综合金融制裁名单主体Mikhail Vladimirovich Petrov姓名匹配度82%，出生年份、国籍一致，但出生日期、完整中间名信息存在差异，现有信息无法确认身份同一性，触发《Sanctions and Watchlist Screening Procedures v2.1》§1及《KYC Policy v3.2》§6.1、§6.3的调查要求",
+          "PEP筛查存在未解决潜在匹配：数据库返回同名2010-2018年俄罗斯地方政府前顾问主体，无出生日期等交叉验证信息，无法确认身份关联性，触发《KYC Policy v3.2》§6.1、§6.2的PEP调查要求",
+          "不利媒体筛查存在未解决潜在匹配：2项同名金融犯罪相关报道（2023年迪拜房产交易涉嫌洗钱被调查、2022年俄商人向东南亚转移资产）无唯一身份标识，无法确认与客户的关联性，触发《KYC Policy v3.2》§6.1、§6.2的不利媒体调查要求",
+          "风险评级触发自动高风险override：依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001），未排除的制裁/PEP潜在匹配无论基础评分均自动认定为高风险，本次总风险评分为15，需适用全套EDD要求",
+          "交易模式存在明确高风险特征：过去12个月跨境交易占比72%，交易对手涉及俄罗斯、塞浦路斯等高风险辖区，累计触发2次交易监控警报，其中2024年4月结构化存款警报正在调查，内部标记有结构化交易模式、高风险地理、制裁观察名单邻近标签，符合高风险交易模式判定标准",
+          "资金来源（SOF）：申报500万美元初始存款来自迪拜商业房产出售，已提交6个月银行流水、迪拜房产契约、泰国公司注册证明，但未提供完整交易链路凭证，资金涉及石化贸易等高风险行业，多渠道结构复杂，风险评分为3（高风险）",
+          "财富来源（SOW）：仅提交自我声明，申报财富来自石化贸易、迪拜房产、东南亚科技投资，无独立佐证材料，验证状态为未核实，不符合高风险客户EDD的财富来源验证要求，强制EDD要求的独立财富来源证明尚未提交",
+          "附加风险点：第三方信用评分仅580，存在1条未决诉讼记录，申请私人银行产品交易规模大，进一步提升风险暴露水平",
+          "现有缓解因素：客户已配合签署合规声明，否认PEP身份及关联关系，1.5年合作期内无已确认合规违规、无SAR提交、无监管查询记录"
+        ],
+        "sources_cited": [
+          {
+            "step": "intake",
+            "sources": [
+              "Customer Due Diligence (CDD) Guidelines",
+              "Sanctions and Watchlist Screening Procedures",
+              "Customer Due Diligence (CDD) Guidelines"
+            ]
+          },
+          {
+            "step": "screening",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Sanctions and Watchlist Screening Procedures",
+              "Sanctions and Watchlist Screening Procedures"
+            ]
+          },
+          {
+            "step": "risk_assessment",
+            "sources": [
+              "Know Your Customer (KYC) Policy",
+              "Customer Due Diligence (CDD) Guidelines",
+              "Customer Risk Rating Matrix and Classification Guide"
+            ]
+          },
+          {
+            "step": "edd",
+            "sources": [
+              "Know Your Customer (KYC) Policy v3.2 §4, §6.1, §6.2, §6.3",
+              "Sanctions and Watchlist Screening Procedures v2.1 §1, §6.3",
+              "Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)"
+            ]
+          }
+        ],
+        "audit_trail": [
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_1: search_policy(Enhanced Due Diligence (EDD) requirements for high-risk individual private banking customers with unresolved potential sanctions, PEP and adverse media matches, including source of wealth/source of funds verification standards, beneficial ownership check obligations, and escalation/decision criteria per KYC Policy v3.2, Sanctions and Watchlist Screening Procedures v2.1, and Customer Risk Rating Matrix and Classification Guide v1.5)",
+            "details": "[Know Your Customer (KYC) Policy — 4. Customer Risk Rating] (relevance: 0.87)\nEnhanced monitoring, review every 2 years\n- **High Risk (Score 7-10):** ",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:52:55.776940+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_2: assess_risk_factor(source_of_wealth_and_source_of_funds)",
+            "details": "Risk factor 'source_of_wealth_and_source_of_funds' not found. Available: ['customer_type', 'geography', 'product_service', 'transaction_pattern', 'sou",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:52:55.777040+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_3: assess_risk_factor(source_of_funds)",
+            "details": "{\n  \"score\": 3,\n  \"justification\": \"\\u4f9d\\u636e\\u300aCustomer Risk Rating Matrix and Classification Guide v1.5\\u300b\\uff08GDL-RRM-001\\uff09\\u8d44\\u91",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:52:55.777044+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_4: assess_risk_factor(geography)",
+            "details": "{\n  \"score\": 3,\n  \"justification\": \"\\u4f9d\\u636e\\u300aCustomer Risk Rating Matrix and Classification Guide v1.5\\u300b\\uff08GDL-RRM-001\\uff09\\u5730\\u74",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:52:55.777047+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_5: assess_risk_factor(transaction_pattern)",
+            "details": "{\n  \"score\": 3,\n  \"justification\": \"\\u4f9d\\u636e\\u300aCustomer Risk Rating Matrix and Classification Guide v1.5\\u300b\\uff08GDL-RRM-001\\uff09\\u4ea4\\u66",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:52:55.777050+00:00"
+          },
+          {
+            "step": "enhanced_due_diligence",
+            "action": "react_round_6: forced_final_answer",
+            "details": "",
+            "sources_used": "",
+            "timestamp": "2026-11-28T13:52:55.777051+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "node": "__interrupt__",
+      "output": []
+    }
+  ],
+  "state_values": {
+    "case_id": "KYC-2024-003",
+    "tenant_id": "pacific_rim_fg",
+    "data_classification": "confidential",
+    "submission": {
+      "case_id": "KYC-2024-003",
+      "submission_type": "individual_onboarding",
+      "submitted_by": "Private Banking Relationship Manager",
+      "submitted_at": "2024-09-02T11:00:00Z",
+      "customer": {
+        "type": "individual",
+        "full_name": "Mikhail Petrov",
+        "aliases": [
+          "Mikhail V. Petrov",
+          "M. Petrov"
+        ],
+        "date_of_birth": "1972-07-14",
+        "nationality": "Russian",
+        "country_of_residence": "Thailand",
+        "occupation": "Business Owner / Investor",
+        "employer": "Self-employed",
+        "annual_income": 2000000,
+        "income_currency": "USD",
+        "additional_info": "Claims to have relocated from Moscow to Bangkok in 2022. Operates multiple businesses across Southeast Asia."
+      },
+      "identification_documents": [
+        {
+          "type": "passport",
+          "category": "A",
+          "document_number": "75 4421889",
+          "issuing_country": "Russia",
+          "issue_date": "2021-05-10",
+          "expiry_date": "2031-05-09",
+          "verified": true
+        },
+        {
+          "type": "utility_bill",
+          "category": "B",
+          "description": "Thai electricity bill - Provincial Electricity Authority",
+          "document_date": "2024-08-15",
+          "address": "99/1 Sukhumvit Soi 31, Watthana, Bangkok 10110, Thailand",
+          "verified": true
+        },
+        {
+          "type": "driver_license",
+          "category": "A",
+          "document_number": "TH-DL-7214-5590",
+          "issuing_country": "Thailand",
+          "issue_date": "2023-02-20",
+          "expiry_date": "2028-02-19",
+          "verified": true
+        }
+      ],
+      "account_request": {
+        "product_type": "private_banking",
+        "purpose": "Wealth management and investment portfolio",
+        "expected_monthly_deposit": 200000,
+        "expected_monthly_withdrawal": 150000,
+        "initial_deposit": 5000000,
+        "source_of_initial_deposit": "Sale of commercial property in Dubai, UAE",
+        "primary_transaction_countries": [
+          "Thailand",
+          "UAE",
+          "Singapore",
+          "Cyprus"
+        ]
+      },
+      "source_of_funds": {
+        "primary": "business_revenue_and_investments",
+        "details": "Claims income from: (1) Real estate holdings in Thailand and UAE, (2) Import/export business - Petrochemical supplies, (3) Technology startup investments in Southeast Asia",
+        "supporting_documents": [
+          "bank_statements_6_months",
+          "property_deed_dubai",
+          "company_registration_thailand"
+        ]
+      },
+      "source_of_wealth": {
+        "declared": "Built wealth through petrochemical trading business established in Moscow in 2005. Diversified into real estate in Dubai (2015) and Southeast Asian tech investments (2020). Claims net worth of approximately $15 million.",
+        "supporting_documents": [
+          "self_declaration_only"
+        ],
+        "verification_status": "unverified"
+      },
+      "declarations": {
+        "pep_status": false,
+        "pep_association": false,
+        "tax_residency": [
+          "Thailand"
+        ],
+        "us_person": false,
+        "consent_given": true,
+        "declaration_signed": true,
+        "declaration_date": "2024-09-02"
+      },
+      "screening_flags": {
+        "sanctions_screening": {
+          "result": "potential_match",
+          "details": "Name 'Mikhail Petrov' returns partial match (82% confidence) against an individual on the EU sanctions list related to Russian oligarch designations. The listed individual has date of birth 1972 and Russian nationality. Additional verification required to confirm or dismiss.",
+          "matched_list": "EU Consolidated Financial Sanctions List",
+          "matched_entry": "PETROV, Mikhail Vladimirovich, DOB: 1972-03-22, Russian national, designated for association with sanctioned entities in energy sector"
+        },
+        "pep_screening": {
+          "result": "potential_match",
+          "details": "An individual named 'Mikhail Petrov' appears in PEP databases as a former advisor to a regional government in Russia (2010-2018). Requires verification whether this is the same person."
+        },
+        "adverse_media": {
+          "result": "findings",
+          "details": "News articles from 2023 mention a 'Mikhail Petrov' involved in a Dubai property transaction that was investigated by UAE financial authorities for potential money laundering. Investigation outcome unknown. Separate articles mention Russian businessmen named Petrov relocating assets to Southeast Asia following 2022 sanctions."
+        }
+      },
+      "issues_for_review": [
+        "Potential sanctions list match (EU list, 82% confidence) — same DOB year and nationality",
+        "Potential PEP match — former Russian government advisor",
+        "Adverse media findings — Dubai property investigation, Russian asset relocation",
+        "Russian national with high-risk geographic profile (Russia, UAE, Cyprus)",
+        "Private banking product — highest risk product category",
+        "Large initial deposit ($5M) from Dubai property sale — must verify",
+        "Source of wealth only self-declared, no independent verification",
+        "Petrochemical business ties — sector under heightened sanctions scrutiny",
+        "Recent relocation from Russia (2022) coincides with sanctions timeline",
+        "Tax residency declared as Thailand only — may have undeclared obligations"
+      ],
+      "expected_outcome": {
+        "risk_rating": "high",
+        "risk_score": 15,
+        "due_diligence_level": "enhanced",
+        "decision": "escalate_to_compliance_committee",
+        "reasoning": "Maximum risk score across multiple dimensions. Critical issue: potential sanctions match must be resolved before any further processing — per Sanctions Screening Procedures Section 5.2, if the match cannot be dismissed within 48 hours, it must be treated as confirmed. The PEP potential match, if confirmed, automatically triggers high-risk classification and senior management approval requirement. Adverse media findings related to money laundering investigation in Dubai add further concern. Even if sanctions and PEP matches are dismissed, the customer profile (Russian national, petrochemical business, Dubai property, Cyprus transactions, recent relocation from Russia) presents an extremely high-risk profile requiring full EDD with Compliance Review Committee approval. Source of wealth must be independently verified — self-declaration alone is insufficient for this risk level."
+      }
+    },
+    "documents_complete": false,
+    "missing_documents": [
+      "tax document (category C)"
+    ],
+    "document_verification": [
+      "passport: verified",
+      "utility_bill: verified",
+      "driver_license: verified"
+    ],
+    "intake_status": "conditional",
+    "critical_missing": [],
+    "non_critical_missing": [
+      "tax document (category C)"
+    ],
+    "sanctions_result": "potential_match",
+    "pep_result": "potential_match",
+    "adverse_media_result": "potential_match",
+    "screening_details": [
+      {
+        "type": "sanctions",
+        "result": "potential_match",
+        "analysis": "客户Mikhail Petrov的姓名与欧盟综合金融制裁名单所列主体Mikhail Vladimirovich Petrov匹配度为82%，二者出生年份均为1972年、国籍均为俄罗斯，客户内部标签标注为「制裁观察名单邻近」；但名单主体出生日期为1972-03-22，与客户出生日期1972-07-14存在差异，且名单主体完整中间名Vladimirovich未在客户提供的别名中明确列示，现有信息无法确认二者为同一主体，构成潜在制裁匹配。客户存在正在调查的结构化交易警报，符合可疑活动触发筛查的政策要求。",
+        "action_required": "investigate",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.3; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "pep",
+        "result": "potential_match",
+        "analysis": "PEP数据库返回同名主体Mikhail Petrov，身份为2010-2018年俄罗斯某地区政府前顾问，但数据库未披露该PEP的出生日期、完整身份标识等可交叉验证的信息，无法确认与当前客户为同一主体，构成潜在PEP匹配。客户为俄籍高净值人士且存在高风险地理关联，核实身份后需判定是否适用PEP增强尽职调查要求。",
+        "action_required": "investigate",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      },
+      {
+        "type": "adverse_media",
+        "result": "potential_match",
+        "analysis": "不利媒体筛查发现两项同名风险报道：一是2023年名为Mikhail Petrov的主体因迪拜房产交易涉嫌洗钱被阿联酋金融当局调查，调查结果尚未披露；二是2022年制裁实施后有同名俄罗斯商人向东南亚转移资产的相关报道。但报道均未披露涉事主体的出生日期、完整姓名等唯一身份标识，无法确认与当前客户为同一主体，构成潜在不利媒体匹配。结合客户72%的跨境交易占比、交易对手涉及高风险辖区、正在调查的结构化存款警报，需进一步核实风险关联性。",
+        "action_required": "investigate",
+        "policy_reference": "Know Your Customer (KYC) Policy v3.2 §6.1, §6.2; Sanctions and Watchlist Screening Procedures v2.1 §1"
+      }
+    ],
+    "risk_scores": {
+      "customer_type": {
+        "score": 2,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）客户类型评分规则，客户为自雇企业主/投资者，持有泰国公司注册证明、6个月银行流水等收入相关支持文件，符合有文件证明的自雇情形，无复杂企业结构、空壳或未披露所有权情况，故评2分"
+      },
+      "geography": {
+        "score": 3,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）地理风险评分规则，客户国籍为规则明确列明的高风险司法辖区俄罗斯，跨境交易对手包含俄罗斯、塞浦路斯等高风险国家，内部标记为高风险地理，涉及高风险司法辖区，故评3分"
+      },
+      "product_service": {
+        "score": 3,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）产品/服务风险评分规则，客户本次申请开立私人银行账户，属于规则明确列明的高风险产品类别，故评3分"
+      },
+      "transaction_pattern": {
+        "score": 3,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）交易模式风险评分规则，客户过去12个月跨境交易占比达72%，交易对手涉及俄罗斯等高风险司法辖区，累计触发2次交易监控警报（含1起正在调查的结构化存款交易），内部标记存在结构化交易模式，存在明确高风险指标，故评3分"
+      },
+      "source_of_funds": {
+        "score": 3,
+        "justification": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）资金来源风险评分规则，客户整体财富来源仅为未验证的自我声明，资金来源涵盖房地产、石化进出口、科技投资多个复杂渠道，涉及石化高风险行业，符合高风险资金来源情形，故评3分"
+      }
+    },
+    "risk_total": 15,
+    "risk_rating": "high",
+    "risk_override": "依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001）自动override规则，存在PEP或制裁匹配的客户无论基础评分高低，自动认定为高风险；当前客户筛查存在尚未核实排除的制裁潜在匹配、PEP潜在匹配，故触发自动override",
+    "due_diligence_level": "enhanced",
+    "edd_findings": {
+      "source_of_wealth": "财富来源仅为客户自我声明，无任何独立第三方验证材料，验证状态为未核实，不符合《KYC Policy v3.2》中高风险客户EDD需独立验证财富来源的强制要求，无法确认其申报的1500万美元净资产及财富积累路径的合法性、真实性，属于核心高风险项。需补充审计财务报表、企业纳税记录、官方房产过户文件、投资交割凭证等独立佐证材料后方可完成验证。",
+      "source_of_funds": "申报初始存款来自迪拜商业房产出售，已提交部分佐证材料，但未提供房产交易全流程官方文件及资金从交易对手到本行账户的完整划转凭证，且资金来源涉及石化贸易等高风险行业，结合高跨境交易占比及正在调查的可疑交易警报，现有材料不足以充分证明资金来源的合法性，依据《Customer Risk Rating Matrix and Classification Guide v1.5》资金来源风险评分为3（高风险）。",
+      "additional_info_needed": [
+        "财富来源独立证明材料（如审计财务报表、企业纳税记录、官方房产过户文件、投资交割凭证等，自我声明无效），满足强制EDD文件要求",
+        "名下所有运营企业的受益所有权结构证明文件，明确各主体的所有权、控制关系及持股比例",
+        "可交叉验证身份的官方补充材料（如完整出生证明、显示完整中间名的身份文件、过往居住记录等），用于排查制裁、PEP及不利媒体匹配的身份关联性",
+        "2024年4月结构化存款警报对应的交易背景证明、资金来源及用途佐证材料，配合可疑交易调查",
+        "500万美元初始存款的完整交易链路证明，包括迪拜房产出售的全套官方交易文件、资金从交易对手至本行账户的全链路划转凭证",
+        "名下石化进出口业务、科技投资业务的运营及财务佐证材料，验证申报收入的真实性"
+      ],
+      "risk_mitigants": [
+        "基础身份文件（护照、水电账单、驾照）均已完成验证",
+        "已提交部分资金来源佐证材料（6个月银行流水、迪拜房产契约、泰国公司注册证明）",
+        "客户已配合签署合规声明，同意尽职调查相关要求，否认PEP身份及关联关系",
+        "1.5年合作期内无已确认的合规违规记录、无SAR提交记录、无监管机构查询记录"
+      ],
+      "risk_amplifiers": [
+        "存在未解决的潜在制裁、PEP、不利媒体三重筛查匹配，触发自动高风险评级，现有信息无法排除金融犯罪关联",
+        "财富来源仅为未验证的自我声明，无独立佐证材料，不符合EDD强制验证要求",
+        "正在调查的结构化存款可疑交易警报，过往曾触发向塞浦路斯空壳公司大额转账的监控警报",
+        "俄罗斯国籍，交易对手涉及俄罗斯、塞浦路斯、阿联酋等FATF高风险/受监管关注辖区，跨境交易占比达72%，地理风险极高",
+        "申请私人银行财富管理产品，初始存款达500万美元，预期交易规模大，风险暴露程度高",
+        "未披露名下多家企业的受益所有权结构，业务及所有权透明度不足",
+        "第三方信用评分仅580，存在未决诉讼记录，信用风险较高",
+        "内部标记存在高风险地理、结构化交易模式、制裁观察名单邻近三类高风险标签"
+      ]
+    },
+    "edd_missing_docs": [
+      "source of wealth supporting documentation (independent evidence — a self-declaration alone is insufficient)"
+    ],
+    "edd_docs_bypassed": true,
+    "findings": [
+      "CONDITIONAL — non-critical missing: tax document (category C). Customer profile loaded: 1.5yr relationship, last KYC=approved_with_conditions",
+      "本次对俄籍高净值客户Mikhail Petrov开展的制裁、PEP、不利媒体三类筛查均返回未核实的潜在匹配，现有身份信息不足以确认或排除匹配；客户同时存在正在调查的疑似拆分存款交易、高风险地理标签、跨境交易占比高、交易对手涉及高风险司法辖区等风险特征，整体筛查未通过，需立即开展身份核实并升级合规处理。",
+      "客户基础风险评分14分，已符合高风险等级标准；同时因存在未排除的制裁、PEP潜在匹配触发自动高风险override，最终评定为高风险，需开展增强型尽职调查。核心风险包括高风险地理关联、私人银行高风险产品、可疑结构化交易记录、未验证的复杂多渠道资金来源、较低信用评分及未决诉讼等，后续需优先核实制裁/PEP匹配真实性、资金来源合法性及交易背景合理性。",
+      "Risk score +1: proceeding with incomplete non-critical documents",
+      "基础身份文件（护照、水电账单、驾照）已完成验证，但客户申报运营多家东南亚企业，未提交相关主体的受益所有权结构材料，所有权透明度不足",
+      "制裁筛查存在未解决潜在匹配：与欧盟综合金融制裁名单主体Mikhail Vladimirovich Petrov姓名匹配度82%，出生年份、国籍一致，但出生日期、完整中间名信息存在差异，现有信息无法确认身份同一性，触发《Sanctions and Watchlist Screening Procedures v2.1》§1及《KYC Policy v3.2》§6.1、§6.3的调查要求",
+      "PEP筛查存在未解决潜在匹配：数据库返回同名2010-2018年俄罗斯地方政府前顾问主体，无出生日期等交叉验证信息，无法确认身份关联性，触发《KYC Policy v3.2》§6.1、§6.2的PEP调查要求",
+      "不利媒体筛查存在未解决潜在匹配：2项同名金融犯罪相关报道（2023年迪拜房产交易涉嫌洗钱被调查、2022年俄商人向东南亚转移资产）无唯一身份标识，无法确认与客户的关联性，触发《KYC Policy v3.2》§6.1、§6.2的不利媒体调查要求",
+      "风险评级触发自动高风险override：依据《Customer Risk Rating Matrix and Classification Guide v1.5》（GDL-RRM-001），未排除的制裁/PEP潜在匹配无论基础评分均自动认定为高风险，本次总风险评分为15，需适用全套EDD要求",
+      "交易模式存在明确高风险特征：过去12个月跨境交易占比72%，交易对手涉及俄罗斯、塞浦路斯等高风险辖区，累计触发2次交易监控警报，其中2024年4月结构化存款警报正在调查，内部标记有结构化交易模式、高风险地理、制裁观察名单邻近标签，符合高风险交易模式判定标准",
+      "资金来源（SOF）：申报500万美元初始存款来自迪拜商业房产出售，已提交6个月银行流水、迪拜房产契约、泰国公司注册证明，但未提供完整交易链路凭证，资金涉及石化贸易等高风险行业，多渠道结构复杂，风险评分为3（高风险）",
+      "财富来源（SOW）：仅提交自我声明，申报财富来自石化贸易、迪拜房产、东南亚科技投资，无独立佐证材料，验证状态为未核实，不符合高风险客户EDD的财富来源验证要求，强制EDD要求的独立财富来源证明尚未提交",
+      "附加风险点：第三方信用评分仅580，存在1条未决诉讼记录，申请私人银行产品交易规模大，进一步提升风险暴露水平",
+      "现有缓解因素：客户已配合签署合规声明，否认PEP身份及关联关系，1.5年合作期内无已确认合规违规、无SAR提交、无监管查询记录"
+    ],
+    "recommendations": [
+      "若后续补充材料经审核排除全部筛查风险、验证来源合法性并获批准入，需适用以下强化监控要求：1",
+      "所有跨境交易（尤其是俄罗斯、塞浦路斯、阿联酋辖区交易）100%事前审核，单笔交易阈值超过10万美元的需额外提交交易背景证明；2",
+      "每季度审核交易行为，重点排查结构化交易、空壳公司交易等可疑模式，每年完成一次全面EDD审核；3",
+      "每季度回溯开展制裁、PEP、不利媒体筛查，动态更新匹配结果；4",
+      "每年要求客户提交最新的财务及所有权证明材料，完成财富来源与资金来源的更新验证；5",
+      "若再次触发可疑交易警报，立即暂停非柜面交易并启动专项调查。"
+    ],
+    "sources_cited": [
+      {
+        "step": "intake",
+        "sources": [
+          "Customer Due Diligence (CDD) Guidelines",
+          "Sanctions and Watchlist Screening Procedures",
+          "Customer Due Diligence (CDD) Guidelines"
+        ]
+      },
+      {
+        "step": "screening",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Sanctions and Watchlist Screening Procedures",
+          "Sanctions and Watchlist Screening Procedures"
+        ]
+      },
+      {
+        "step": "risk_assessment",
+        "sources": [
+          "Know Your Customer (KYC) Policy",
+          "Customer Due Diligence (CDD) Guidelines",
+          "Customer Risk Rating Matrix and Classification Guide"
+        ]
+      },
+      {
+        "step": "edd",
+        "sources": [
+          "Know Your Customer (KYC) Policy v3.2 §4, §6.1, §6.2, §6.3",
+          "Sanctions and Watchlist Screening Procedures v2.1 §1, §6.3",
+          "Customer Risk Rating Matrix and Classification Guide v1.5 (GDL-RRM-001)"
+        ]
+      }
+    ],
+    "decision": "escalate",
+    "decision_rationale": "本客户为依据规则自动认定的高风险俄籍私人银行申请者，现有证据显示其存在未排除的潜在制裁、PEP及不利媒体三重匹配，财富来源仅为未验证的自我声明，同时伴随正在调查的结构化可疑交易、高风险辖区关联、72%跨境交易占比等多重高风险指标，符合合规委员会升级审议的触发条件。现有信息无法充分排除制裁关联及金融犯罪风险，需先收集全部缺失的EDD材料完成核验后，再由合规委员会作出最终准入判定，现阶段不具备直接批准或拒绝的充分依据。",
+    "human_review_required": true,
+    "ai_confidence": 0.9,
+    "review_status": "in_review",
+    "current_step": "enhanced_due_diligence",
+    "next_step": "identity_screening",
+    "info_requests": [],
+    "audit_trail": [
+      {
+        "step": "intake",
+        "action": "document_completeness_check",
+        "details": "[CONDITIONAL] CONDITIONAL — non-critical missing: tax document (category C). Customer profile loaded: 1.5yr relationship, last KYC=approved_with_conditions",
+        "sources_used": "GDL-CDD-001, PRO-SAN-001, GDL-CDD-001",
+        "timestamp": "2026-11-28T13:43:36.271274+00:00"
+      },
+      {
+        "step": "identity_screening",
+        "action": "sanctions_pep_adverse_media_screening",
+        "details": "本次对俄籍高净值客户Mikhail Petrov开展的制裁、PEP、不利媒体三类筛查均返回未核实的潜在匹配，现有身份信息不足以确认或排除匹配；客户同时存在正在调查的疑似拆分存款交易、高风险地理标签、跨境交易占比高、交易对手涉及高风险司法辖区等风险特征，整体筛查未通过，需立即开展身份核实并升级合规处理。",
+        "sources_used": "POL-KYC-001, PRO-SAN-001, PRO-SAN-001",
+        "timestamp": "2026-11-28T13:46:17.297717+00:00"
+      },
+      {
+        "step": "risk_assessment",
+        "action": "risk_scoring",
+        "details": "Total score: 15, Rating: high, DD: enhanced",
+        "sources_used": "POL-KYC-001, GDL-CDD-001, GDL-RRM-001",
+        "timestamp": "2026-11-28T13:48:57.339283+00:00"
+      },
+      {
+        "step": "edd_document_check",
+        "action": "edd_document_gate",
+        "details": "EDD documents outstanding: source of wealth supporting documentation (independent evidence — a self-declaration alone is insufficient). NOT blocking — screening red flag (sanctions=potential_match, pep=potential_match) must reach EDD/escalation; gaps carried into EDD as conditions",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:48:57.357639+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_1: search_policy(Enhanced Due Diligence (EDD) requirements for high-risk individual private banking customers with unresolved potential sanctions, PEP and adverse media matches, including source of wealth/source of funds verification standards, beneficial ownership check obligations, and escalation/decision criteria per KYC Policy v3.2, Sanctions and Watchlist Screening Procedures v2.1, and Customer Risk Rating Matrix and Classification Guide v1.5)",
+        "details": "[Know Your Customer (KYC) Policy — 4. Customer Risk Rating] (relevance: 0.87)\nEnhanced monitoring, review every 2 years\n- **High Risk (Score 7-10):** ",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:52:55.776940+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_2: assess_risk_factor(source_of_wealth_and_source_of_funds)",
+        "details": "Risk factor 'source_of_wealth_and_source_of_funds' not found. Available: ['customer_type', 'geography', 'product_service', 'transaction_pattern', 'sou",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:52:55.777040+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_3: assess_risk_factor(source_of_funds)",
+        "details": "{\n  \"score\": 3,\n  \"justification\": \"\\u4f9d\\u636e\\u300aCustomer Risk Rating Matrix and Classification Guide v1.5\\u300b\\uff08GDL-RRM-001\\uff09\\u8d44\\u91",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:52:55.777044+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_4: assess_risk_factor(geography)",
+        "details": "{\n  \"score\": 3,\n  \"justification\": \"\\u4f9d\\u636e\\u300aCustomer Risk Rating Matrix and Classification Guide v1.5\\u300b\\uff08GDL-RRM-001\\uff09\\u5730\\u74",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:52:55.777047+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_5: assess_risk_factor(transaction_pattern)",
+        "details": "{\n  \"score\": 3,\n  \"justification\": \"\\u4f9d\\u636e\\u300aCustomer Risk Rating Matrix and Classification Guide v1.5\\u300b\\uff08GDL-RRM-001\\uff09\\u4ea4\\u66",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:52:55.777050+00:00"
+      },
+      {
+        "step": "enhanced_due_diligence",
+        "action": "react_round_6: forced_final_answer",
+        "details": "",
+        "sources_used": "",
+        "timestamp": "2026-11-28T13:52:55.777051+00:00"
+      }
+    ],
+    "customer_profile": {
+      "customer_id": "C-2024-003",
+      "relationship_start": "2023-03-10",
+      "relationship_tenure_years": 1.5,
+      "customer_segment": "hnwi",
+      "relationship_manager": "RM-PB-018",
+      "products_held": [
+        "current_account",
+        "fx_trading",
+        "securities"
+      ],
+      "transaction_summary": {
+        "avg_monthly_inflow": 200000,
+        "avg_monthly_outflow": 175000,
+        "max_single_transaction": 850000,
+        "cross_border_tx_pct": 0.72,
+        "primary_counterparty_countries": [
+          "UAE",
+          "Cyprus",
+          "Russia",
+          "Thailand"
+        ],
+        "cash_deposit_frequency": "occasional",
+        "unusual_pattern_flags": 2
+      },
+      "risk_events": [
+        {
+          "date": "2023-09-15",
+          "event_type": "transaction_monitoring_alert",
+          "description": "Large wire transfer ($420K) to Cyprus-based shell company flagged by TM system",
+          "outcome": "dismissed_after_review",
+          "reviewed_by": "Compliance Officer CO-012"
+        },
+        {
+          "date": "2024-04-22",
+          "event_type": "transaction_monitoring_alert",
+          "description": "Series of structured deposits ($49K each) over 5 business days totaling $245K",
+          "outcome": "under_investigation",
+          "reviewed_by": "Compliance Officer CO-008"
+        }
+      ],
+      "compliance_history": {
+        "previous_kyc_reviews": 1,
+        "last_kyc_date": "2023-03-10",
+        "last_kyc_outcome": "approved_with_conditions",
+        "last_risk_rating": "medium",
+        "risk_rating_trajectory": [
+          "medium"
+        ],
+        "sar_filed": false,
+        "regulatory_inquiries": 0
+      },
+      "service_summary": {
+        "total_interactions": 8,
+        "complaints": 1,
+        "account_freezes": 0,
+        "login_anomalies": 2
+      },
+      "external_data": {
+        "credit_score": 580,
+        "other_bank_loans": 2,
+        "bankruptcy_records": false,
+        "litigation_records": 1
+      },
+      "internal_tags": [
+        "high_risk_geography",
+        "structured_transaction_pattern",
+        "sanctions_watchlist_proximity"
+      ]
+    },
+    "customer_profile_summary": "【Customer Profile — Bank Internal Behavioral Data】\nRelationship tenure: 1.5 years (since 2023-03-10)\nCustomer segment: hnwi\nProducts held: current_account, fx_trading, securities\n\nTransaction behavior (last 12 months):\n  Avg monthly inflow: $200,000\n  Avg monthly outflow: $175,000\n  Max single transaction: $850,000\n  Cross-border tx ratio: 72%\n  Primary counterparty countries: UAE, Cyprus, Russia, Thailand\n  Cash deposit frequency: occasional\n  Transaction monitoring alerts (12m): 2\n\nHistorical risk events (2):\n  [2023-09-15] transaction_monitoring_alert: Large wire transfer ($420K) to Cyprus-based shell company flagged by TM system → dismissed_after_review\n  [2024-04-22] transaction_monitoring_alert: Series of structured deposits ($49K each) over 5 business days totaling $245K → under_investigation\n\nCompliance history:\n  Previous KYC reviews: 1\n  Last KYC: 2023-03-10 → approved_with_conditions\n  Risk rating trajectory: medium\n  SAR filed: No\n  Regulatory inquiries: 0\n\nThird-party data:\n  Credit score: 580\n  Other bank loans: 2\n  Bankruptcy records: No\n  Litigation records: 1\n\nService history:\n  Total interactions: 8\n  Complaints: 1\n  Account freezes: 0\n\nInternal tags: high_risk_geography, structured_transaction_pattern, sanctions_watchlist_proximity",
+    "is_existing_customer": true
+  }
+}
