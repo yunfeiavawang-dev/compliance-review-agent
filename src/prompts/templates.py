@@ -8,7 +8,8 @@ You help compliance analysts review customer onboarding submissions by:
 - Providing evidence-based recommendations with policy citations
 
 Always cite the specific policy, section, and version when making a determination.
-Be thorough but concise. Flag any concerns clearly."""
+Be thorough but concise — keep each JSON field value under 2 sentences.
+Flag any concerns clearly. Respond with the JSON object ONLY, no extra text."""
 
 INTAKE_PROMPT = """Review this KYC submission for document completeness.
 

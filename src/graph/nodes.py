@@ -145,21 +145,21 @@ class NodeRunner:
         self.kb = ComplianceKnowledgeBase(config)
         self.profile_store = CustomerProfileStore()
 
-    def _call_llm(self, system: str, user: str) -> dict:
+    def _call_llm(self, system: str, user: str, max_tokens: int | None = None) -> dict:
         response = chat_completion(
             self.client, self.model,
             [{"role": "system", "content": system}, {"role": "user", "content": user}],
             temperature=self.config.llm.temperature,
-            max_tokens=self.config.llm.max_tokens,
+            max_tokens=max_tokens or self.config.llm.max_tokens,
         )
         return _parse_json_response(response)
 
-    def _call_llm_raw(self, system: str, messages: list[dict]) -> str:
+    def _call_llm_raw(self, system: str, messages: list[dict], max_tokens: int | None = None) -> str:
         return chat_completion(
             self.client, self.model,
             [{"role": "system", "content": system}] + messages,
             temperature=self.config.llm.temperature,
-            max_tokens=self.config.llm.max_tokens,
+            max_tokens=max_tokens or self.config.llm.max_tokens,
         )
 
     def _execute_react_tool(self, tool_call: dict, state: ReviewState) -> str:
@@ -217,6 +217,7 @@ class NodeRunner:
     def _react_loop(
         self, system_prompt: str, initial_user_msg: str, state: ReviewState,
         max_rounds: int = 5, step_name: str = "review",
+        max_tokens_per_round: int | None = None,
     ) -> tuple[dict, list[dict]]:
         """Run a ReAct loop: Thought → Action → Observation, up to max_rounds.
 
@@ -226,7 +227,7 @@ class NodeRunner:
         trace: list[dict] = []
 
         for i in range(max_rounds):
-            raw = self._call_llm_raw(system_prompt, messages)
+            raw = self._call_llm_raw(system_prompt, messages, max_tokens=max_tokens_per_round)
             parsed = _parse_json_response(raw)
 
             if parsed.get("parse_error") and i == 0:
@@ -267,8 +268,8 @@ class NodeRunner:
             })
 
         final_raw = self._call_llm_raw(system_prompt, messages + [
-            {"role": "user", "content": "You have used all available rounds. Provide your final_answer now."}
-        ])
+            {"role": "user", "content": "You have used all available rounds. Provide your final_answer now as a concise JSON object."}
+        ], max_tokens=max_tokens_per_round)
         final = _parse_json_response(final_raw)
         trace.append({"round": max_rounds + 1, "action": "forced_final_answer"})
         return final, trace
@@ -374,7 +375,7 @@ class NodeRunner:
                 policy_context=policy_context,
                 historical_context=profile_summary,
             )
-            llm_result = self._call_llm(SYSTEM_PROMPT, prompt)
+            llm_result = self._call_llm(SYSTEM_PROMPT, prompt, max_tokens=1024)
             llm_non_critical = llm_result.get("non_critical_missing", non_critical_missing)
             for item in llm_non_critical:
                 if item not in non_critical_missing:
@@ -450,7 +451,7 @@ class NodeRunner:
             historical_context=state.get("customer_profile_summary", "No customer profile available."),
         )
 
-        result = self._call_llm(SYSTEM_PROMPT, prompt)
+        result = self._call_llm(SYSTEM_PROMPT, prompt, max_tokens=1024)
 
         findings = list(state.get("findings", []))
         findings.append(result.get("summary", "Screening completed"))
@@ -503,7 +504,7 @@ class NodeRunner:
             historical_context=state.get("customer_profile_summary", "No customer profile available."),
         )
 
-        result = self._call_llm(SYSTEM_PROMPT, prompt)
+        result = self._call_llm(SYSTEM_PROMPT, prompt, max_tokens=1024)
 
         findings = list(state.get("findings", []))
         findings.append(result.get("summary", "Risk assessment completed"))
@@ -584,7 +585,8 @@ class NodeRunner:
 
         result, trace = self._react_loop(
             SYSTEM_PROMPT, initial_msg, state,
-            max_rounds=4, step_name="standard_review",
+            max_rounds=3, step_name="standard_review",
+            max_tokens_per_round=768,
         )
 
         findings = list(state.get("findings", []))
@@ -705,7 +707,8 @@ class NodeRunner:
 
         result, trace = self._react_loop(
             SYSTEM_PROMPT, initial_msg, state,
-            max_rounds=5, step_name="edd",
+            max_rounds=3, step_name="edd",
+            max_tokens_per_round=768,
         )
 
         decision = _extract_recommendation(result, default="escalate")
@@ -807,7 +810,7 @@ class NodeRunner:
             human_input=json.dumps(human_input, indent=2),
         )
 
-        result = self._call_llm(SYSTEM_PROMPT, prompt)
+        result = self._call_llm(SYSTEM_PROMPT, prompt, max_tokens=1024)
 
         try:
             mem_summary = self._summarize_for_memory(state)
