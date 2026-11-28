@@ -47,7 +47,7 @@ The compliance analyst's role shifts from "doing the checks" to "reviewing the A
 |--------|-----------------|---------------------|--------------|
 | **First-Pass Document Completeness** | ~60% | 85%+ | % of submissions that pass intake without request-for-info |
 | **Average Review Turnaround** | 3-5 days (CDD), 5-15 days (EDD) | <1 day (CDD), 2-3 days (EDD) | Submission timestamp to decision timestamp |
-| **Risk Rating Consistency** | ~70% agreement rate across analysts | 100% (same input → same output) | Agreement rate: % of cases where independent reviews yield the same risk level |
+| **Risk Rating Consistency** | ~70% agreement rate across analysts | ≥95% run-to-run agreement (100% once factor scoring is fully rule-based) | Agreement rate: % of repeated runs / independent reviews that yield the same risk level |
 | **Policy Citation Coverage** | Partial (analyst memory) | 100% | % of conclusions with traceable policy references |
 | **Audit Trail Completeness** | Variable | 100% | % of review steps with documented action, evidence, and policy basis |
 
@@ -57,7 +57,7 @@ The compliance analyst's role shifts from "doing the checks" to "reviewing the A
 
 **Review Turnaround (days → hours):** AI performs document checks, screening simulation, risk scoring, and due diligence investigation automatically. The human reviewer receives a complete package (AI recommendation + evidence + policy citations) rather than starting from scratch.
 
-**Risk Rating Consistency (70% → 100%):** The same risk matrix, the same scoring logic, the same policy retrieval — applied identically every time. The only variability comes from LLM temperature, which is set to 0.3 (near-deterministic). The AI recommendation is tracked against the human decision (`ai_human_agreement`) to measure alignment over time.
+**Risk Rating Consistency (70% → ≥95%):** The rating step is deterministic: fixed score thresholds (total ≥12 → high, ≥8 → medium), +1 for a conditional intake, and a forced upgrade to high on any screening red flag. The remaining variability comes from the per-factor scores, which the LLM still assigns from the submission (temperature 0.3 reduces but does not eliminate run-to-run variation). In the current 7-case evaluation the risk level matched the expected rating in 5/7 cases. Reaching 100% requires moving factor scoring to a rule-based risk matrix, with the LLM only extracting the factors. The AI recommendation is tracked against the human decision (`ai_human_agreement`) to measure alignment over time.
 
 **Policy Citation & Audit Completeness:** Structural guarantees from the architecture — not aspirational goals. The graph enforces step completion; RAG provides cited policy context; the append-only audit trail records every action.
 
@@ -168,9 +168,9 @@ The replacement — retrospective documents written by compliance officers, inge
 
 1. **Synthetic data only:** All customer profiles, policies, and cases are fabricated. Real-world policies would be significantly more complex and nuanced.
 
-2. **No PII handling:** The prototype sends full customer data to the LLM API. Production requires a PII masking layer, especially with cross-border LLM providers (Ark API in Beijing, OpenAI API in the US).
+2. **PII masking not on the LLM path:** `src/auth/pii.py` masks names, passport / NRIC / HKID numbers, dates of birth, emails and phone numbers, and is used in the dashboard and the audit log. The graph nodes still send unmasked customer data to the LLM API. Production must mask before every LLM call, especially with cross-border LLM providers (Ark API in Beijing, OpenAI API in the US).
 
-3. **No RBAC:** The dashboard doesn't distinguish between analyst, officer, and admin roles. All users see and can do everything.
+3. **RBAC is a skeleton:** `src/auth/rbac.py` defines four roles (analyst, senior analyst, compliance officer, admin), granular permissions and a risk-level approval check that the dashboard enforces when a decision is submitted. The current user is a hard-coded mock: there is no login or SSO, and no maker-checker rule (submitter ≠ approver) yet. Production would populate the user from the bank's identity provider (SAML / OIDC).
 
 ---
 

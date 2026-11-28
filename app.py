@@ -18,6 +18,12 @@ from src.database import crud
 from src.memory.short_term import SessionMemory
 from src.graph.resume import pause_point, supply_information
 from src.memory.long_term import LongTermMemory
+from src.models import get_llm_client, chat_completion
+
+# Enterprise modules: RBAC, audit logging, PII masking
+from src.auth.rbac import Role, Permission, get_current_user, UserContext
+from src.auth.audit_logger import AuditLogger, AuditAction
+from src.auth.pii import mask_pii, mask_name
 
 
 # --- Page Config ---
@@ -122,6 +128,10 @@ def get_knowledge_base():
 def get_long_term_memory():
     return LongTermMemory()
 
+@st.cache_resource
+def get_audit_logger():
+    return AuditLogger()
+
 
 def load_case_file(path: str) -> dict:
     with open(path) as f:
@@ -141,6 +151,29 @@ def get_all_cases() -> list[dict]:
 
 # --- Sidebar ---
 with st.sidebar:
+    # Enterprise: RBAC role switcher (demo only)
+    role_options = [r.value for r in Role]
+    selected_role = st.selectbox(
+        "Demo: switch role",
+        role_options,
+        index=role_options.index(st.session_state.get("demo_role", Role.SENIOR_ANALYST.value)),
+        key="role_switcher",
+    )
+    st.session_state["demo_role"] = selected_role
+    current_user = UserContext(
+        user_id="demo-user-001",
+        username="demo_analyst",
+        role=Role(selected_role),
+        tenant_id="pacific_rim_fg",
+        email="analyst@pacificrim.example",
+        ip_address="127.0.0.1",
+    )
+    st.markdown(
+        f"**{current_user.username}** · `{current_user.role.value}`  \n"
+        f"Tenant: `{current_user.tenant_id}`"
+    )
+    st.divider()
+
     st.header("System Info")
     config = get_config()
     st.text(f"LLM: {config.llm.provider} / {config.llm.model}")
@@ -153,13 +186,51 @@ with st.sidebar:
 
     st.divider()
     st.header("RAG Inspector")
+
+    # Document inventory
+    all_meta = kb.collection.get(include=["metadatas"])["metadatas"]
+    doc_index: dict[str, dict] = {}
+    for m in all_meta:
+        did = m.get("document_id", m.get("source_file", "unknown"))
+        if did not in doc_index:
+            doc_index[did] = {"title": m.get("title", did), "version": m.get("version", "?"), "chunks": 0}
+        doc_index[did]["chunks"] += 1
+
+    st.caption(f"{len(doc_index)} documents · {len(all_meta)} chunks")
+    with st.expander("Ingested documents"):
+        for did, info in sorted(doc_index.items()):
+            st.markdown(f"**{info['title']}** `{did}` v{info['version']} — {info['chunks']} chunks")
+
+    # Query playground
     rag_query = st.text_input("Query the knowledge base:")
     if rag_query:
         results = kb.query(rag_query, n_results=3)
-        for r in results:
-            with st.expander(f"[{r['relevance_score']:.2f}] {r['source']} — {r['section']}"):
-                st.text(r["text"][:500])
-                st.caption(f"Doc: {r['document_id']} v{r['version']}")
+
+        col_src, col_ans = st.columns(2)
+        with col_src:
+            st.subheader("Retrieved Sources")
+            for r in results:
+                with st.expander(f"[{r['relevance_score']:.2f}] {r['source']} — {r['section']}"):
+                    st.text(r["text"][:500])
+                    st.caption(f"Doc: {r['document_id']} v{r['version']}")
+
+        with col_ans:
+            st.subheader("LLM Answer")
+            if st.button("Ask LLM with these sources"):
+                sources_text = "\n\n---\n\n".join(
+                    f"[Source: {r['source']} v{r['version']} — {r['section']}]\n{r['text']}"
+                    for r in results
+                )
+                messages = [
+                    {"role": "system", "content": "Answer using ONLY the provided policy sources. Cite the source for each claim."},
+                    {"role": "user", "content": f"Sources:\n{sources_text}\n\nQuestion: {rag_query}"},
+                ]
+                try:
+                    client = get_llm_client(config)
+                    answer = chat_completion(client, config.llm.model, messages, max_tokens=1024)
+                    st.markdown(answer)
+                except Exception as e:
+                    st.error(f"LLM error: {e}")
 
 
 # --- Navigation ---
@@ -389,6 +460,9 @@ def render_detail_page():
                     critical_missing=[],
                     non_critical_missing=[],
                     review_status="in_review",
+                    # Enterprise: multi-tenant isolation & data classification
+                    tenant_id=current_user.tenant_id,
+                    data_classification="confidential",
                 )
                 # One case = one thread, so the request-info loop keeps its state.
                 # A brand-new review of the same case gets a fresh thread, otherwise
@@ -426,7 +500,9 @@ def render_detail_page():
     current_values = state_snapshot.values if state_snapshot else {}
 
     # Tabs for the detail view
-    tab_review, tab_details, tab_audit = st.tabs(["Review", "Case Details", "Audit Timeline"])
+    tab_review, tab_details, tab_audit, tab_enterprise_audit = st.tabs(
+        ["Review", "Case Details", "Audit Timeline", "Enterprise Audit Log"]
+    )
 
     with tab_review:
         _render_review_layout(case_id, case_data, current_values, review_info, current_step)
@@ -436,6 +512,9 @@ def render_detail_page():
 
     with tab_audit:
         _render_audit_timeline(current_values, review_info)
+
+    with tab_enterprise_audit:
+        _render_enterprise_audit_log(case_id)
 
 
 def _step_from_pause(app, thread_config) -> str:
@@ -780,8 +859,44 @@ def _render_review_layout(case_id, case_data, current_values, review_info, curre
             if st.button("Submit Decision", type="primary", use_container_width=True, key=f"submit_{case_id}"):
                 if not human_notes.strip():
                     st.error("Review notes are required.")
+                # Enterprise RBAC: check if user can approve at this risk level
+                elif human_decision in ("approve", "approve_with_conditions") and not current_user.can_approve_risk_level(current_values.get("risk_rating", "low")):
+                    st.error(
+                        f"Permission denied: {current_user.role.value} cannot approve "
+                        f"{current_values.get('risk_rating', 'unknown')}-risk cases. "
+                        f"Please escalate to a compliance officer."
+                    )
+                    get_audit_logger().log_case_action(
+                        action=AuditAction.PERMISSION_DENIED,
+                        case_id=case_id,
+                        details={
+                            "attempted_decision": human_decision,
+                            "role": current_user.role.value,
+                            "risk_level": current_values.get("risk_rating"),
+                            "reason": "insufficient role for risk level",
+                        },
+                        user=current_user,
+                        risk_level=current_values.get("risk_rating"),
+                    )
                 else:
                     try:
+                        # Enterprise: log human decision to audit trail
+                        audit_logger = get_audit_logger()
+                        is_override = human_decision != agent_decision
+                        audit_logger.log_case_action(
+                            action=AuditAction.CASE_OVERRIDE_AI if is_override else AuditAction.CASE_SUBMIT_DECISION,
+                            case_id=case_id,
+                            details={
+                                "human_decision": human_decision,
+                                "ai_decision": agent_decision,
+                                "notes": human_notes,
+                                "is_override": is_override,
+                            },
+                            risk_level=current_values.get("risk_rating"),
+                            ai_decision=agent_decision,
+                            human_decision=human_decision,
+                        )
+
                         app = get_app()
                         thread_config = review_info["thread_config"]
                         app.update_state(
@@ -1026,6 +1141,63 @@ def _render_audit_timeline(current_values, review_info):
                             st.markdown(f"**{label}:** {v}")
                 else:
                     st.write(output)
+
+
+def _render_enterprise_audit_log(case_id: str):
+    """Render the enterprise audit log panel (RBAC-aware, read-only)."""
+    audit_logger = get_audit_logger()
+
+    # Metrics row
+    overrides = audit_logger.query_overrides()
+    case_entries = audit_logger.query_by_case(case_id, limit=20)
+    all_entries = audit_logger.query_by_case(case_id, limit=200)
+
+    col_m1, col_m2, col_m3 = st.columns(3)
+    with col_m1:
+        st.metric("Total Actions (this case)", len(all_entries))
+    with col_m2:
+        denied = sum(1 for e in all_entries if e.get("action") == "permission_denied")
+        st.metric("Permission Denied", denied)
+    with col_m3:
+        st.metric("AI Overrides (all cases)", len(overrides))
+
+    st.markdown("### Recent Audit Entries")
+
+    if not case_entries:
+        st.info("No audit entries yet. Submit a decision to generate audit records.")
+        return
+
+    import pandas as pd
+    rows = []
+    for entry in case_entries:
+        details = json.loads(entry["details"]) if entry.get("details") else {}
+        rows.append({
+            "Timestamp": entry.get("timestamp", "")[:19].replace("T", " "),
+            "User": entry.get("username", ""),
+            "Role": entry.get("role", ""),
+            "Action": entry.get("action", "").replace("_", " ").title(),
+            "Case ID": entry.get("resource_id", ""),
+            "Risk Level": (entry.get("risk_level") or "").upper(),
+            "AI Decision": (entry.get("ai_decision") or "—").replace("_", " "),
+            "Human Decision": (entry.get("human_decision") or "—").replace("_", " "),
+            "Override": "Yes" if entry.get("ai_human_agreement") == 0 else ("No" if entry.get("ai_human_agreement") == 1 else "—"),
+        })
+
+    df = pd.DataFrame(rows)
+    st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with st.expander("Raw Audit Details"):
+        for entry in case_entries:
+            details = json.loads(entry["details"]) if entry.get("details") else {}
+            ts = entry.get("timestamp", "")[:19].replace("T", " ")
+            action = entry.get("action", "")
+            st.markdown(
+                f"**{ts}** — `{action}` by {entry.get('username', '?')} "
+                f"({entry.get('role', '?')}) from {entry.get('ip_address', '?')}"
+            )
+            if details:
+                st.json(details)
+            st.divider()
 
 
 # =============================================================================

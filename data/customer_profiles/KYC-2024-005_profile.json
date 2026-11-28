@@ -1,0 +1,46 @@
+{
+  "customer_id": "C-2024-005",
+  "relationship_start": "2016-11-20",
+  "relationship_tenure_years": 8.0,
+  "customer_segment": "hnwi",
+  "relationship_manager": "RM-PB-003",
+  "products_held": ["private_banking", "savings", "fx_trading", "trust_services", "credit_card"],
+
+  "transaction_summary": {
+    "avg_monthly_inflow": 150000,
+    "avg_monthly_outflow": 95000,
+    "max_single_transaction": 500000,
+    "cross_border_tx_pct": 0.40,
+    "primary_counterparty_countries": ["Malaysia", "Singapore", "Indonesia"],
+    "cash_deposit_frequency": "rare",
+    "unusual_pattern_flags": 0
+  },
+
+  "risk_events": [],
+
+  "compliance_history": {
+    "previous_kyc_reviews": 3,
+    "last_kyc_date": "2023-01-15",
+    "last_kyc_outcome": "approved_with_conditions",
+    "last_risk_rating": "high",
+    "risk_rating_trajectory": ["high", "high", "high"],
+    "sar_filed": false,
+    "regulatory_inquiries": 0
+  },
+
+  "service_summary": {
+    "total_interactions": 45,
+    "complaints": 0,
+    "account_freezes": 0,
+    "login_anomalies": 0
+  },
+
+  "external_data": {
+    "credit_score": 750,
+    "other_bank_loans": 0,
+    "bankruptcy_records": false,
+    "litigation_records": 0
+  },
+
+  "internal_tags": ["pep_related", "high_value_client", "long_term_relationship"]
+}

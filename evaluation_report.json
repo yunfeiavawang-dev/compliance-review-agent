@@ -1,0 +1,301 @@
+{
+  "summary": {
+    "llm": "ark/doubao-seed-evolving",
+    "total": 7,
+    "correct": 6,
+    "accuracy_pct": 85.71428571428571,
+    "risk_match": 5,
+    "dd_match": 7,
+    "total_tokens": 291601,
+    "total_cost": 0.16200055555555556,
+    "avg_latency": 616.8866980757032,
+    "avg_experience": 5.285714285714286
+  },
+  "cases": [
+    {
+      "case_id": "KYC-2024-001",
+      "customer_name": "Chen Wei Lin",
+      "efficiency": {
+        "input_tokens": 12596,
+        "output_tokens": 31001,
+        "total_tokens": 43597,
+        "elapsed_s": 698.3,
+        "cost_usd": 0.0242,
+        "node_latencies": {
+          "?": 0.2,
+          "intake": 192.1,
+          "identity_screening": 213.1,
+          "risk_assessment": 130.5,
+          "standard_review": 0.0,
+          "decision": 162.4
+        }
+      },
+      "quality": {
+        "risk_rating_match": false,
+        "dd_level_match": true,
+        "decision_acceptable": true,
+        "decision_actual": "approve",
+        "decision_expected": "approve",
+        "accuracy_pct": 66.66666666666666
+      },
+      "experience": {
+        "clarity": 4,
+        "no_jargon": 3,
+        "has_references": true,
+        "has_next_steps": false,
+        "jargon_found": [
+          "CDD",
+          "KYC",
+          "PEP"
+        ],
+        "total": 4.5,
+        "max": 7.0
+      }
+    },
+    {
+      "case_id": "KYC-2024-007",
+      "customer_name": "TechBridge Solutions Pte Ltd",
+      "efficiency": {
+        "input_tokens": 13679,
+        "output_tokens": 27073,
+        "total_tokens": 40752,
+        "elapsed_s": 527.2,
+        "cost_usd": 0.0226,
+        "node_latencies": {
+          "?": 0.3,
+          "intake": 114.7,
+          "identity_screening": 161.2,
+          "risk_assessment": 126.7,
+          "standard_review": 0.0,
+          "decision": 124.4
+        }
+      },
+      "quality": {
+        "risk_rating_match": false,
+        "dd_level_match": true,
+        "decision_acceptable": true,
+        "decision_actual": "approve",
+        "decision_expected": "approve",
+        "accuracy_pct": 66.66666666666666
+      },
+      "experience": {
+        "clarity": 4,
+        "no_jargon": 4,
+        "has_references": true,
+        "has_next_steps": true,
+        "jargon_found": [
+          "KYC",
+          "PEP"
+        ],
+        "total": 6.0,
+        "max": 7.0
+      }
+    },
+    {
+      "case_id": "KYC-2024-006",
+      "customer_name": "Sarah Chen Mei Ling",
+      "efficiency": {
+        "input_tokens": 10889,
+        "output_tokens": 26819,
+        "total_tokens": 37708,
+        "elapsed_s": 573.8,
+        "cost_usd": 0.0209,
+        "node_latencies": {
+          "?": 73.7,
+          "intake": 91.3,
+          "identity_screening": 98.0,
+          "risk_assessment": 143.0,
+          "standard_review": 0.0,
+          "decision": 167.8
+        }
+      },
+      "quality": {
+        "risk_rating_match": true,
+        "dd_level_match": true,
+        "decision_acceptable": true,
+        "decision_actual": "approve",
+        "decision_expected": "approve",
+        "accuracy_pct": 100.0
+      },
+      "experience": {
+        "clarity": 4,
+        "no_jargon": 3,
+        "has_references": true,
+        "has_next_steps": true,
+        "jargon_found": [
+          "CDD",
+          "KYC",
+          "PEP"
+        ],
+        "total": 5.5,
+        "max": 7.0
+      }
+    },
+    {
+      "case_id": "KYC-2024-004",
+      "customer_name": "Tanaka Yuki",
+      "efficiency": {
+        "input_tokens": 6469,
+        "output_tokens": 23061,
+        "total_tokens": 29530,
+        "elapsed_s": 470.1,
+        "cost_usd": 0.0164,
+        "node_latencies": {
+          "?": 0.3,
+          "intake": 125.9,
+          "identity_screening": 81.0,
+          "risk_assessment": 139.2,
+          "standard_review": 0.0,
+          "decision": 123.7
+        }
+      },
+      "quality": {
+        "risk_rating_match": true,
+        "dd_level_match": true,
+        "decision_acceptable": true,
+        "decision_actual": "approve",
+        "decision_expected": "approve",
+        "accuracy_pct": 100.0
+      },
+      "experience": {
+        "clarity": 4,
+        "no_jargon": 3,
+        "has_references": true,
+        "has_next_steps": true,
+        "jargon_found": [
+          "CDD",
+          "KYC",
+          "PEP"
+        ],
+        "total": 5.5,
+        "max": 7.0
+      }
+    },
+    {
+      "case_id": "KYC-2024-005",
+      "customer_name": "Dato' Ahmad bin Ibrahim",
+      "efficiency": {
+        "input_tokens": 10207,
+        "output_tokens": 33561,
+        "total_tokens": 43768,
+        "elapsed_s": 648.3,
+        "cost_usd": 0.0243,
+        "node_latencies": {
+          "?": 0.3,
+          "intake": 114.1,
+          "identity_screening": 141.3,
+          "risk_assessment": 0.0,
+          "edd_document_check": 233.9,
+          "enhanced_due_diligence": 0.0,
+          "decision": 158.8
+        }
+      },
+      "quality": {
+        "risk_rating_match": true,
+        "dd_level_match": true,
+        "decision_acceptable": true,
+        "decision_actual": "approve_with_conditions",
+        "decision_expected": "approve_with_conditions",
+        "accuracy_pct": 100.0
+      },
+      "experience": {
+        "clarity": 4,
+        "no_jargon": 3,
+        "has_references": true,
+        "has_next_steps": true,
+        "jargon_found": [
+          "EDD",
+          "KYC",
+          "PEP",
+          "SAR"
+        ],
+        "total": 5.5,
+        "max": 7.0
+      }
+    },
+    {
+      "case_id": "KYC-2024-002",
+      "customer_name": "Golden Dragon Trading Co. Ltd",
+      "efficiency": {
+        "input_tokens": 8738,
+        "output_tokens": 38047,
+        "total_tokens": 46785,
+        "elapsed_s": 753.4,
+        "cost_usd": 0.026,
+        "node_latencies": {
+          "?": 132.5,
+          "intake": 0.0,
+          "request_info": 0.0,
+          "await_info": 139.6,
+          "identity_screening": 295.8,
+          "risk_assessment": 0.0,
+          "edd_document_check": 0.0,
+          "decision": 185.4
+        }
+      },
+      "quality": {
+        "risk_rating_match": true,
+        "dd_level_match": true,
+        "decision_acceptable": false,
+        "decision_actual": "escalate",
+        "decision_expected": "request_more_information",
+        "accuracy_pct": 66.66666666666666
+      },
+      "experience": {
+        "clarity": 4,
+        "no_jargon": 3,
+        "has_references": true,
+        "has_next_steps": false,
+        "jargon_found": [
+          "CDD",
+          "KYC",
+          "PEP"
+        ],
+        "total": 4.5,
+        "max": 7.0
+      }
+    },
+    {
+      "case_id": "KYC-2024-003",
+      "customer_name": "Mikhail Petrov",
+      "efficiency": {
+        "input_tokens": 14709,
+        "output_tokens": 34752,
+        "total_tokens": 49461,
+        "elapsed_s": 647.1,
+        "cost_usd": 0.0275,
+        "node_latencies": {
+          "?": 0.3,
+          "intake": 132.9,
+          "identity_screening": 143.3,
+          "risk_assessment": 0.0,
+          "edd_document_check": 216.6,
+          "enhanced_due_diligence": 0.0,
+          "decision": 153.9
+        }
+      },
+      "quality": {
+        "risk_rating_match": true,
+        "dd_level_match": true,
+        "decision_acceptable": true,
+        "decision_actual": "escalate",
+        "decision_expected": "escalate_to_compliance_committee",
+        "accuracy_pct": 100.0
+      },
+      "experience": {
+        "clarity": 4,
+        "no_jargon": 3,
+        "has_references": true,
+        "has_next_steps": true,
+        "jargon_found": [
+          "CDD",
+          "EDD",
+          "KYC",
+          "PEP"
+        ],
+        "total": 5.5,
+        "max": 7.0
+      }
+    }
+  ]
+}

@@ -17,6 +17,12 @@ class ReviewState(TypedDict, total=False):
     review_id: str
     customer_id: str
 
+    # Enterprise: multi-tenant isolation & data classification
+    # In production, tenant_id is injected from the SSO token and used to
+    # partition all database queries — no cross-tenant data leakage.
+    tenant_id: str  # e.g. "pacific_rim_fg", "acme_bank_hk"
+    data_classification: str  # "public" | "internal" | "confidential" | "restricted"
+
     # Raw submission data
     submission: dict
 
@@ -85,6 +91,11 @@ class ReviewState(TypedDict, total=False):
     # whatever a node returns onto the existing list, so a node can never
     # overwrite earlier entries. Nodes therefore return ONLY their new entries.
     audit_trail: Annotated[list[dict], operator.add]
+
+    # Long-term memory: bank-wide customer behavior profile (pulled once at intake)
+    customer_profile: Optional[dict]
+    customer_profile_summary: Optional[str]
+    is_existing_customer: bool
 
     # Error handling
     error: Optional[str]

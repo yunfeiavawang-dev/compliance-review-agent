@@ -10,6 +10,7 @@ from typing import Any
 from src.config import AppConfig
 from src.models import get_llm_client, chat_completion
 from src.knowledge.retrieval import ComplianceKnowledgeBase
+from src.memory.customer_profile_store import CustomerProfileStore
 from src.prompts.templates import (
     SYSTEM_PROMPT, INTAKE_PROMPT, SCREENING_PROMPT,
     RISK_ASSESSMENT_PROMPT, STANDARD_REVIEW_PROMPT,
@@ -87,6 +88,16 @@ def _add_audit(state: ReviewState, step: str, action: str, details: str = "", so
     return [_audit_entry(step, action, details, sources)]
 
 
+# Evaluation-only keys carried in the test-case JSON files. They are ground-truth
+# labels for the eval harness and must never reach a prompt.
+_EVAL_ONLY_KEYS = ("expected_outcome",)
+
+
+def _submission_for_prompt(submission: dict) -> dict:
+    """Copy of the submission without evaluation labels, safe to serialize into a prompt."""
+    return {k: v for k, v in submission.items() if k not in _EVAL_ONLY_KEYS}
+
+
 def _case_background(submission: dict) -> str:
     """Declared funding/wealth facts that SoF/SoW assessment depends on."""
     return (
@@ -132,6 +143,7 @@ class NodeRunner:
         self.client = get_llm_client(config)
         self.model = config.llm.model
         self.kb = ComplianceKnowledgeBase(config)
+        self.profile_store = CustomerProfileStore()
 
     def _call_llm(self, system: str, user: str) -> dict:
         response = chat_completion(
@@ -155,14 +167,15 @@ class NodeRunner:
         tool = tool_call.get("tool", "")
         if tool == "search_policy":
             query = tool_call.get("query", "")
-            results = self.kb.query(query, n_results=3)
+            current_step = state.get("current_step", "standard_review")
+            results = self.kb.select_context(query, step_name=current_step, n_results=5, max_chars=2000)
             if not results:
                 return "No policy documents found for this query."
             parts = []
             for r in results:
                 parts.append(
                     f"[{r['source']} — {r.get('section', 'N/A')}] "
-                    f"(relevance: {r.get('relevance_score', 0):.2f})\n{r['text'][:400]}"
+                    f"(relevance: {r.get('relevance_score', 0):.2f})\n{r['text']}"
                 )
             return "\n---\n".join(parts)
 
@@ -183,12 +196,20 @@ class NodeRunner:
 
         elif tool == "search_precedent":
             query = tool_call.get("query", "")
-            results = self.kb.query(query, n_results=2, where={"document_id": {"$contains": "RETRO"}})
+            results = self.kb.query(query, n_results=3, where={"document_id": {"$contains": "RETRO"}})
             if not results:
-                results = self.kb.query(query, n_results=2)
+                results = self.kb.query(query, n_results=3)
             if not results:
                 return "No precedent cases found."
-            parts = [f"[{r['source']}] {r['text'][:300]}" for r in results]
+            parts = []
+            budget = 1200
+            total = 0
+            for r in sorted(results, key=lambda x: x.get("relevance_score", 0), reverse=True):
+                text = r["text"]
+                if total + len(text) > budget and parts:
+                    break
+                parts.append(f"[{r['source']}] {text}")
+                total += len(text)
             return "\n---\n".join(parts)
 
         return f"Unknown tool: {tool}"
@@ -332,7 +353,12 @@ class NodeRunner:
 
     def intake_node(self, state: ReviewState) -> dict:
         submission = state["submission"]
+        case_id = state.get("case_id", "")
         policy_results = self.kb.get_policy_for_step("intake")
+
+        # Pull long-term customer profile from bank systems
+        profile = self.profile_store.get_profile(case_id)
+        profile_summary = self.profile_store.format_for_prompt(profile)
 
         rules = self._rule_based_doc_check(submission)
         critical_missing = rules["critical_missing"]
@@ -343,9 +369,10 @@ class NodeRunner:
             policy_context = self.kb.format_sources_for_prompt(policy_results)
             customer_type = submission.get("customer", {}).get("type", "individual")
             prompt = INTAKE_PROMPT.format(
-                submission_json=json.dumps(submission, indent=2, default=str),
+                submission_json=json.dumps(_submission_for_prompt(submission), indent=2, default=str),
                 customer_type=customer_type.upper(),
                 policy_context=policy_context,
+                historical_context=profile_summary,
             )
             llm_result = self._call_llm(SYSTEM_PROMPT, prompt)
             llm_non_critical = llm_result.get("non_critical_missing", non_critical_missing)
@@ -374,6 +401,13 @@ class NodeRunner:
             summary_parts.append(f"CONDITIONAL — non-critical missing: {', '.join(non_critical_missing)}")
         if rules["doc_issues"]:
             summary_parts.append(f"Issues: {'; '.join(rules['doc_issues'])}")
+        if profile is not None:
+            summary_parts.append(
+                f"Customer profile loaded: {profile.get('relationship_tenure_years', '?')}yr relationship, "
+                f"last KYC={profile.get('compliance_history', {}).get('last_kyc_outcome', '?')}"
+            )
+        else:
+            summary_parts.append("No prior bank relationship — new customer")
         if llm_summary:
             summary_parts.append(f"LLM assessment: {llm_summary}")
         summary = ". ".join(summary_parts)
@@ -389,6 +423,9 @@ class NodeRunner:
             "next_step": "identity_screening" if intake_status != "blocked" else "request_info",
             "findings": [summary],
             "sources_cited": [{"step": "intake", "sources": [r["source"] for r in policy_results]}],
+            "customer_profile": profile,
+            "customer_profile_summary": profile_summary,
+            "is_existing_customer": profile is not None,
             "audit_trail": _add_audit(
                 state, "intake", "document_completeness_check",
                 f"[{intake_status.upper()}] {summary}",
@@ -410,6 +447,7 @@ class NodeRunner:
             customer_json=json.dumps(customer, indent=2, default=str),
             screening_data=json.dumps(screening_data, indent=2, default=str) if screening_data else "No pre-existing screening data. Conduct fresh screening based on customer information.",
             policy_context=policy_context,
+            historical_context=state.get("customer_profile_summary", "No customer profile available."),
         )
 
         result = self._call_llm(SYSTEM_PROMPT, prompt)
@@ -462,6 +500,7 @@ class NodeRunner:
             account_json=json.dumps(account_context, indent=2, default=str),
             screening_summary=json.dumps(screening_summary, indent=2),
             policy_context=policy_context,
+            historical_context=state.get("customer_profile_summary", "No customer profile available."),
         )
 
         result = self._call_llm(SYSTEM_PROMPT, prompt)
@@ -514,6 +553,7 @@ class NodeRunner:
     # --- Node: Standard Review (ReAct loop) ---
     def standard_review_node(self, state: ReviewState) -> dict:
         submission = state["submission"]
+        profile_ctx = state.get("customer_profile_summary", "No customer profile available.")
 
         case_summary = (
             f"Customer: {json.dumps(submission.get('customer', {}), indent=2, default=str)}\n"
@@ -521,7 +561,8 @@ class NodeRunner:
             f"Screening: {json.dumps(state.get('screening_details', []), indent=2, default=str)}\n"
             f"Risk: total={state.get('risk_total', 0)}, rating={state.get('risk_rating', '')}, "
             f"scores={json.dumps(state.get('risk_scores', {}), indent=2, default=str)}\n"
-            f"{_case_background(submission)}"
+            f"{_case_background(submission)}\n\n"
+            f"## Customer Historical Profile\n{profile_ctx}"
         )
 
         initial_msg = (
@@ -602,6 +643,7 @@ class NodeRunner:
     # --- Node: Enhanced Due Diligence (ReAct loop) ---
     def edd_node(self, state: ReviewState) -> dict:
         submission = state["submission"]
+        profile_ctx = state.get("customer_profile_summary", "No customer profile available.")
 
         case_summary = (
             f"Customer: {json.dumps(submission.get('customer', {}), indent=2, default=str)}\n"
@@ -610,7 +652,8 @@ class NodeRunner:
             f"Risk: total={state.get('risk_total', 0)}, rating={state.get('risk_rating', '')}, "
             f"override={state.get('risk_override')}\n"
             f"Beneficial ownership: {json.dumps(submission.get('beneficial_ownership', {}), indent=2, default=str)}\n"
-            f"{_case_background(submission)}"
+            f"{_case_background(submission)}\n\n"
+            f"## Customer Historical Profile\n{profile_ctx}"
         )
         outstanding = state.get("edd_missing_docs") or []
         if outstanding:
@@ -715,6 +758,26 @@ class NodeRunner:
             ),
         }
 
+    def _summarize_for_memory(self, state: ReviewState) -> dict:
+        """Build a compact summary of the review for long-term memory."""
+        findings = state.get("findings", [])
+        key_findings = []
+        for f in findings[:5]:
+            if isinstance(f, dict):
+                key_findings.append(f.get("summary", str(f)))
+            else:
+                key_findings.append(str(f))
+        return {
+            "case_id": state.get("case_id"),
+            "decision": state.get("decision"),
+            "risk_rating": state.get("risk_rating"),
+            "risk_score": state.get("risk_total"),
+            "due_diligence_level": state.get("due_diligence_level"),
+            "key_findings": key_findings,
+            "conditions": state.get("recommendations", []),
+            "reviewed_at": datetime.now(timezone.utc).isoformat(),
+        }
+
     # --- Node: Final Decision ---
     def decision_node(self, state: ReviewState) -> dict:
         final_decision = state.get("human_decision") or state.get("decision") or "escalate"
@@ -745,6 +808,14 @@ class NodeRunner:
         )
 
         result = self._call_llm(SYSTEM_PROMPT, prompt)
+
+        try:
+            mem_summary = self._summarize_for_memory(state)
+            self.profile_store.write_case_summary(
+                state.get("case_id", ""), state.get("customer_id", ""), mem_summary,
+            )
+        except Exception:
+            pass
 
         return {
             "decision": final_decision,

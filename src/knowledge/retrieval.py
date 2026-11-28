@@ -47,23 +47,68 @@ class ComplianceKnowledgeBase:
         """Query for a specific compliance topic."""
         return self.query(topic, n_results=n_results)
 
+    _STEP_QUERIES = {
+        "intake": "document completeness check requirements for KYC onboarding submission",
+        "identity_screening": "sanctions screening PEP watchlist verification procedures",
+        "risk_assessment": "customer risk rating scoring methodology matrix factors",
+        "standard_review": "standard due diligence CDD procedures requirements",
+        "enhanced_due_diligence": "enhanced due diligence EDD requirements source of wealth verification",
+        "human_review": "review decision approval escalation procedures",
+        "decision": "KYC decision approve reject escalation criteria",
+    }
+
+    _STEP_BOOST_KEYWORDS: dict[str, list[str]] = {
+        "intake": ["document", "completeness", "submission", "onboarding", "verification"],
+        "identity_screening": ["sanctions", "pep", "screening", "watchlist", "adverse media"],
+        "risk_assessment": ["risk", "rating", "score", "matrix", "factor"],
+        "standard_review": ["due diligence", "cdd", "standard", "review", "procedures"],
+        "enhanced_due_diligence": ["edd", "enhanced", "source of wealth", "source of funds", "beneficial ownership"],
+        "human_review": ["approval", "escalation", "decision", "override"],
+        "decision": ["decision", "approve", "reject", "escalation", "criteria"],
+    }
+
+    def select_context(
+        self,
+        question: str,
+        step_name: str,
+        n_results: int = 5,
+        relevance_threshold: float = 0.3,
+        max_chars: int = 3000,
+    ) -> list[dict]:
+        """Explicit context selection with relevance gating, step-aware boosting, and budget cap."""
+        candidates = self.query(question, n_results=n_results)
+
+        # Relevance gate
+        candidates = [c for c in candidates if c.get("relevance_score", 0) >= relevance_threshold]
+
+        # Step-aware boost
+        boost_keywords = self._STEP_BOOST_KEYWORDS.get(step_name, [])
+        for c in candidates:
+            section = (c.get("section") or "").lower()
+            if any(kw in section for kw in boost_keywords):
+                c["relevance_score"] = c.get("relevance_score", 0) + 0.1
+
+        candidates.sort(key=lambda c: c.get("relevance_score", 0), reverse=True)
+
+        # Budget cap — keep full chunks, stop when total exceeds max_chars
+        selected = []
+        total_chars = 0
+        for c in candidates:
+            chunk_len = len(c.get("text", ""))
+            if total_chars + chunk_len > max_chars and selected:
+                break
+            selected.append(c)
+            total_chars += chunk_len
+
+        return selected
+
     def get_policy_for_step(self, step_name: str, context: str = "", n_results: int = 3) -> list[dict]:
         """Retrieve policies relevant to a specific review step."""
-        step_queries = {
-            "intake": "document completeness check requirements for KYC onboarding submission",
-            "identity_screening": "sanctions screening PEP watchlist verification procedures",
-            "risk_assessment": "customer risk rating scoring methodology matrix factors",
-            "standard_review": "standard due diligence CDD procedures requirements",
-            "enhanced_due_diligence": "enhanced due diligence EDD requirements source of wealth verification",
-            "human_review": "review decision approval escalation procedures",
-            "decision": "KYC decision approve reject escalation criteria",
-        }
-
-        query_text = step_queries.get(step_name, step_name)
+        query_text = self._STEP_QUERIES.get(step_name, step_name)
         if context:
             query_text = f"{query_text}. Context: {context}"
 
-        return self.query(query_text, n_results=n_results)
+        return self.select_context(query_text, step_name, n_results=n_results)
 
     def format_sources_for_prompt(self, results: list[dict], max_chars: int = 3000) -> str:
         """Format retrieved results as a context block for LLM prompts."""

@@ -11,3 +11,7 @@ venv/
 data/compliance.db
 *.db-journal
 .claude/
+
+# Runtime audit DB and private meeting notes (not part of the deliverable)
+compliance_review.db
+minutes/

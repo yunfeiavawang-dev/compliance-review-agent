@@ -17,6 +17,9 @@ INTAKE_PROMPT = """Review this KYC submission for document completeness.
 
 ## Customer Type: {customer_type}
 
+## Customer Historical Profile
+{historical_context}
+
 ## Relevant Policy Requirements
 {policy_context}
 
@@ -57,6 +60,9 @@ SCREENING_PROMPT = """Conduct sanctions, PEP, and adverse media screening analys
 ## Screening Data
 {screening_data}
 
+## Customer Historical Profile
+{historical_context}
+
 ## Relevant Screening Procedures
 {policy_context}
 
@@ -95,6 +101,9 @@ RISK_ASSESSMENT_PROMPT = """Perform a risk assessment for this customer using th
 
 ## Screening Results
 {screening_summary}
+
+## Customer Historical Profile
+{historical_context}
 
 ## Risk Rating Matrix
 {policy_context}

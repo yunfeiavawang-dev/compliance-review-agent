@@ -1,0 +1,46 @@
+{
+  "customer_id": "C-2024-001",
+  "relationship_start": "2019-03-15",
+  "relationship_tenure_years": 5.7,
+  "customer_segment": "mass_affluent",
+  "relationship_manager": "RM-SG-042",
+  "products_held": ["savings", "credit_card", "fx_trading"],
+
+  "transaction_summary": {
+    "avg_monthly_inflow": 45000,
+    "avg_monthly_outflow": 38000,
+    "max_single_transaction": 180000,
+    "cross_border_tx_pct": 0.35,
+    "primary_counterparty_countries": ["Japan", "Singapore", "Hong Kong"],
+    "cash_deposit_frequency": "rare",
+    "unusual_pattern_flags": 0
+  },
+
+  "risk_events": [],
+
+  "compliance_history": {
+    "previous_kyc_reviews": 2,
+    "last_kyc_date": "2022-03-20",
+    "last_kyc_outcome": "approved",
+    "last_risk_rating": "low",
+    "risk_rating_trajectory": ["low", "low"],
+    "sar_filed": false,
+    "regulatory_inquiries": 0
+  },
+
+  "service_summary": {
+    "total_interactions": 15,
+    "complaints": 0,
+    "account_freezes": 0,
+    "login_anomalies": 0
+  },
+
+  "external_data": {
+    "credit_score": 720,
+    "other_bank_loans": 0,
+    "bankruptcy_records": false,
+    "litigation_records": 0
+  },
+
+  "internal_tags": ["high_value_client"]
+}

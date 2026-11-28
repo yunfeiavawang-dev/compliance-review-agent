@@ -1,0 +1,61 @@
+{
+  "customer_id": "C-2024-003",
+  "relationship_start": "2023-03-10",
+  "relationship_tenure_years": 1.5,
+  "customer_segment": "hnwi",
+  "relationship_manager": "RM-PB-018",
+  "products_held": ["current_account", "fx_trading", "securities"],
+
+  "transaction_summary": {
+    "avg_monthly_inflow": 200000,
+    "avg_monthly_outflow": 175000,
+    "max_single_transaction": 850000,
+    "cross_border_tx_pct": 0.72,
+    "primary_counterparty_countries": ["UAE", "Cyprus", "Russia", "Thailand"],
+    "cash_deposit_frequency": "occasional",
+    "unusual_pattern_flags": 2
+  },
+
+  "risk_events": [
+    {
+      "date": "2023-09-15",
+      "event_type": "transaction_monitoring_alert",
+      "description": "Large wire transfer ($420K) to Cyprus-based shell company flagged by TM system",
+      "outcome": "dismissed_after_review",
+      "reviewed_by": "Compliance Officer CO-012"
+    },
+    {
+      "date": "2024-04-22",
+      "event_type": "transaction_monitoring_alert",
+      "description": "Series of structured deposits ($49K each) over 5 business days totaling $245K",
+      "outcome": "under_investigation",
+      "reviewed_by": "Compliance Officer CO-008"
+    }
+  ],
+
+  "compliance_history": {
+    "previous_kyc_reviews": 1,
+    "last_kyc_date": "2023-03-10",
+    "last_kyc_outcome": "approved_with_conditions",
+    "last_risk_rating": "medium",
+    "risk_rating_trajectory": ["medium"],
+    "sar_filed": false,
+    "regulatory_inquiries": 0
+  },
+
+  "service_summary": {
+    "total_interactions": 8,
+    "complaints": 1,
+    "account_freezes": 0,
+    "login_anomalies": 2
+  },
+
+  "external_data": {
+    "credit_score": 580,
+    "other_bank_loans": 2,
+    "bankruptcy_records": false,
+    "litigation_records": 1
+  },
+
+  "internal_tags": ["high_risk_geography", "structured_transaction_pattern", "sanctions_watchlist_proximity"]
+}

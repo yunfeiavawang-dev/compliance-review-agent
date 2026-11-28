@@ -1,0 +1,46 @@
+{
+  "customer_id": "C-2024-007",
+  "relationship_start": "2022-10-01",
+  "relationship_tenure_years": 2.1,
+  "customer_segment": "sme",
+  "relationship_manager": "RM-CB-022",
+  "products_held": ["business_current_account", "trade_finance"],
+
+  "transaction_summary": {
+    "avg_monthly_inflow": 120000,
+    "avg_monthly_outflow": 105000,
+    "max_single_transaction": 320000,
+    "cross_border_tx_pct": 0.30,
+    "primary_counterparty_countries": ["Singapore", "Malaysia", "India"],
+    "cash_deposit_frequency": "none",
+    "unusual_pattern_flags": 0
+  },
+
+  "risk_events": [],
+
+  "compliance_history": {
+    "previous_kyc_reviews": 1,
+    "last_kyc_date": "2022-10-01",
+    "last_kyc_outcome": "approved",
+    "last_risk_rating": "low",
+    "risk_rating_trajectory": ["low"],
+    "sar_filed": false,
+    "regulatory_inquiries": 0
+  },
+
+  "service_summary": {
+    "total_interactions": 10,
+    "complaints": 0,
+    "account_freezes": 0,
+    "login_anomalies": 0
+  },
+
+  "external_data": {
+    "credit_score": 700,
+    "other_bank_loans": 1,
+    "bankruptcy_records": false,
+    "litigation_records": 0
+  },
+
+  "internal_tags": ["government_contractor"]
+}

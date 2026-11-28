@@ -1,0 +1,54 @@
+{
+  "customer_id": "C-2024-004",
+  "relationship_start": "2021-09-01",
+  "relationship_tenure_years": 3.0,
+  "customer_segment": "mass_affluent",
+  "relationship_manager": "RM-SG-055",
+  "products_held": ["savings", "investment_account", "credit_card"],
+
+  "transaction_summary": {
+    "avg_monthly_inflow": 80000,
+    "avg_monthly_outflow": 65000,
+    "max_single_transaction": 250000,
+    "cross_border_tx_pct": 0.55,
+    "primary_counterparty_countries": ["Japan", "Hong Kong", "Singapore"],
+    "cash_deposit_frequency": "none",
+    "unusual_pattern_flags": 1
+  },
+
+  "risk_events": [
+    {
+      "date": "2023-06-10",
+      "event_type": "transaction_monitoring_alert",
+      "description": "Unusual spike in FX trading volume ($180K in one week vs avg $40K/month)",
+      "outcome": "dismissed_after_review",
+      "reviewed_by": "Compliance Officer CO-015"
+    }
+  ],
+
+  "compliance_history": {
+    "previous_kyc_reviews": 1,
+    "last_kyc_date": "2021-09-01",
+    "last_kyc_outcome": "approved",
+    "last_risk_rating": "low",
+    "risk_rating_trajectory": ["low", "medium"],
+    "sar_filed": false,
+    "regulatory_inquiries": 0
+  },
+
+  "service_summary": {
+    "total_interactions": 12,
+    "complaints": 0,
+    "account_freezes": 0,
+    "login_anomalies": 0
+  },
+
+  "external_data": {
+    "credit_score": 710,
+    "other_bank_loans": 1,
+    "bankruptcy_records": false,
+    "litigation_records": 0
+  },
+
+  "internal_tags": ["expat_professional"]
+}

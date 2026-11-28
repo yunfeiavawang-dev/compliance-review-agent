@@ -22,6 +22,8 @@ class EmbeddingConfig:
     provider: str = "local"
     model_name: str = "BAAI/bge-small-zh-v1.5"
     dimension: int = 512
+    base_url: str = ""
+    api_key: str = ""
 
 
 @dataclass
@@ -64,10 +66,26 @@ def load_config() -> AppConfig:
         )
 
     embedding_provider = os.getenv("EMBEDDING_PROVIDER", "local")
-    embedding = EmbeddingConfig(
-        provider=embedding_provider,
-        model_name="BAAI/bge-small-zh-v1.5" if embedding_provider == "local" else "text-embedding-3-small",
-        dimension=512 if embedding_provider == "local" else 1536,
-    )
+    if embedding_provider == "ark":
+        embedding = EmbeddingConfig(
+            provider="ark",
+            model_name=os.getenv("ARK_EMBEDDING_ENDPOINT_ID", ""),
+            dimension=2560,
+            base_url=os.getenv("ARK_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3"),
+            api_key=os.getenv("ARK_API_KEY", ""),
+        )
+    elif embedding_provider == "local":
+        embedding = EmbeddingConfig(
+            provider="local",
+            model_name="BAAI/bge-small-zh-v1.5",
+            dimension=512,
+        )
+    else:
+        embedding = EmbeddingConfig(
+            provider="openai",
+            model_name=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
+            dimension=1536,
+            api_key=os.getenv("OPENAI_API_KEY", ""),
+        )
 
     return AppConfig(llm=llm, embedding=embedding)

@@ -1,0 +1,46 @@
+{
+  "customer_id": "C-2024-006",
+  "relationship_start": "2018-06-10",
+  "relationship_tenure_years": 6.3,
+  "customer_segment": "mass",
+  "relationship_manager": "RM-SG-071",
+  "products_held": ["savings", "credit_card"],
+
+  "transaction_summary": {
+    "avg_monthly_inflow": 30000,
+    "avg_monthly_outflow": 25000,
+    "max_single_transaction": 60000,
+    "cross_border_tx_pct": 0.05,
+    "primary_counterparty_countries": ["Singapore"],
+    "cash_deposit_frequency": "none",
+    "unusual_pattern_flags": 0
+  },
+
+  "risk_events": [],
+
+  "compliance_history": {
+    "previous_kyc_reviews": 1,
+    "last_kyc_date": "2021-06-15",
+    "last_kyc_outcome": "approved",
+    "last_risk_rating": "low",
+    "risk_rating_trajectory": ["low"],
+    "sar_filed": false,
+    "regulatory_inquiries": 0
+  },
+
+  "service_summary": {
+    "total_interactions": 8,
+    "complaints": 0,
+    "account_freezes": 0,
+    "login_anomalies": 0
+  },
+
+  "external_data": {
+    "credit_score": 740,
+    "other_bank_loans": 1,
+    "bankruptcy_records": false,
+    "litigation_records": 0
+  },
+
+  "internal_tags": []
+}
