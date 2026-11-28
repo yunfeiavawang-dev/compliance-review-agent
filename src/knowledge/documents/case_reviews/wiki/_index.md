@@ -18,6 +18,9 @@ This wiki supplements the weekly retrospectives (RETRO-*) with evergreen decisio
 | sanctions_potential_match | Sanctions Fuzzy Match | Evaluating potential sanctions list matches, including transliteration and common-name false positives |
 | pep_with_mitigants | PEP with Mitigating Factors | Assessing Politically Exposed Persons who present strong risk mitigants (cooling-off period, documented wealth) |
 | cross_border_corporate | Cross-Border Corporate Structures | Reviewing corporate customers with multi-jurisdiction operations and complex ownership |
+| rejection_grounds | Grounds for Rejection | When and how to reject — mandatory triggers, case examples, and STR referral criteria |
+| false_positive_resolution | False Positive Resolution | Resolving sanctions and PEP screening hits — evidence-based dismissal thresholds and secondary identifiers |
+| unusual_transaction_patterns | Unusual Transaction Patterns | ML/TF typologies (layering, TBML, structuring, shell companies), red flags, and onboarding risk assessment |
 
 ## How to Use
 
